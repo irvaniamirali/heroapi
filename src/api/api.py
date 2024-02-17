@@ -1,5 +1,6 @@
 from myrino.client import Client
 import langdetect
+import faker
 import json
 
 
@@ -52,3 +53,46 @@ def lang(text: str) -> str:
         example: `en` or `fa`
     '''
     return langdetect.detect(text)
+
+
+def faker_data(content: str = 'text', count: int = 10, lang: str = 'en_US') -> list:
+    '''This api is used to generate fake content.
+    :param content:
+        Type of content. example > `text` or `name`
+    :param count:
+        Number of contents. example > 10 or 50
+    :param lang:
+        desired language. example > `en_US` or `fa_IR`
+        !NOTE: Uppercase and lowercase letters are sensitive
+    :return:
+        Fake data as a list
+    '''
+    data: list = []
+    fake: classmethod = faker.Faker(lang.split())
+    if content == 'text': return fake.text()
+    elif content == 'name':
+        for _ in range(0, len(count)):
+            data.append(fake.name())
+
+        return data
+
+
+    elif content == 'data':
+        for _ in range(0, len(count)):
+            data.append(fake.data())
+
+        return data
+
+
+    elif content == 'emoji':
+        for _ in range(0, len(count)):
+            data.append(fake.emoji())
+
+        return data
+
+
+    elif content == 'ip':
+        for _ in range(0, len(count)):
+            data.append(fake.ipv4())
+
+        return data
