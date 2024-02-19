@@ -2,6 +2,8 @@
 
 ### Free and open source api 
 
+Soon the apis will be placed on the server for use
+
 
 ### All apis
 1. __Rubino downloder__
