@@ -28,7 +28,7 @@ async def rubino_dl(url: str, timeout: float = 10) -> dict:
     :return:
         Full post information
 
-    Powered by the myrino library. github > github.com/metect/myrino
+    If you want more details, go to this address: https://github.com/metect/myrino
     '''
     result: dict = rubino(url=url, timeout=timeout)
     return {
@@ -41,7 +41,7 @@ async def rubino_dl(url: str, timeout: float = 10) -> dict:
 
 parameters: list = [{'item': 'text'}]
 @app.get('/font', status_code=status.HTTP_200_OK)
-async def main(text: str) -> dict:
+async def font_generate(text: str) -> dict:
     '''This function is for generating fonts. Currently only English language is supported
     :param text:
         The text you want the font to be applied to
