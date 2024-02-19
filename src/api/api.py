@@ -74,7 +74,10 @@ def lang(text: str) -> str:
     :return:
         example: `en` or `fa`
     '''
-    return langdetect.detect(text)
+    try:
+        return langdetect.detect(text)
+    except langdetect.LangDetectException:
+        return 'The value of the text parameter you sent is integer. While you should have sent string'
 
 
 def faker_data(content: str = 'text', count: int = 10, lang: str = 'en_US') -> list:
