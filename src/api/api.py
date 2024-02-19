@@ -1,5 +1,6 @@
 import urllib.parse
-import html, re
+import html
+import re
 import requests
 import random
 import langdetect
@@ -117,3 +118,21 @@ def faker_data(content: str = 'text', count: int = 10, lang: str = 'en_US') -> l
             data.append(fake.ipv4())
 
         return data
+
+
+def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
+    '''This API, which is based on the Google Translate API, is used to translate texts'''
+    session = requests.session()
+    base_url: str = 'https://translate.google.com'
+    url: str = f'{base_url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
+    r = session.request(
+        method='get', url=url, headers={
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
+        }
+    )
+
+    if r.status_code == 200:
+        result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', r.text)
+        return html.unescape(result[0])
+    else:
+        return 'A problem has occurred'
