@@ -1,4 +1,7 @@
-from myrino.client import Client
+import urllib.parse
+import html, re
+import requests
+import random
 import langdetect
 import faker
 import json
@@ -14,10 +17,28 @@ def rubino(url: str, timeout: float = 10) -> dict:
     :return:
         Full post information
 
-    Powered by the myrino library. github > github.com/metect/myrino
+    If you want more details, go to this address: https://github.com/metect/myrino
     '''
-    cliant = Client('rnd', timeout=timeout)
-    return cliant.get_post_by_share_link(share_link=url)
+    auth_list: list = []
+    payload: dict = {
+        'api_version': '0',
+        'auth': random.choice(seq=auth_list),
+        'client': {
+            'app_name': 'Main',
+            'app_version': '3.0.1',
+            'package': 'app.rubino.main',
+            'lang_code': 'en',
+            'platform': 'PWA'
+    },
+        'data': {
+            'share_link': url.split('/')[-1],
+            'profile_id': None
+        },
+        'method': 'getPostByShareLink'
+    }
+    session = requests.session()
+    base_url: str = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
+    return session.request('post', url=base_url, timeout=timeout, json=payload).json()
 
 
 def font(text: str = 'ohmyapi') -> dict:
