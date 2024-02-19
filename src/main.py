@@ -91,3 +91,17 @@ async def main(content: str = 'text', count: int = 10, lang: str = 'en_US') -> d
         'url': 't.me/ohmyapi',
         'result': result
     }
+
+
+
+parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
+@app.get('/translate', status_code=status.HTTP_200_OK)
+async def main(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
+    '''This API, which is based on the Google Translate API, is used to translate texts'''
+    result: str = translate(text=text, to_lang=to_lang, from_lang=from_lang)
+    return {
+        'status': True,
+        'dev': 'amirali irvany',
+        'url': 't.me/ohmyapi',
+        'result': result
+    }
