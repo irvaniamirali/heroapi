@@ -9,6 +9,7 @@
 3. __Language detect__
 4. __Fake Data__
 5. __Google Translate__
+6. __Text2image__
 
 > To view the documents, refer to the [Telegram channel](t.me/ohmyapi)
 
