@@ -1,5 +1,3 @@
-'''this is `ohmyapi`, free and open-source api'''
-
 from fastapi import FastAPI, status
 from api.api import *
 
@@ -91,7 +89,6 @@ async def main(content: str = 'text', count: int = 10, lang: str = 'en_US') -> d
         'url': 't.me/ohmyapi',
         'result': result
     }
-
 
 
 parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
