@@ -76,24 +76,6 @@ async def lang_detect(text: str) -> dict:
     }
 
 
-parameters: list = [{'item': 'content', 'item': 'count', 'item': 'lang'}]
-@app.get('/api/fake', status_code=status.HTTP_200_OK)
-async def fake_data(content: str = 'text', count: int = 10, lang: str = 'en_US') -> dict:
-    MAX_COUNT_DATA: int = 999
-    if count > MAX_COUNT_DATA:
-        return {
-            'err_message': f'It is not possible to provide more than {MAX_COUNT_DATA} data'
-        }
-
-    result = faker_data(content=content, count=count, lang=lang)
-    return {
-        'status': True,
-        'dev': 'amirali irvany',
-        'url': 't.me/ohmyapi',
-        'result': result
-    }
-
-
 parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
 @app.get('/api/translate', status_code=status.HTTP_200_OK)
 async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
