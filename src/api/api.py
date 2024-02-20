@@ -124,7 +124,7 @@ def faker_data(content: str = 'text', count: int = 10, lang: str = 'en_US') -> l
         return data
 
 
-def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
+def translator(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''This API, which is based on the Google Translate API, is used to translate texts'''
     session = requests.session()
     base_url: str = 'https://translate.google.com'
