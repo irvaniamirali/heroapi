@@ -15,7 +15,7 @@ async def main() -> dict:
 
 
 parameters: list = [{'item': 'url', 'item': 'timeout'}]
-@app.get('/rubino', status_code=status.HTTP_200_OK)
+@app.get('/api/rubino', status_code=status.HTTP_200_OK)
 async def rubino_dl(url: str, timeout: float = 10) -> dict:
     '''This method is used to get the download link
     and other information of the post(s) in Rubino Messenger
@@ -38,12 +38,15 @@ async def rubino_dl(url: str, timeout: float = 10) -> dict:
 
 
 parameters: list = [{'item': 'text'}]
-@app.get('/font', status_code=status.HTTP_200_OK)
+@app.get('/api/font', status_code=status.HTTP_200_OK)
 async def font_generate(text: str) -> dict:
     '''This function is for generating fonts. Currently only English language is supported
     :param text:
         The text you want the font to be applied to
     '''
+    if lang(text) in ['fa', 'ar']:
+        return 'Currently, Persian language is not supported'
+
     result: list = font(text=text)
     return {
         'status': True,
@@ -54,7 +57,7 @@ async def font_generate(text: str) -> dict:
 
 
 parameters: list = [{'item': 'text'}]
-@app.get('/lang', status_code=status.HTTP_200_OK)
+@app.get('/api/lang', status_code=status.HTTP_200_OK)
 async def lang_detect(text: str) -> dict:
     '''This function is to identify the language of a text
     :param text:
@@ -74,8 +77,8 @@ async def lang_detect(text: str) -> dict:
 
 
 parameters: list = [{'item': 'content', 'item': 'count', 'item': 'lang'}]
-@app.get('/fake', status_code=status.HTTP_200_OK)
-async def main(content: str = 'text', count: int = 10, lang: str = 'en_US') -> dict:
+@app.get('/api/fake', status_code=status.HTTP_200_OK)
+async def fake_data(content: str = 'text', count: int = 10, lang: str = 'en_US') -> dict:
     MAX_COUNT_DATA: int = 999
     if count > MAX_COUNT_DATA:
         return {
@@ -92,10 +95,10 @@ async def main(content: str = 'text', count: int = 10, lang: str = 'en_US') -> d
 
 
 parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
-@app.get('/translate', status_code=status.HTTP_200_OK)
+@app.get('/api/translate', status_code=status.HTTP_200_OK)
 async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''This API, which is based on the Google Translate API, is used to translate texts'''
-    result: str = translate(text=text, to_lang=to_lang, from_lang=from_lang)
+    result: str = translator(text=text, to_lang=to_lang, from_lang=from_lang)
     return {
         'status': True,
         'dev': 'amirali irvany',
@@ -104,14 +107,14 @@ async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -
     }
 
 
-parameters: list = [{'item': 'text'}]
-@app.get('/text2image', status_code=status.HTTP_200_OK)
-async def text2image(text: str) -> dict:
+parameters: list = [{'item': 'p'}]
+@app.get('/api/text2image', status_code=status.HTTP_200_OK)
+async def text2image(p: str) -> dict:
     '''This api is used to convert text to image by artificial intelligence'''
     url: str = replicate.run(
         'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
         input={
-            'prompt': text
+            'prompt': p
         }
     )
     return {
@@ -119,7 +122,7 @@ async def text2image(text: str) -> dict:
         'dev': 'amirali irvany',
         'url': 't.me/ohmyapi',
         'result': {
-            'prompt': text,
+            'prompt': p,
             'url': url[0]
         }
     }
