@@ -9,9 +9,8 @@ Soon the apis will be placed on the server for use
 1. __Rubino downloder__
 2. __Font generate__
 3. __Language detect__
-4. __Fake Data__
-5. __Google Translate__
-6. __Text2image__
+4. __Google Translate__
+5. __Text2image__
 
 > To view the documents, refer to the [Telegram channel](t.me/ohmyapi)
 
