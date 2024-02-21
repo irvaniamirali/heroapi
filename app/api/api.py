@@ -127,3 +127,19 @@ def translator(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dic
         return html.unescape(result[0])
     else:
         return 'A problem has occurred'
+
+
+def fake(count: int = 100, lang: str = 'en_US') -> str:
+    '''This api is used to generate fake text
+    :param count
+        Number of words, example >>> `10`
+    :param lang
+        desired language, example >>> `en_US` or `fa_IR`
+
+    '''
+    text: list = []
+    __fake = faker.Faker([lang])
+    # for _ in range(0, count):
+    #     text.append(__fake.text())
+
+    return __fake.text(count)
