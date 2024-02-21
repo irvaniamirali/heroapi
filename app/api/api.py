@@ -6,7 +6,6 @@ import requests
 import random
 import langdetect
 import faker
-import json
 
 
 def rubino(url: str, timeout: float = 10) -> dict:
