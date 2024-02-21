@@ -2,8 +2,6 @@
 
 ### Free and open source api 
 
-Soon the apis will be placed on the server for use
-
 
 ### All apis
 1. __Rubino downloder__
@@ -12,7 +10,20 @@ Soon the apis will be placed on the server for use
 4. __Google Translate__
 5. __Text2image__
 
-> To view the documents, refer to the [Telegram channel](t.me/ohmyapi)
+### Url
+> https://ohmyapi.liara.run/
+
+#### Have to use
+```python
+import requests
+
+url = 'https://ohmyapi.liara.run/api/translate?text=hello&to_lang=fa'
+r = requests.get(url=url)
+print(r)
+```
+
+
+> Reading documents in [Telegram channel](t.me/ohmyapi) or [this link](https://ohmyapi.liara.run/docs)
 
 
 ### License
