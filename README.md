@@ -14,7 +14,7 @@
 ### Url
 > https://ohmyapi.liara.run/
 
-#### Have to use
+#### Example
 ```python
 import requests
 
