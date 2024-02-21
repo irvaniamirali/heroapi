@@ -1,3 +1,4 @@
+import requests
 from fastapi import FastAPI, status
 from .api.api import *
 
@@ -108,3 +109,41 @@ async def text2image(p: str) -> dict:
             'url': url[0]
         }
     }
+
+
+parameters: list = [{'item': 'count', 'item': 'lang'}]
+@app.get('/api/faketext', status_code=status.HTTP_200_OK)
+async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
+    '''This api is used to generate fake text
+    :param count
+        Number of words, example >>> `10`
+    :param lang
+        desired language, example >>> `en_US` or `fa_IR`
+    '''
+    if count > 999:
+        return {
+            'err-message': 'The amount is too big. Send a smaller number'
+        }
+
+    result: str = fake(count=count, lang=lang)
+    return {
+        'status': True,
+        'dev': 'amirali irvany',
+        'url': 't.me/ohmyapi',
+        'result': result
+    }
+
+
+parameters: list = [{'item': 'p'}]
+@app.get('/api/gpt', status_code=status.HTTP_200_OK)
+async def main(p: str) -> dict:
+    pass
+    # return {
+    #     'status': True,
+    #     'dev': 'amirali irvany',
+    #     'url': 't.me/ohmyapi',
+    #     'result': {
+    #         'prompt': p,
+    #         'responce': r
+    #     }
+    # }
