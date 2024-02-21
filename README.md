@@ -23,7 +23,7 @@ print(r)
 ```
 
 
-> Reading documents in [Telegram channel](t.me/ohmyapi) or [this link](https://ohmyapi.liara.run/docs)
+> Reading documents in [Telegram channel](https://t.me/ohmyapi) or [this link](https://ohmyapi.liara.run/docs)
 
 
 ### License
