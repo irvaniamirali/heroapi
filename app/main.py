@@ -1,5 +1,5 @@
 from fastapi import FastAPI, status
-from api.api import *
+from .api.api import *
 
 
 app = FastAPI()
