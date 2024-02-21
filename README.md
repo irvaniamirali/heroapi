@@ -9,6 +9,7 @@
 3. __Language detect__
 4. __Google Translate__
 5. __Text2image__
+6. __Fake text generate__
 
 ### Url
 > https://ohmyapi.liara.run/
