@@ -1,4 +1,3 @@
-import requests
 from fastapi import FastAPI, status
 from .api.api import *
 
@@ -11,7 +10,7 @@ async def main() -> dict:
     return {
         'status': True,
         'dev': 'amirali irvany',
-        'url': 't.me/ohmyapi'
+        'url': 't.me/Heroapi'
     }
 
 
@@ -33,7 +32,7 @@ async def rubino_dl(url: str, timeout: float = 10) -> dict:
     return {
         'status': True,
         'dev': 'amirali irvany',
-        'url': 't.me/ohmyapi',
+        'url': 't.me/Heroapi',
         'result': result
     }
 
@@ -52,7 +51,7 @@ async def font_generate(text: str) -> dict:
     return {
         'status': True,
         'dev': 'amirali irvany',
-        'url': 't.me/ohmyapi',
+        'url': 't.me/Heroapi',
         'result': result
     }
 
@@ -72,7 +71,7 @@ async def lang_detect(text: str) -> dict:
     return {
         'status': True,
         'dev': 'amirali irvany',
-        'url': 't.me/ohmyapi',
+        'url': 't.me/Heroapi',
         'result': result
     }
 
@@ -85,7 +84,7 @@ async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -
     return {
         'status': True,
         'dev': 'amirali irvany',
-        'url': 't.me/ohmyapi',
+        'url': 't.me/Heroapi',
         'result': result
     }
 
@@ -103,7 +102,7 @@ async def text2image(p: str) -> dict:
     return {
         'status': True,
         'dev': 'amirali irvany',
-        'url': 't.me/ohmyapi',
+        'url': 't.me/Heroapi',
         'result': {
             'prompt': p,
             'url': url[0]
@@ -119,6 +118,8 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
         Number of words, example >>> `10`
     :param lang
         desired language, example >>> `en_US` or `fa_IR`
+
+    Power taken from the library `Faker`
     '''
     if count > 999:
         return {
@@ -129,21 +130,6 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
     return {
         'status': True,
         'dev': 'amirali irvany',
-        'url': 't.me/ohmyapi',
+        'url': 't.me/Heroapi',
         'result': result
     }
-
-
-parameters: list = [{'item': 'p'}]
-@app.get('/api/gpt', status_code=status.HTTP_200_OK)
-async def main(p: str) -> dict:
-    pass
-    # return {
-    #     'status': True,
-    #     'dev': 'amirali irvany',
-    #     'url': 't.me/ohmyapi',
-    #     'result': {
-    #         'prompt': p,
-    #         'responce': r
-    #     }
-    # }
