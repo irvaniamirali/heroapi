@@ -28,12 +28,12 @@ async def rubino_dl(url: str, timeout: float = 10) -> dict:
 
     If you want more details, go to this address: https://github.com/metect/myrino
     '''
-    result: dict = rubino(url=url, timeout=timeout)
+    # result: dict = rubino(url=url, timeout=timeout)
     return {
         'status': True,
         'dev': 'amirali irvany',
         'url': 't.me/Heroapi',
-        'result': result
+        'result': 'Currently, it is not possible to use this web service'
     }
 
 
