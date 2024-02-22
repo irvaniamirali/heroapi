@@ -136,10 +136,6 @@ def fake(count: int = 100, lang: str = 'en_US') -> str:
     :param lang
         desired language, example >>> `en_US` or `fa_IR`
 
+    Power taken from the library `Faker`
     '''
-    text: list = []
-    __fake = faker.Faker([lang])
-    # for _ in range(0, count):
-    #     text.append(__fake.text())
-
-    return __fake.text(count)
+    return faker.Faker([lang]).text()
