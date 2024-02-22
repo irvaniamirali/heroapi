@@ -2,16 +2,46 @@ from fastapi import FastAPI, status
 from .api.api import *
 
 
+class HeroAPI:
+
+    def __init__(
+            self,
+            url: str = 't.me/Heroapi',
+            github: str = 'https://github.com/metect/Heroapi',
+            developer: str = 'amirali irvany'
+    ) -> dict:
+        self.url: str = url
+        self.github: str = github
+        self.developer: str = developer
+
+    def return_data(
+            self,
+            data: dict = None,
+            status: bool = True,
+            developer: str = None,
+            err_message: str = None,
+    ) -> dict:
+        developer = self.developer if developer == None else None
+        __dict: dict = {
+            'status': status,
+            'dev': developer,
+            'url': self.url,
+            'github': self.github,
+            'result': {
+                'err_mesage': err_message,
+                'out': data
+            },
+        }
+        return __dict
+
+
 app = FastAPI()
+heroapi = HeroAPI()
 
 @app.get('/', status_code=status.HTTP_200_OK)
 async def main() -> dict:
     '''displaying developer information'''
-    return {
-        'status': True,
-        'dev': 'amirali irvany',
-        'url': 't.me/Heroapi'
-    }
+    return heroapi.return_data()
 
 
 parameters: list = [{'item': 'url', 'item': 'timeout'}]
@@ -28,13 +58,9 @@ async def rubino_dl(url: str, timeout: float = 10) -> dict:
 
     If you want more details, go to this address: https://github.com/metect/myrino
     '''
-    # result: dict = rubino(url=url, timeout=timeout)
-    return {
-        'status': True,
-        'dev': 'amirali irvany',
-        'url': 't.me/Heroapi',
-        'result': 'Currently, it is not possible to use this web service'
-    }
+    return heroapi.return_data(
+        err_message='Currently, it is not possible to use this web service'
+    )
 
 
 parameters: list = [{'item': 'text'}]
@@ -44,19 +70,11 @@ async def font_generate(text: str) -> dict:
     :param text:
         The text you want the font to be applied to
     '''
-    try:
-        result: list = font(text=text)
-    except Exception:
-        result = {
-            'err-message': 'Currently, Persian language is not supported'
-        }
-
-    return {
-        'status': True,
-        'dev': 'amirali irvany',
-        'url': 't.me/Heroapi',
-        'result': result
-    }
+    return heroapi.return_data(
+        status=True,
+        developer='amirali irvany',
+        data=font(text=text)
+    )
 
 
 parameters: list = [{'item': 'text'}]
@@ -70,26 +88,16 @@ async def lang_detect(text: str) -> dict:
 
     Powered by the `langdetetc` library
     '''
-    result: str = lang(text=text)
-    return {
-        'status': True,
-        'dev': 'amirali irvany',
-        'url': 't.me/Heroapi',
-        'result': result
-    }
+    return heroapi.return_data(data=lang(text=text))
 
 
 parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
 @app.get('/api/translate', status_code=status.HTTP_200_OK)
 async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''This API, which is based on the Google Translate API, is used to translate texts'''
-    result: str = translator(text=text, to_lang=to_lang, from_lang=from_lang)
-    return {
-        'status': True,
-        'dev': 'amirali irvany',
-        'url': 't.me/Heroapi',
-        'result': result
-    }
+    return heroapi.return_data(
+        data=translator(text=text, to_lang=to_lang, from_lang=from_lang)
+    )
 
 
 parameters: list = [{'item': 'p'}]
@@ -102,15 +110,12 @@ async def text2image(p: str) -> dict:
             'prompt': p
         }
     )
-    return {
-        'status': True,
-        'dev': 'amirali irvany',
-        'url': 't.me/Heroapi',
-        'result': {
+    return heroapi.return_data(
+        data={
             'prompt': p,
             'url': url[0]
         }
-    }
+    )
 
 
 parameters: list = [{'item': 'count', 'item': 'lang'}]
@@ -124,15 +129,6 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
 
     Power taken from the library `Faker`
     '''
-    if count > 999:
-        return {
-            'err-message': 'The amount is too big. Send a smaller number'
-        }
-
-    result: str = fake(count=count, lang=lang)
-    return {
-        'status': True,
-        'dev': 'amirali irvany',
-        'url': 't.me/Heroapi',
-        'result': result
-    }
+    return heroapi.return_data(
+        data=fake(count=count, lang=lang)
+    )
