@@ -147,3 +147,13 @@ async def datetime() -> dict:
     return heroapi.return_json(
         data=jdate(result_format='H:i:s ,Y/n/j')
     )
+
+
+@app.get('/api/usd', status_code=status.HTTP_200_OK)
+async def usd() -> dict:
+    '''api to get live currency prices from the `https://irarz.com`
+    > More details will be added soon
+    '''
+    return heroapi.return_json(
+        data=live_usd()
+    )
