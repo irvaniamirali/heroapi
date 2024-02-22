@@ -7,20 +7,11 @@ import langdetect
 import faker
 import os
 import json
+from jalali.Jalalian import jdate
 
 
 def rubino(url: str, timeout: float = 10) -> dict:
-    '''This method is used to get the download link
-    and other information of the post(s) in Rubino Messenger
-    :param url:
-        The link of the desired post
-    :param timeout:
-        Optional To manage slow timeout when the server is slow
-    :return:
-        Full post information
-
-    If you want more details, go to this address: https://github.com/metect/myrino
-    '''
+    return
     # auth_list: list = []
     # payload: dict = {
     #     'api_version': '0',
@@ -43,11 +34,8 @@ def rubino(url: str, timeout: float = 10) -> dict:
     # return session.request('post', url=base_url, timeout=timeout, json=payload).json()
 
 
-def font(text: str = 'ohmyapi') -> dict:
-    '''This function is for generating fonts. Currently only English language is supported
-    :param text:
-        The text you want the font to be applied to
-    '''
+def font(text: str = 'Heroapi') -> dict:
+    '''generate ascii font, all fonts: 33'''
     prefix = re.sub(pattern='api.py', repl='f.json', string=os.path.abspath(__file__))
     with open(prefix, 'r') as f:
         fonts = json.load(f)
@@ -67,26 +55,8 @@ def font(text: str = 'ohmyapi') -> dict:
     return result
 
 
-def lang(text: str) -> str:
-    '''This function is to identify the language of a text
-    :param text:
-        Your desired text
-    :return:
-        example: `en` or `fa`
-
-    Power taken from the library `langdetect`
-    '''
-    try:
-        return langdetect.detect(text)
-    except langdetect.LangDetectException:
-        return {
-            'err-message':
-                'The value of the text parameter you sent is integer. While you should have sent string'
-        }
-
-
 def translator(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
-    '''This API, which is based on the Google Translate API, is used to translate texts'''
+    '''This api based on google Translate API, is used to translate texts'''
     session = requests.session()
     base_url: str = 'https://translate.google.com'
     url: str = f'{base_url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
@@ -100,24 +70,9 @@ def translator(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dic
         result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', r.text)
         return html.unescape(result[0])
     else:
-        return {
-            'err-message': 'A problem has occurred'
-        }
+        return
 
 
 def fake(count: int = 100, lang: str = 'en_US') -> str:
-    '''This api is used to generate fake text
-    :param count
-        Number of words, example >>> `10`
-    :param lang
-        desired language, example >>> `en_US` or `fa_IR`
-
-    Power taken from the library `Faker`
-    '''
-
-    if count > 999:
-        return {
-            'err-message': 'The amount is too big. Send a smaller number'
-        }
-    else:
-        return faker.Faker([lang]).text()
+    '''This function is used to generate fake text. Power taken from the library `Faker`'''
+    return faker.Faker([lang]).text()
