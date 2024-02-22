@@ -8,6 +8,7 @@ import faker
 import os
 import json
 from jalali.Jalalian import jdate
+import bs4
 
 
 def rubino(url: str, timeout: float = 10) -> dict:
@@ -76,3 +77,17 @@ def translator(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dic
 def fake(count: int = 100, lang: str = 'en_US') -> str:
     '''This function is used to generate fake text. Power taken from the library `Faker`'''
     return faker.Faker([lang]).text()
+
+
+def live_usd() -> dict:
+    r = requests.get(
+        'https://markets.businessinsider.com/currencies/usd-irr'
+    )
+    soup = bs4.BeautifulSoup(r.text, 'html.parser')
+    html_string = soup.find(
+        'div', {
+            'class': 'price-section__values'
+        }
+    )
+    n = re.findall(r'(.*)\..*', re.findall(r'".*\">(.*)</>*', str(html_string))[0])
+    return n[0]
