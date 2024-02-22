@@ -79,7 +79,10 @@ def lang(text: str) -> str:
     try:
         return langdetect.detect(text)
     except langdetect.LangDetectException:
-        return 'The value of the text parameter you sent is integer. While you should have sent string'
+        return {
+            'err-message':
+                'The value of the text parameter you sent is integer. While you should have sent string'
+        }
 
 
 def translator(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
@@ -111,4 +114,10 @@ def fake(count: int = 100, lang: str = 'en_US') -> str:
 
     Power taken from the library `Faker`
     '''
-    return faker.Faker([lang]).text()
+
+    if count > 999:
+        return {
+            'err-message': 'The amount is too big. Send a smaller number'
+        }
+    else:
+        return faker.Faker([lang]).text()
