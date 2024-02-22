@@ -2,6 +2,8 @@ from fastapi import FastAPI, status
 from .api.api import *
 
 
+app = FastAPI()
+
 class HeroAPI:
 
     def __init__(
@@ -35,8 +37,8 @@ class HeroAPI:
         return __dict
 
 
-app = FastAPI()
 heroapi = HeroAPI()
+
 
 @app.get('/', status_code=status.HTTP_200_OK)
 async def main() -> dict:
@@ -70,11 +72,7 @@ async def font_generate(text: str) -> dict:
     :param text:
         The text you want the font to be applied to
     '''
-    return heroapi.return_data(
-        status=True,
-        developer='amirali irvany',
-        data=font(text=text)
-    )
+    return heroapi.return_data(data=font(text=text))
 
 
 parameters: list = [{'item': 'text'}]
@@ -129,6 +127,4 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
 
     Power taken from the library `Faker`
     '''
-    return heroapi.return_data(
-        data=fake(count=count, lang=lang)
-    )
+    return heroapi.return_data(data=fake(count=count, lang=lang))
