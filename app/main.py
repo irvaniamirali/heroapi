@@ -9,14 +9,14 @@ class HeroAPI:
     def __init__(
             self,
             url: str = 't.me/Heroapi',
-            github: str = 'https://github.com/metect/Heroapi',
-            developer: str = 'amirali irvany'
+            developer: str = 'amirali irvany',
+        github: str = 'https://github.com/metect/Heroapi'
     ) -> dict:
         self.url: str = url
-        self.github: str = github
         self.developer: str = developer
+        self.github: str = github
 
-    def return_data(
+    def return_json(
             self,
             data: dict = None,
             status: bool = True,
@@ -39,11 +39,10 @@ class HeroAPI:
 
 heroapi = HeroAPI()
 
-
 @app.get('/', status_code=status.HTTP_200_OK)
 async def main() -> dict:
     '''displaying developer information'''
-    return heroapi.return_data()
+    return heroapi.return_json()
 
 
 parameters: list = [{'item': 'url', 'item': 'timeout'}]
@@ -60,7 +59,7 @@ async def rubino_dl(url: str, timeout: float = 10) -> dict:
 
     If you want more details, go to this address: https://github.com/metect/myrino
     '''
-    return heroapi.return_data(
+    return heroapi.return_json(
         err_message='Currently, it is not possible to use this web service'
     )
 
@@ -72,7 +71,7 @@ async def font_generate(text: str) -> dict:
     :param text:
         The text you want the font to be applied to
     '''
-    return heroapi.return_data(data=font(text=text))
+    return heroapi.return_json(data=font(text=text))
 
 
 parameters: list = [{'item': 'text'}]
@@ -86,34 +85,41 @@ async def lang_detect(text: str) -> dict:
 
     Powered by the `langdetetc` library
     '''
-    return heroapi.return_data(data=lang(text=text))
+    try:
+        return heroapi.return_json(
+            data=langdetect.detect(text)
+        )
+    except langdetect.LangDetectException:
+        return heroapi.return_json(
+            err_message='The value of the `text` parameter is not invalid'
+        )
 
 
 parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
 @app.get('/api/translate', status_code=status.HTTP_200_OK)
 async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''This API, which is based on the Google Translate API, is used to translate texts'''
-    return heroapi.return_data(
+    return heroapi.return_json(
         data=translator(text=text, to_lang=to_lang, from_lang=from_lang)
     )
 
 
-parameters: list = [{'item': 'p'}]
-@app.get('/api/text2image', status_code=status.HTTP_200_OK)
-async def text2image(p: str) -> dict:
-    '''This api is used to convert text to image by artificial intelligence'''
-    url: str = replicate.run(
-        'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
-        input={
-            'prompt': p
-        }
-    )
-    return heroapi.return_data(
-        data={
-            'prompt': p,
-            'url': url[0]
-        }
-    )
+# parameters: list = [{'item': 'p'}]
+# @app.get('/api/text2image', status_code=status.HTTP_200_OK)
+# async def text2image(p: str) -> dict:
+#     '''This api is used to convert text to image by artificial intelligence'''
+#     url: str = replicate.run(
+#         'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
+#         input={
+#             'prompt': p
+#         }
+#     )
+#     return heroapi.return_json(
+#         data={
+#             'prompt': p,
+#             'url': url[0]
+#         }
+#     )
 
 
 parameters: list = [{'item': 'count', 'item': 'lang'}]
@@ -127,4 +133,17 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
 
     Power taken from the library `Faker`
     '''
-    return heroapi.return_data(data=fake(count=count, lang=lang))
+    if count > 999:
+        return heroapi.return_json(
+            err_message='The amount is too big. Send a smaller number `count`'
+        )
+    else:
+        return heroapi.return_json(data=fake(count=count, lang=lang))
+
+
+@app.get('/api/datetime', status_code=status.HTTP_200_OK)
+async def datetime() -> dict:
+    '''This api is used to display date and time in solar'''
+    return heroapi.return_json(
+        data=jdate(result_format='H:i:s ,Y/n/j')
+    )
