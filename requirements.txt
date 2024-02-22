@@ -9,11 +9,13 @@ h11==0.14.0
 httpcore==1.0.3
 httpx==0.26.0
 idna==3.6
+jalali==1.2
 langdetect==1.0.9
 packaging==23.2
 pydantic==2.6.1
 pydantic_core==2.16.2
 python-dateutil==2.8.2
+pytz==2024.1
 replicate==0.24.0
 requests==2.31.0
 six==1.16.0
