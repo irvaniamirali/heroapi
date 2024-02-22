@@ -44,10 +44,13 @@ async def font_generate(text: str) -> dict:
     :param text:
         The text you want the font to be applied to
     '''
-    if lang(text) in ['fa', 'ar']:
-        return 'Currently, Persian language is not supported'
+    try:
+        result: list = font(text=text)
+    except Exception:
+        result = {
+            'err-message': 'Currently, Persian language is not supported'
+        }
 
-    result: list = font(text=text)
     return {
         'status': True,
         'dev': 'amirali irvany',
