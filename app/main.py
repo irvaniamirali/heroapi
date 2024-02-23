@@ -1,4 +1,5 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, Request, status
+from fastapi.templating import Jinja2Templates
 
 import urllib.parse
 import replicate
@@ -13,8 +14,9 @@ import json
 from jalali.Jalalian import jdate
 import bs4
 
-
 app = FastAPI()
+templates = Jinja2Templates(directory='templates')
+
 
 class HeroAPI:
 
@@ -22,18 +24,19 @@ class HeroAPI:
             self,
             url: str = 't.me/Heroapi',
             developer: str = 'amirali irvany',
-        github: str = 'https://github.com/metect/Heroapi'
+            github: str = 'https://github.com/metect/Heroapi'
     ) -> dict:
         self.url: str = url
-        self.developer: str = developer
         self.github: str = github
+        self.developer: str = developer
 
-    def return_json(
+    def execute(
             self,
-            data: dict = None,
             status: bool = True,
             developer: str = None,
             err_message: str = None,
+            note: str = None,
+            data: dict = None,
     ) -> dict:
         developer = self.developer if developer == None else None
         __dict: dict = {
@@ -42,8 +45,9 @@ class HeroAPI:
             'url': self.url,
             'github': self.github,
             'result': {
+                'out': data,
+                'note': note,
                 'err_message': err_message,
-                'out': data
             },
         }
         return __dict
@@ -51,15 +55,24 @@ class HeroAPI:
 
 heroapi = HeroAPI()
 
+@app.exception_handler(404)
+async def custom_404_handler(request, __):
+    return templates.TemplateResponse(
+        'index.html', {
+            'request': request
+        }
+    )
+
+
 @app.get('/', status_code=status.HTTP_200_OK)
 async def main() -> dict:
     '''displaying developer information'''
-    return heroapi.return_json()
+    return heroapi.execute()
 
 
-parameters: list = [{'item': 'url', 'item': 'timeout'}]
+parameters: list = [{'item': 'auth', 'item': 'url', 'item': 'timeout'}]
 @app.get('/api/rubino', status_code=status.HTTP_200_OK)
-async def rubino_dl(url: str, timeout: float = 10) -> dict:
+async def rubino_dl(auth: str, url: str, timeout: float = 10) -> dict:
     '''This method is used to get the download link
     and other information of the post(s) in Rubino Messenger
     :param url:
@@ -71,10 +84,9 @@ async def rubino_dl(url: str, timeout: float = 10) -> dict:
 
     If you want more details, go to this address: https://github.com/metect/myrino
     '''
-    auth_list: list = []
     payload: dict = {
         'api_version': '0',
-        'auth': random.choice(seq=auth_list),
+        'auth': auth,
         'client': {
             'app_name': 'Main',
             'app_version': '3.0.1',
@@ -90,7 +102,7 @@ async def rubino_dl(url: str, timeout: float = 10) -> dict:
     }
     session = requests.session()
     base_url: str = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
-    return heroapi.return_json(
+    return heroapi.execute(
         data=session.request('post', url=base_url, timeout=timeout, json=payload).json()
     )
 
@@ -118,7 +130,7 @@ async def font_generate(text: str) -> dict:
         converted_text += '\n'
         result = converted_text.split('\n')[0:-1]
 
-    return heroapi.return_json(data=result)
+    return heroapi.execute(data=result)
 
 
 parameters: list = [{'item': 'text'}]
@@ -133,11 +145,11 @@ async def lang_detect(text: str) -> dict:
     Powered by the `langdetetc` library
     '''
     try:
-        return heroapi.return_json(
+        return heroapi.execute(
             data=langdetect.detect(text)
         )
     except langdetect.LangDetectException:
-        return heroapi.return_json(
+        return heroapi.execute(
             err_message='The value of the `text` parameter is not invalid'
         )
 
@@ -151,17 +163,18 @@ async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -
     url: str = f'{base_url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
     r = session.request(
         method='get', url=url, headers={
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
+            'User-Agent':
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
         }
     )
 
     if r.status_code == 200:
         result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', r.text)
-        return heroapi.return_json(
+        return heroapi.execute(
             data=html.unescape(result[0])
         )
     else:
-        return heroapi.return_json(
+        return heroapi.execute(
             err_message='A problem has occurred on our end'
         )
 
@@ -176,7 +189,7 @@ async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -
 #             'prompt': p
 #         }
 #     )
-#     return heroapi.return_json(
+#     return heroapi.execute(
 #         data={
 #             'prompt': p,
 #             'url': url[0]
@@ -196,11 +209,11 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
     Power taken from the library `Faker`
     '''
     if count > 999:
-        return heroapi.return_json(
+        return heroapi.execute(
             err_message='The amount is too big. Send a smaller number `count`'
         )
     else:
-        return heroapi.return_json(
+        return heroapi.execute(
             data=faker.Faker([lang]).text()
         )
 
@@ -208,7 +221,7 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
 @app.get('/api/datetime', status_code=status.HTTP_200_OK)
 async def datetime() -> dict:
     '''This api is used to display date and time in solar'''
-    return heroapi.return_json(
+    return heroapi.execute(
         data=jdate(result_format='H:i:s ,Y/n/j')
     )
 
@@ -219,13 +232,24 @@ async def usd() -> dict:
     > More details will be added soon
     '''
     r = requests.get(
-        'https://markets.businessinsider.com/currencies/usd-irr'
+        'https://www.tgju.org/currency'
     )
     soup = bs4.BeautifulSoup(r.text, 'html.parser')
-    html_string = soup.find(
-        'div', {
-            'class': 'price-section__values'
+    html = soup.find_all(
+        'span', {
+            'class': 'info-price'
         }
     )
-    n = re.findall(r'(.*)\..*', re.findall(r'".*\">(.*)</>*', str(html_string))[0])
-    return heroapi.return_json(data=n[0])
+    __make = lambda tag_number : re.findall(r'.*\">(.*)<\/', string=str(html[tag_number]))[0]
+
+    return heroapi.execute(
+        data={
+            'exchange': __make(0),
+            'shekel_gold': __make(2),
+            'gold18': __make(3),
+            'dollar': __make(5),
+            'euro': __make(6),
+            'Brent_oil': __make(7),
+            'bitcoin': __make(8)
+        }
+    )
