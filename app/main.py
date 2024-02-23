@@ -219,13 +219,23 @@ async def usd() -> dict:
     > More details will be added soon
     '''
     r = requests.get(
-        'https://markets.businessinsider.com/currencies/usd-irr'
+        'https://www.tgju.org/currency'
     )
     soup = bs4.BeautifulSoup(r.text, 'html.parser')
-    html_string = soup.find(
-        'div', {
-            'class': 'price-section__values'
+    html = soup.find_all(
+        'span', {
+            'class': 'info-price'
         }
     )
-    n = re.findall(r'(.*)\..*', re.findall(r'".*\">(.*)</>*', str(html_string))[0])
-    return heroapi.return_json(data=n[0])
+    gold = re.findall(r'.*\">(.*)<\/', string=str(html[3]))
+    dollar = re.findall(r'.*\">(.*)<\/', string=str(html[5]))
+    euro = re.findall(r'.*\">(.*)<\/', string=str(html[6]))
+    bitcoin = re.findall(r'.*\">(.*)<\/', string=str(html[8]))
+    return heroapi.return_json(
+        data={
+            'gold18': gold[0],
+            'dollar': dollar[0],
+            'euro': euro[0],
+            'bitcoin': bitcoin[0]
+        }
+    )
