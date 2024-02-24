@@ -2,7 +2,6 @@ from fastapi import FastAPI, status
 from fastapi.templating import Jinja2Templates
 
 import urllib.parse
-import replicate
 import html
 import re
 import requests
@@ -65,6 +64,7 @@ async def custom_404_handler(request, __) -> 'template page':
 
 
 @app.get('/', status_code=status.HTTP_200_OK)
+@app.post('/', status_code=status.HTTP_200_OK)
 async def main() -> dict:
     '''displaying developer information'''
     return heroapi.execute(
@@ -76,6 +76,7 @@ async def main() -> dict:
 
 parameters: list = [{'item': 'auth', 'item': 'url', 'item': 'timeout'}]
 @app.get('/api/rubino', status_code=status.HTTP_200_OK)
+@app.post('/api/rubino', status_code=status.HTTP_200_OK)
 async def rubino_dl(auth: str, url: str, timeout: float = 10) -> dict:
     '''This method is used to get the download link
     and other information of the post(s) in Rubino Messenger
@@ -113,6 +114,7 @@ async def rubino_dl(auth: str, url: str, timeout: float = 10) -> dict:
 
 parameters: list = [{'item': 'text'}]
 @app.get('/api/font', status_code=status.HTTP_200_OK)
+@app.post('/api/font', status_code=status.HTTP_200_OK)
 async def font_generate(text: str) -> dict:
     '''This function is for generating fonts. Currently only English language is supported
     :param text:
@@ -142,6 +144,7 @@ async def font_generate(text: str) -> dict:
 
 parameters: list = [{'item': 'text'}]
 @app.get('/api/lang', status_code=status.HTTP_200_OK)
+@app.post('/api/lang', status_code=status.HTTP_200_OK)
 async def lang_detect(text: str) -> dict:
     '''This function is to identify the language of a text
     :param text:
@@ -163,6 +166,7 @@ async def lang_detect(text: str) -> dict:
 
 parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
 @app.get('/api/translate', status_code=status.HTTP_200_OK)
+@app.post('/api/translate', status_code=status.HTTP_200_OK)
 async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''This API, which is based on the Google Translate API, is used to translate texts'''
     session = requests.session()
@@ -188,6 +192,7 @@ async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -
 
 parameters: list = [{'item': 'count', 'item': 'lang'}]
 @app.get('/api/faketext', status_code=status.HTTP_200_OK)
+@app.post('/api/faketext', status_code=status.HTTP_200_OK)
 async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
     '''This api is used to generate fake text
     :param count
@@ -208,6 +213,7 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
 
 
 @app.get('/api/datetime', status_code=status.HTTP_200_OK)
+@app.post('/api/datetime', status_code=status.HTTP_200_OK)
 async def datetime() -> dict:
     '''This api is used to display date and time in solar'''
     return heroapi.execute(
@@ -216,8 +222,9 @@ async def datetime() -> dict:
 
 
 @app.get('/api/usd', status_code=status.HTTP_200_OK)
+@app.post('/api/usd', status_code=status.HTTP_200_OK)
 async def usd() -> dict:
-    '''api to get live currency prices from the `https://irarz.com`
+    '''api to get live currency prices from the `https://irarz.com` website
     > More details will be added soon
     '''
     r = requests.get(
