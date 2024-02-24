@@ -2,7 +2,6 @@ from fastapi import FastAPI, status
 from fastapi.templating import Jinja2Templates
 
 import urllib.parse
-import replicate
 import html
 import re
 import requests
@@ -15,7 +14,7 @@ from jalali.Jalalian import jdate
 import bs4
 
 app = FastAPI()
-templates = Jinja2Templates(directory='app/templates')
+templates = Jinja2Templates(directory='templates')
 
 
 class HeroAPI:
@@ -56,7 +55,7 @@ class HeroAPI:
 heroapi = HeroAPI()
 
 @app.exception_handler(404)
-async def custom_404_handler(request, __):
+async def custom_404_handler(request, __) -> 'template page':
     return templates.TemplateResponse(
         '404.html', {
             'request': request
@@ -65,13 +64,19 @@ async def custom_404_handler(request, __):
 
 
 @app.get('/', status_code=status.HTTP_200_OK)
+@app.post('/', status_code=status.HTTP_200_OK)
 async def main() -> dict:
     '''displaying developer information'''
-    return heroapi.execute()
+    return heroapi.execute(
+        status=True,
+        developer='amirali irvany',
+        note='This api is available for free and open source. For more information, check the LICENSE file in the repository of this project'
+    )
 
 
 parameters: list = [{'item': 'auth', 'item': 'url', 'item': 'timeout'}]
 @app.get('/api/rubino', status_code=status.HTTP_200_OK)
+@app.post('/api/rubino', status_code=status.HTTP_200_OK)
 async def rubino_dl(auth: str, url: str, timeout: float = 10) -> dict:
     '''This method is used to get the download link
     and other information of the post(s) in Rubino Messenger
@@ -103,12 +108,13 @@ async def rubino_dl(auth: str, url: str, timeout: float = 10) -> dict:
     session = requests.session()
     base_url: str = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
     return heroapi.execute(
-        data=session.request('post', url=base_url, timeout=timeout, json=payload).json()
+        note='Currently this api is not available'
     )
 
 
 parameters: list = [{'item': 'text'}]
 @app.get('/api/font', status_code=status.HTTP_200_OK)
+@app.post('/api/font', status_code=status.HTTP_200_OK)
 async def font_generate(text: str) -> dict:
     '''This function is for generating fonts. Currently only English language is supported
     :param text:
@@ -123,18 +129,29 @@ async def font_generate(text: str) -> dict:
         for char in text:
             if char.isalpha():
                 char_index = ord(char.lower()) - 97
-                converted_text += fonts[str(count)][char_index]
+                try:
+                    converted_text += fonts[str(count)][char_index]
+                except IndexError:
+                    return heroapi.execute(
+                        status=False,
+                        err_message='Persian language is not supported'
+                    )
             else:
                 converted_text += char
 
         converted_text += '\n'
         result = converted_text.split('\n')[0:-1]
 
-    return heroapi.execute(data=result)
+    return heroapi.execute(
+        status=True,
+        data=result,
+        note='Currently, Persian language is not supported'
+    )
 
 
 parameters: list = [{'item': 'text'}]
 @app.get('/api/lang', status_code=status.HTTP_200_OK)
+@app.post('/api/lang', status_code=status.HTTP_200_OK)
 async def lang_detect(text: str) -> dict:
     '''This function is to identify the language of a text
     :param text:
@@ -150,12 +167,14 @@ async def lang_detect(text: str) -> dict:
         )
     except langdetect.LangDetectException:
         return heroapi.execute(
+            status=False,
             err_message='The value of the `text` parameter is not invalid'
         )
 
 
 parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
 @app.get('/api/translate', status_code=status.HTTP_200_OK)
+@app.post('/api/translate', status_code=status.HTTP_200_OK)
 async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''This API, which is based on the Google Translate API, is used to translate texts'''
     session = requests.session()
@@ -175,30 +194,14 @@ async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -
         )
     else:
         return heroapi.execute(
+            status=False,
             err_message='A problem has occurred on our end'
         )
 
 
-# parameters: list = [{'item': 'p'}]
-# @app.get('/api/text2image', status_code=status.HTTP_200_OK)
-# async def text2image(p: str) -> dict:
-#     '''This api is used to convert text to image by artificial intelligence'''
-#     url: str = replicate.run(
-#         'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
-#         input={
-#             'prompt': p
-#         }
-#     )
-#     return heroapi.execute(
-#         data={
-#             'prompt': p,
-#             'url': url[0]
-#         }
-#     )
-
-
 parameters: list = [{'item': 'count', 'item': 'lang'}]
 @app.get('/api/faketext', status_code=status.HTTP_200_OK)
+@app.post('/api/faketext', status_code=status.HTTP_200_OK)
 async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
     '''This api is used to generate fake text
     :param count
@@ -210,6 +213,7 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
     '''
     if count > 999:
         return heroapi.execute(
+            status=False,
             err_message='The amount is too big. Send a smaller number `count`'
         )
     else:
@@ -219,6 +223,7 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
 
 
 @app.get('/api/datetime', status_code=status.HTTP_200_OK)
+@app.post('/api/datetime', status_code=status.HTTP_200_OK)
 async def datetime() -> dict:
     '''This api is used to display date and time in solar'''
     return heroapi.execute(
@@ -227,8 +232,9 @@ async def datetime() -> dict:
 
 
 @app.get('/api/usd', status_code=status.HTTP_200_OK)
+@app.post('/api/usd', status_code=status.HTTP_200_OK)
 async def usd() -> dict:
-    '''api to get live currency prices from the `https://irarz.com`
+    '''api to get live currency prices from the `https://irarz.com` website
     > More details will be added soon
     '''
     r = requests.get(
@@ -241,7 +247,6 @@ async def usd() -> dict:
         }
     )
     __make = lambda tag_number : re.findall(r'.*\">(.*)<\/', string=str(html[tag_number]))[0]
-
     return heroapi.execute(
         data={
             'exchange': __make(0),
