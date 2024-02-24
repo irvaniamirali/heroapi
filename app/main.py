@@ -1,5 +1,4 @@
 from fastapi import FastAPI, status
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import urllib.parse
@@ -17,7 +16,6 @@ import bs4
 
 app = FastAPI()
 templates = Jinja2Templates(directory='app/templates')
-app.mount("/app/templates/", StaticFiles(directory="app/templates/assets/"), name="static")
 
 
 class HeroAPI:
