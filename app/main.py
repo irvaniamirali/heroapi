@@ -56,7 +56,7 @@ class HeroAPI:
 heroapi = HeroAPI()
 
 @app.exception_handler(404)
-async def custom_404_handler(request, __):
+async def custom_404_handler(request, __) -> 'template page':
     return templates.TemplateResponse(
         '404.html', {
             'request': request
