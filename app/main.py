@@ -129,15 +129,22 @@ async def font_generate(text: str) -> dict:
         for char in text:
             if char.isalpha():
                 char_index = ord(char.lower()) - 97
-                converted_text += fonts[str(count)][char_index]
+                try:
+                    converted_text += fonts[str(count)][char_index]
+                except IndexError:
+                    return heroapi.execute(
+                        status=False,
+                        err_message='Persian language is not supported'
+                    )
             else:
                 converted_text += char
 
         converted_text += '\n'
-        __global = converted_text.split('\n')[0:-1]
+        result = converted_text.split('\n')[0:-1]
 
     return heroapi.execute(
-        data=__global,
+        status=True,
+        data=result,
         note='Currently, Persian language is not supported'
     )
 
@@ -160,6 +167,7 @@ async def lang_detect(text: str) -> dict:
         )
     except langdetect.LangDetectException:
         return heroapi.execute(
+            status=False,
             err_message='The value of the `text` parameter is not invalid'
         )
 
@@ -186,6 +194,7 @@ async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -
         )
     else:
         return heroapi.execute(
+            status=False,
             err_message='A problem has occurred on our end'
         )
 
@@ -204,6 +213,7 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
     '''
     if count > 999:
         return heroapi.execute(
+            status=False,
             err_message='The amount is too big. Send a smaller number `count`'
         )
     else:
