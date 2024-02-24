@@ -47,7 +47,7 @@ class HeroAPI:
                 'out': data,
                 'note': note,
                 'err_message': err_message,
-            },
+            }
         }
         return __dict
 
@@ -70,7 +70,8 @@ async def main() -> dict:
     return heroapi.execute(
         status=True,
         developer='amirali irvany',
-        note='This api is available for free and open source. For more information, check the LICENSE file in the repository of this project'
+        note='This api is available for free and open source. '
+                'For more information, check the LICENSE file in the repository of this project'
     )
 
 
