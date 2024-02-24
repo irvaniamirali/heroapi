@@ -218,7 +218,7 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
         )
     else:
         return heroapi.execute(
-            data=faker.Faker([lang]).text()
+            data=faker.Faker([lang]).text(count)
         )
 
 
