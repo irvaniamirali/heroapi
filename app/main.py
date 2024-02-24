@@ -15,7 +15,7 @@ from jalali.Jalalian import jdate
 import bs4
 
 app = FastAPI()
-templates = Jinja2Templates(directory='app/templates')
+templates = Jinja2Templates(directory='templates')
 
 
 class HeroAPI:
@@ -67,7 +67,11 @@ async def custom_404_handler(request, __):
 @app.get('/', status_code=status.HTTP_200_OK)
 async def main() -> dict:
     '''displaying developer information'''
-    return heroapi.execute()
+    return heroapi.execute(
+        status=True,
+        developer='amirali irvany',
+        note='This api is available for free and open source. For more information, check the LICENSE file in the repository of this project'
+    )
 
 
 parameters: list = [{'item': 'auth', 'item': 'url', 'item': 'timeout'}]
@@ -103,7 +107,7 @@ async def rubino_dl(auth: str, url: str, timeout: float = 10) -> dict:
     session = requests.session()
     base_url: str = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
     return heroapi.execute(
-        data=session.request('post', url=base_url, timeout=timeout, json=payload).json()
+        note='Currently this api is not available'
     )
 
 
@@ -128,9 +132,12 @@ async def font_generate(text: str) -> dict:
                 converted_text += char
 
         converted_text += '\n'
-        result = converted_text.split('\n')[0:-1]
+        __global = converted_text.split('\n')[0:-1]
 
-    return heroapi.execute(data=result)
+    return heroapi.execute(
+        data=__global,
+        note='Currently, Persian language is not supported'
+    )
 
 
 parameters: list = [{'item': 'text'}]
@@ -177,24 +184,6 @@ async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -
         return heroapi.execute(
             err_message='A problem has occurred on our end'
         )
-
-
-# parameters: list = [{'item': 'p'}]
-# @app.get('/api/text2image', status_code=status.HTTP_200_OK)
-# async def text2image(p: str) -> dict:
-#     '''This api is used to convert text to image by artificial intelligence'''
-#     url: str = replicate.run(
-#         'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
-#         input={
-#             'prompt': p
-#         }
-#     )
-#     return heroapi.execute(
-#         data={
-#             'prompt': p,
-#             'url': url[0]
-#         }
-#     )
 
 
 parameters: list = [{'item': 'count', 'item': 'lang'}]
