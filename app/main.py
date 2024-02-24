@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, status
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import urllib.parse
@@ -15,7 +16,8 @@ from jalali.Jalalian import jdate
 import bs4
 
 app = FastAPI()
-templates = Jinja2Templates(directory='templates')
+templates = Jinja2Templates(directory='app/templates')
+app.mount("/app/templates/", StaticFiles(directory="app/templates/assets/"), name="static")
 
 
 class HeroAPI:
@@ -58,7 +60,7 @@ heroapi = HeroAPI()
 @app.exception_handler(404)
 async def custom_404_handler(request, __):
     return templates.TemplateResponse(
-        'index.html', {
+        '404.html', {
             'request': request
         }
     )
