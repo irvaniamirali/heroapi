@@ -14,7 +14,7 @@ from jalali.Jalalian import jdate
 import bs4
 
 app = FastAPI()
-templates = Jinja2Templates(directory='templates')
+templates = Jinja2Templates(directory='app/templates')
 
 
 class HeroAPI:
