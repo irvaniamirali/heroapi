@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, Request, status
 from fastapi.templating import Jinja2Templates
 
 import urllib.parse
@@ -55,7 +55,7 @@ class HeroAPI:
 heroapi = HeroAPI()
 
 @app.exception_handler(404)
-async def custom_404_handler(request, __) -> 'template page':
+async def custom_404_handler(request: Request, __) -> 'template page':
     return templates.TemplateResponse(
         '404.html', {
             'request': request
@@ -79,12 +79,11 @@ parameters: list = [{'item': 'auth', 'item': 'url', 'item': 'timeout'}]
 @app.get('/api/rubino', status_code=status.HTTP_200_OK)
 @app.post('/api/rubino', status_code=status.HTTP_200_OK)
 async def rubino_dl(auth: str, url: str, timeout: float = 10) -> dict:
-    '''This method is used to get the download link
-    and other information of the post(s) in Rubino Messenger
+    '''This api is used to get the information of the post(s) in Rubino Messenger
     :param url:
-        The link of the desired post
+        The link of the desired post. Example: `https://rubika.ir/post/xxxxxx`
     :param timeout:
-        Optional To manage slow timeout when the server is slow
+        For manage timeout when the rubika server
     :return:
         Full post information
 
@@ -108,9 +107,10 @@ async def rubino_dl(auth: str, url: str, timeout: float = 10) -> dict:
     }
     session = requests.session()
     base_url: str = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
-    return heroapi.execute(
-        note='Currently this api is not available'
+    responce = session.request(
+        method='get', url=base_url, json=payload
     )
+    return heroapi.execute(data=responce)
 
 
 parameters: list = [{'item': 'text'}]
@@ -144,7 +144,6 @@ async def font_generate(text: str) -> dict:
         result = converted_text.split('\n')[0:-1]
 
     return heroapi.execute(
-        status=True,
         data=result,
         note='Currently, Persian language is not supported'
     )
