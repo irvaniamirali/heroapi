@@ -230,7 +230,6 @@ async def usd() -> dict:
         }
     )
     __make = lambda tag_number : re.findall(r'.*\">(.*)<\/', string=str(html[tag_number]))[0]
-
     return heroapi.execute(
         data={
             'exchange': __make(0),
