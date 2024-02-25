@@ -32,7 +32,7 @@ class HeroAPI():
             note: str = None,
             data: dict = None,
     ) -> dict:
-        developer = self.developer if developer == None else None
+        developer = self.developer if developer == None else self.developer
         __dict: dict = {
             'status': status,
             'dev': developer,
@@ -47,10 +47,13 @@ class HeroAPI():
         return __dict
 
     async def main_app(self):
-        return self.execute()
+        return await self.execute(
+            status=True,
+            developer='amirali irvany',
+        )
 
 
-    async def rubino_api(self, auth: str, url: str, timeout: float = 10) -> dict:
+    async def rubino(self, auth: str, url: str, timeout: float = 10) -> dict:
         payload: dict = {
             'api_version': '0',
             'auth': auth,
@@ -122,11 +125,11 @@ class HeroAPI():
 
         if r.status_code == 200:
             result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', r.text)
-            return self.execute(
+            return await self.execute(
                 data=html.unescape(result[0])
             )
         else:
-            return self.execute(
+            return await self.execute(
                 status=False,
                 data='A problem has occurred on our end'
             )
@@ -134,18 +137,18 @@ class HeroAPI():
 
     async def _faketext(self, count: int = 100, lang: str = 'en_US') -> dict:
         if count >= 999:
-            return heroapi.execute(
+            return await self.execute(
                 status=False,
                 err_message='The amount is too big. Send a smaller number `count`'
             )
         else:
-            return heroapi.execute(
+            return await self.execute(
                 data=faker.Faker([lang]).text(count)
             )
 
 
     async def date_time(self) -> dict:
-        return heroapi.execute(
+        return await self.execute(
             data=jdate(result_format='H:i:s ,Y/n/j')
         )
 
@@ -161,7 +164,7 @@ class HeroAPI():
             }
         )
         __make = lambda index, x: re.findall(r'.*\">(.*)<\/', string=str(html[index]))[x]
-        return self.execute(
+        return await self.execute(
             data={
                 'exchange': __make(0, 0),
                 'shekel_gold': __make(2, 0),
