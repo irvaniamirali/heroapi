@@ -101,7 +101,6 @@ class HeroAPI():
 
 
     async def lang(self, text: str) -> dict:
-        '''This function is to identify the language of a text'''
         try:
             return await self.execute(data=langdetect.detect(text))
         except langdetect.LangDetectException:
@@ -112,7 +111,6 @@ class HeroAPI():
 
 
     async def translator(self, text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
-        '''This function is to identify the language of a text'''
         session = requests.session()
         base_url: str = 'https://translate.google.com'
         url: str = f'{base_url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
