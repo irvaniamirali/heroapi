@@ -23,7 +23,7 @@ async def main() -> dict:
     :return
         status, developer name and ...
     '''
-    return await heroapi.main_app()
+    return await heroapi._main()
 
 
 parameters: list = [{'item': 'auth', 'item': 'url', 'item': 'timeout'}]
@@ -40,7 +40,7 @@ async def rubino(auth: str, url: str, timeout: float = 10) -> dict:
 
     If you want more details, go to this address: https://github.com/metect/myrino
     '''
-    return await heroapi.rubino(auth=auth, url=url, timeout=timeout)
+    return await heroapi._rubino(auth=auth, url=url, timeout=timeout)
 
 
 parameters: list = [{'item': 'text'}]
@@ -52,7 +52,7 @@ async def font(text: str = 'Heroapi') -> dict:
         The text you want the font to be applied to
     '''
     try:
-        return await heroapi.font_generate(text=text)
+        return await heroapi._font(text=text)
     except IndexError:
         return await heroapi.execute(
             status=False,
@@ -72,7 +72,7 @@ async def lang_detect(text: str) -> dict:
 
     Powered by the `langdetetc` library
     '''
-    return await heroapi.lang(text=text)
+    return await heroapi._lang_detect(text=text)
 
 
 parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
@@ -80,7 +80,7 @@ parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
 @app.post('/api/translate', status_code=status.HTTP_200_OK)
 async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''This API, which is based on the Google Translate API, is used to translate texts'''
-    return await heroapi.translator(text=text, to_lang=to_lang, from_lang=from_lang)
+    return await heroapi._translate(text=text, to_lang=to_lang, from_lang=from_lang)
 
 
 parameters: list = [{'item': 'count', 'item': 'lang'}]
@@ -102,11 +102,11 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
 @app.post('/api/datetime', status_code=status.HTTP_200_OK)
 async def datetime() -> dict:
     '''This api is used to display date and time in solar'''
-    return await heroapi.date_time()
+    return await heroapi._datetime()
 
 
 @app.get('/api/usd', status_code=status.HTTP_200_OK)
 @app.post('/api/usd', status_code=status.HTTP_200_OK)
-async def usd() -> dict:
+async def _usd() -> dict:
     '''api to get live currency prices from the `https://irarz.com` website'''
     return await heroapi.usd()
