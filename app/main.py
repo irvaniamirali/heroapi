@@ -30,7 +30,7 @@ async def main() -> dict:
 parameters: list = [{'item': 'auth', 'item': 'url', 'item': 'timeout'}]
 @app.get('/api/rubino', status_code=status.HTTP_200_OK)
 @app.post('/api/rubino', status_code=status.HTTP_200_OK)
-async def rubino_dl(auth: str, url: str, timeout: float = 10) -> dict:
+async def rubino(auth: str, url: str, timeout: float = 10) -> dict:
     '''This api is used to get the information of the post(s) in Rubino Messenger
     :param url:
         The link of the desired post. Example: `https://rubika.ir/post/xxxxxx`
@@ -41,7 +41,7 @@ async def rubino_dl(auth: str, url: str, timeout: float = 10) -> dict:
 
     If you want more details, go to this address: https://github.com/metect/myrino
     '''
-    return await heroapi.rubino_api(auth=auth, url=url, timeout=timeout)
+    return await heroapi.rubino(auth=auth, url=url, timeout=timeout)
 
 
 parameters: list = [{'item': 'text'}]
@@ -52,7 +52,13 @@ async def font(text: str = 'Heroapi') -> dict:
     :param text:
         The text you want the font to be applied to
     '''
-    return await heroapi.font_generate(text=text)
+    try:
+        return await heroapi.font_generate(text=text)
+    except IndexError:
+        return await heroapi.execute(
+            status=False,
+            err_message='Currently, Persian language is not supported'
+        )
 
 
 parameters: list = [{'item': 'text'}]
