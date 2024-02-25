@@ -89,7 +89,13 @@ class HeroAPI():
             for char in text:
                 if char.isalpha():
                     char_index = ord(char.lower()) - 97
-                    converted_text += fonts[str(count)][char_index]
+                    try:
+                        converted_text += fonts[str(count)][char_index]
+                    except IndexError:
+                        return await self.execute(
+                            status=False,
+                            err_message='Currently, Persian language is not supported'
+                        )
                 else:
                     converted_text += char
 
