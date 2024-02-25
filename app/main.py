@@ -8,7 +8,6 @@ heroapi = HeroAPI()
 app = FastAPI()
 templates = Jinja2Templates(directory='app/templates')
 
-
 @app.exception_handler(404)
 async def custom_404_handler(request: Request, __) -> 'template page':
     return templates.TemplateResponse(
