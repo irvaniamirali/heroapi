@@ -54,7 +54,7 @@ class HeroAPI():
         )
 
 
-    async def _rubino(self, auth: str, url: str, timeout: float = 10) -> dict:
+    async def _rubino(self, auth: str, url: str, timeout: float) -> dict:
         payload: dict = {
             'api_version': '0',
             'auth': auth,
@@ -71,15 +71,14 @@ class HeroAPI():
             },
             'method': 'getPostByShareLink'
         }
-        session = requests.session()
         base_url: str = f'https://rubino{randint(1, 20)}.iranlms.ir/'
-        responce = session.request(
+        responce = requests.request(
             method='get', url=base_url, json=payload
         )
         return await self.execute(data=responce.json())
 
 
-    async def _font(self, text: str = 'Heroapi') -> dict:
+    async def _font(self, text: str) -> dict:
         prefix = re.sub(pattern='api.py', repl='f.json', string=abspath(__file__))
         with open(prefix, 'r') as f:
             fonts = json.load(f)
@@ -117,12 +116,11 @@ class HeroAPI():
             )
 
 
-    async def _translate(self, text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
-        session = requests.session()
+    async def _translate(self, text: str, to_lang: str, from_lang: str) -> dict:
         base_url: str = 'https://translate.google.com'
         url: str = f'{base_url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
-        r = session.request(
-            method='get', url=url, headers={
+        r = requests.get(
+            url=url, headers={
                 'User-Agent':
                     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
             }
@@ -140,7 +138,7 @@ class HeroAPI():
             )
 
 
-    async def _faketext(self, count: int = 100, lang: str = 'en_US') -> dict:
+    async def _faketext(self, count: int, lang: str) -> dict:
         if count >= 999:
             return await self.execute(
                 status=False,
@@ -152,9 +150,9 @@ class HeroAPI():
             )
 
 
-    async def _datetime(self) -> dict:
+    async def _datetime(self, tr_num: str) -> dict:
         return await self.execute(
-            data=jdate(result_format='H:i:s ,Y/n/j')
+            data=jdate(result_format='H:i:s ,Y/n/j', tr_num=tr_num)
         )
 
 
@@ -168,15 +166,38 @@ class HeroAPI():
                 'class': 'info-price'
             }
         )
-        __make = lambda index, x: re.findall(r'.*\">(.*)<\/', string=str(html[index]))[x]
+        __make = lambda index: re.findall(r'.*\">(.*)<\/', string=str(html[index]))[0]
         return await self.execute(
             data={
-                'exchange': __make(0, 0),
-                'shekel_gold': __make(2, 0),
-                'gold18': __make(3, 0),
-                'dollar': __make(5, 0),
-                'euro': __make(6, 0),
-                'Brent_oil': __make(7, 0),
-                'bitcoin': __make(8, 0)
+                'exchange': __make(0),
+                'shekel_gold': __make(2),
+                'gold18': __make(3),
+                'dollar': __make(5),
+                'euro': __make(6),
+                'Brent_oil': __make(7),
+                'bitcoin': __make(8)
             }
+        )
+
+
+    async def _bard(self, text):
+        url: str = 'https://api.safone.dev/bard?message=hello'
+        responce = requests.request(method='get', url=url)
+        if responce.status_code == 200:
+            _json = responce.json()
+            return await self.execute(data=_json['candidates'][0]['content']['parts'][0]['text'])
+        else:
+            return await self.execute(
+                status=False,
+                err_message='A problem has occurred on our end'
+            )
+
+
+    async def _joke(self):
+        prefix = re.sub(pattern='api.py', repl='joke.json', string=abspath(__file__))
+        with open(prefix, 'r') as f:
+            jokes = json.load(f)
+
+        return await self.execute(
+            data=jokes
         )
