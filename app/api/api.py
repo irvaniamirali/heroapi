@@ -29,7 +29,6 @@ class HeroAPI():
             status: bool = True,
             developer: str = None,
             err_message: str = None,
-            note: str = None,
             data: dict = None,
     ) -> dict:
         developer = self.developer if developer == None else self.developer
@@ -40,7 +39,6 @@ class HeroAPI():
             'github': self.github,
             'result': {
                 'out': data,
-                'note': note,
                 'err_message': err_message,
             }
         }
@@ -50,7 +48,6 @@ class HeroAPI():
         return await self.execute(
             status=True,
             developer='amirali irvany',
-            note='This api is available for free and open source. For more information, check the LICENSE file in the repository of this project'
         )
 
 
@@ -101,9 +98,7 @@ class HeroAPI():
             converted_text += '\n'
             result = converted_text.split('\n')[0:-1]
 
-        return await self.execute(
-            data=result, note='Currently only English language is supported'
-        )
+        return await self.execute(data=result)
 
 
     async def _lang_detect(self, text: str) -> dict:
@@ -198,6 +193,4 @@ class HeroAPI():
         with open(prefix, 'r') as f:
             jokes = json.load(f)
 
-        return await self.execute(
-            data=jokes
-        )
+        return await self.execute(data=jokes)
