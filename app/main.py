@@ -2,11 +2,22 @@ from fastapi import FastAPI, Request, status
 from fastapi.templating import Jinja2Templates
 from .api.api import HeroAPI
 
-heroapi = HeroAPI()
-
-
-app = FastAPI()
+app = FastAPI(
+    title='HeroAPI',
+    description='Free and open source api',
+    contact={
+        'name': 'amirali irvany',
+        'email': 'dev.amirali.irvany@gmail.com',
+    },
+    license_info={
+        'name': 'MIT',
+        'url': 'https://github.com/metect/Heroapi/blob/main/LICENSE',
+    },
+)
 templates = Jinja2Templates(directory='app/templates')
+
+
+heroapi = HeroAPI()
 
 @app.exception_handler(404)
 async def custom_404_handler(request: Request, __) -> 'template page':
