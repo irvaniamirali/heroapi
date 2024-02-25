@@ -109,7 +109,5 @@ async def datetime() -> dict:
 @app.get('/api/usd', status_code=status.HTTP_200_OK)
 @app.post('/api/usd', status_code=status.HTTP_200_OK)
 async def usd() -> dict:
-    '''api to get live currency prices from the `https://irarz.com` website
-    > More details will be added soon
-    '''
+    '''api to get live currency prices from the `https://irarz.com` website'''
     return await heroapi.usd()
