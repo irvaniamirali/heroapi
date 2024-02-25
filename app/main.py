@@ -51,13 +51,7 @@ async def font(text: str = 'Heroapi') -> dict:
     :param text:
         The text you want the font to be applied to
     '''
-    try:
-        return await heroapi._font(text=text)
-    except IndexError:
-        return await heroapi.execute(
-            status=False,
-            err_message='Currently, Persian language is not supported'
-        )
+    return await heroapi._font(text=text)
 
 
 parameters: list = [{'item': 'text'}]
