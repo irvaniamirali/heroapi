@@ -46,14 +46,15 @@ class HeroAPI():
         }
         return __dict
 
-    async def main_app(self):
+    async def _main(self):
         return await self.execute(
             status=True,
             developer='amirali irvany',
+            note='This api is available for free and open source. For more information, check the LICENSE file in the repository of this project'
         )
 
 
-    async def rubino(self, auth: str, url: str, timeout: float = 10) -> dict:
+    async def _rubino(self, auth: str, url: str, timeout: float = 10) -> dict:
         payload: dict = {
             'api_version': '0',
             'auth': auth,
@@ -78,7 +79,7 @@ class HeroAPI():
         return await self.execute(data=responce.json())
 
 
-    async def font_generate(self, text: str = 'Heroapi') -> dict:
+    async def _font(self, text: str = 'Heroapi') -> dict:
         prefix = re.sub(pattern='api.py', repl='f.json', string=abspath(__file__))
         with open(prefix, 'r') as f:
             fonts = json.load(f)
@@ -100,7 +101,7 @@ class HeroAPI():
         )
 
 
-    async def lang(self, text: str) -> dict:
+    async def _lang_detect(self, text: str) -> dict:
         try:
             return await self.execute(data=langdetect.detect(text))
         except langdetect.LangDetectException:
@@ -110,7 +111,7 @@ class HeroAPI():
             )
 
 
-    async def translator(self, text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
+    async def _translate(self, text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
         session = requests.session()
         base_url: str = 'https://translate.google.com'
         url: str = f'{base_url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
@@ -145,13 +146,13 @@ class HeroAPI():
             )
 
 
-    async def date_time(self) -> dict:
+    async def _datetime(self) -> dict:
         return await self.execute(
             data=jdate(result_format='H:i:s ,Y/n/j')
         )
 
 
-    async def usd(self):
+    async def _usd(self):
         r = requests.get(
             'https://www.tgju.org/currency'
         )
