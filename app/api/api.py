@@ -1,15 +1,16 @@
-import re
 import html
+import re
+import random
 import requests
 import json
 import faker
+import os
 import urllib.parse
 import langdetect
 
-from os.path import abspath
-from random import randint
 from jalali.Jalalian import jdate
 from bs4 import BeautifulSoup
+from bardapi import Bard
 
 
 class HeroAPI():
@@ -68,7 +69,7 @@ class HeroAPI():
             },
             'method': 'getPostByShareLink'
         }
-        base_url: str = f'https://rubino{randint(1, 20)}.iranlms.ir/'
+        base_url: str = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
         responce = requests.request(
             method='get', url=base_url, json=payload
         )
@@ -76,7 +77,7 @@ class HeroAPI():
 
 
     async def _font(self, text: str) -> dict:
-        prefix = re.sub(pattern='api.py', repl='f.json', string=abspath(__file__))
+        prefix = re.sub(pattern='api.py', repl='f.json', string=os.path.abspath(__file__))
         with open(prefix, 'r') as f:
             fonts = json.load(f)
 
@@ -176,21 +177,34 @@ class HeroAPI():
 
 
     async def _bard(self, text):
-        url: str = 'https://api.safone.dev/bard?message=hello'
-        responce = requests.request(method='get', url=url)
-        if responce.status_code == 200:
-            _json = responce.json()
-            return await self.execute(data=_json['candidates'][0]['content']['parts'][0]['text'])
-        else:
-            return await self.execute(
-                status=False,
-                err_message='A problem has occurred on our end'
-            )
+        token = os.environ['_BARD_API_KEY']
+        responce = Bard().get_answer(text)
+        return await self.execute(
+            data=responce['content']
+        )
 
 
     async def _joke(self):
-        prefix = re.sub(pattern='api.py', repl='joke.json', string=abspath(__file__))
+        prefix = re.sub(pattern='api.py', repl='joke.json', string=os.path.abspath(__file__))
         with open(prefix, 'r') as f:
-            jokes = json.load(f)
+            _json = json.load(f)
 
-        return await self.execute(data=jokes)
+        joke = random.choice(_json['data'])
+        return await self.execute(data=joke.strip())
+
+
+    async def _logoai(self, text: str, page: int):
+        r = requests.request(
+            method='get',
+            url=f'https://www.brandcrowd.com/maker/logos/page{page}?Text={text}&isMobile=false'
+        )
+        try:
+            result = re.findall(
+                'src=\"(https://dynamic\.brandcrowd\.com/asset/logo/.*)\"\ alt', r.text
+            )
+        except SyntaxWarning:
+            pass
+
+        return await self.execute(
+            data=result
+        )
