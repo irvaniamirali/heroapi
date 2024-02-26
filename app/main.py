@@ -130,3 +130,13 @@ async def bard(text : str) -> dict:
 async def joke() -> dict:
     '''Happy jokes web service. It has about 80 different jokes'''
     return await heroapi._joke()
+
+
+parameters: list = [{'item': 'text', 'item': 'page'}]
+@app.get('/api/logo', status_code=status.HTTP_200_OK)
+@app.post('/api/logo', status_code=status.HTTP_200_OK)
+async def logo(text: str, page: int) -> dict:
+    '''This api is for logo generation.
+    Powered by https://www.brandcrowd.com
+    '''
+    return await heroapi._logoai(text=text, page=page)
