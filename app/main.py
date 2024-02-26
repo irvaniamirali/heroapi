@@ -2,11 +2,22 @@ from fastapi import FastAPI, Request, status
 from fastapi.templating import Jinja2Templates
 from .api.api import HeroAPI
 
-heroapi = HeroAPI()
-
-
-app = FastAPI()
+app = FastAPI(
+    title='HeroAPI',
+    description='Free and open source api',
+    contact={
+        'name': 'amirali irvany',
+        'email': 'dev.amirali.irvany@gmail.com',
+    },
+    license_info={
+        'name': 'MIT',
+        'url': 'https://github.com/metect/Heroapi/blob/main/LICENSE',
+    },
+)
 templates = Jinja2Templates(directory='app/templates')
+
+
+heroapi = HeroAPI()
 
 @app.exception_handler(404)
 async def custom_404_handler(request: Request, __) -> 'template page':
@@ -51,13 +62,7 @@ async def font(text: str = 'Heroapi') -> dict:
     :param text:
         The text you want the font to be applied to
     '''
-    try:
-        return await heroapi._font(text=text)
-    except IndexError:
-        return await heroapi.execute(
-            status=False,
-            err_message='Currently, Persian language is not supported'
-        )
+    return await heroapi._font(text=text)
 
 
 parameters: list = [{'item': 'text'}]
@@ -100,9 +105,9 @@ async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
 
 @app.get('/api/datetime', status_code=status.HTTP_200_OK)
 @app.post('/api/datetime', status_code=status.HTTP_200_OK)
-async def datetime() -> dict:
+async def datetime(tr_num: str = 'en') -> dict:
     '''This api is used to display date and time in solar'''
-    return await heroapi._datetime()
+    return await heroapi._datetime(tr_num=tr_num)
 
 
 @app.get('/api/usd', status_code=status.HTTP_200_OK)
@@ -110,3 +115,28 @@ async def datetime() -> dict:
 async def _usd() -> dict:
     '''api to get live currency prices from the `https://irarz.com` website'''
     return await heroapi.usd()
+
+
+parameters: list = [{'item': 'text'}]
+@app.get('/api/bard', status_code=status.HTTP_200_OK)
+@app.post('/api/bard', status_code=status.HTTP_200_OK)
+async def bard(text : str) -> dict:
+    '''bard artificial intelligence api'''
+    return await heroapi._bard(text=text)
+
+
+@app.get('/api/joke', status_code=status.HTTP_200_OK)
+@app.post('/api/joke', status_code=status.HTTP_200_OK)
+async def joke() -> dict:
+    '''Happy jokes web service. It has about 80 different jokes'''
+    return await heroapi._joke()
+
+
+parameters: list = [{'item': 'text', 'item': 'page'}]
+@app.get('/api/logo', status_code=status.HTTP_200_OK)
+@app.post('/api/logo', status_code=status.HTTP_200_OK)
+async def logo(text: str, page: int) -> dict:
+    '''This api is for logo generation.
+    Powered by https://www.brandcrowd.com
+    '''
+    return await heroapi._logoai(text=text, page=page)

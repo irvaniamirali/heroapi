@@ -1,15 +1,16 @@
-import re
 import html
+import re
+import random
 import requests
 import json
 import faker
+import os
 import urllib.parse
 import langdetect
 
-from os.path import abspath
-from random import randint
 from jalali.Jalalian import jdate
 from bs4 import BeautifulSoup
+from bardapi import Bard
 
 
 class HeroAPI():
@@ -29,7 +30,6 @@ class HeroAPI():
             status: bool = True,
             developer: str = None,
             err_message: str = None,
-            note: str = None,
             data: dict = None,
     ) -> dict:
         developer = self.developer if developer == None else self.developer
@@ -40,7 +40,6 @@ class HeroAPI():
             'github': self.github,
             'result': {
                 'out': data,
-                'note': note,
                 'err_message': err_message,
             }
         }
@@ -50,11 +49,10 @@ class HeroAPI():
         return await self.execute(
             status=True,
             developer='amirali irvany',
-            note='This api is available for free and open source. For more information, check the LICENSE file in the repository of this project'
         )
 
 
-    async def _rubino(self, auth: str, url: str, timeout: float = 10) -> dict:
+    async def _rubino(self, auth: str, url: str, timeout: float) -> dict:
         payload: dict = {
             'api_version': '0',
             'auth': auth,
@@ -71,16 +69,15 @@ class HeroAPI():
             },
             'method': 'getPostByShareLink'
         }
-        session = requests.session()
-        base_url: str = f'https://rubino{randint(1, 20)}.iranlms.ir/'
-        responce = session.request(
+        base_url: str = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
+        responce = requests.request(
             method='get', url=base_url, json=payload
         )
         return await self.execute(data=responce.json())
 
 
-    async def _font(self, text: str = 'Heroapi') -> dict:
-        prefix = re.sub(pattern='api.py', repl='f.json', string=abspath(__file__))
+    async def _font(self, text: str) -> dict:
+        prefix = re.sub(pattern='api.py', repl='f.json', string=os.path.abspath(__file__))
         with open(prefix, 'r') as f:
             fonts = json.load(f)
 
@@ -89,16 +86,20 @@ class HeroAPI():
             for char in text:
                 if char.isalpha():
                     char_index = ord(char.lower()) - 97
-                    converted_text += fonts[str(count)][char_index]
+                    try:
+                        converted_text += fonts[str(count)][char_index]
+                    except IndexError:
+                        return await self.execute(
+                            status=False,
+                            err_message='Currently, Persian language is not supported'
+                        )
                 else:
                     converted_text += char
 
             converted_text += '\n'
             result = converted_text.split('\n')[0:-1]
 
-        return await self.execute(
-            data=result, note='Currently only English language is supported'
-        )
+        return await self.execute(data=result)
 
 
     async def _lang_detect(self, text: str) -> dict:
@@ -111,12 +112,11 @@ class HeroAPI():
             )
 
 
-    async def _translate(self, text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
-        session = requests.session()
+    async def _translate(self, text: str, to_lang: str, from_lang: str) -> dict:
         base_url: str = 'https://translate.google.com'
         url: str = f'{base_url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
-        r = session.request(
-            method='get', url=url, headers={
+        r = requests.get(
+            url=url, headers={
                 'User-Agent':
                     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
             }
@@ -134,7 +134,7 @@ class HeroAPI():
             )
 
 
-    async def _faketext(self, count: int = 100, lang: str = 'en_US') -> dict:
+    async def _faketext(self, count: int, lang: str) -> dict:
         if count >= 999:
             return await self.execute(
                 status=False,
@@ -146,9 +146,9 @@ class HeroAPI():
             )
 
 
-    async def _datetime(self) -> dict:
+    async def _datetime(self, tr_num: str) -> dict:
         return await self.execute(
-            data=jdate(result_format='H:i:s ,Y/n/j')
+            data=jdate(result_format='H:i:s ,Y/n/j', tr_num=tr_num)
         )
 
 
@@ -162,15 +162,49 @@ class HeroAPI():
                 'class': 'info-price'
             }
         )
-        __make = lambda index, x: re.findall(r'.*\">(.*)<\/', string=str(html[index]))[x]
+        __make = lambda index: re.findall(r'.*\">(.*)<\/', string=str(html[index]))[0]
         return await self.execute(
             data={
-                'exchange': __make(0, 0),
-                'shekel_gold': __make(2, 0),
-                'gold18': __make(3, 0),
-                'dollar': __make(5, 0),
-                'euro': __make(6, 0),
-                'Brent_oil': __make(7, 0),
-                'bitcoin': __make(8, 0)
+                'exchange': __make(0),
+                'shekel_gold': __make(2),
+                'gold18': __make(3),
+                'dollar': __make(5),
+                'euro': __make(6),
+                'Brent_oil': __make(7),
+                'bitcoin': __make(8)
             }
+        )
+
+
+    async def _bard(self, text):
+        token = os.environ['_BARD_API_KEY']
+        responce = Bard().get_answer(text)
+        return await self.execute(
+            data=responce['content']
+        )
+
+
+    async def _joke(self):
+        prefix = re.sub(pattern='api.py', repl='joke.json', string=os.path.abspath(__file__))
+        with open(prefix, 'r') as f:
+            _json = json.load(f)
+
+        joke = random.choice(_json['data'])
+        return await self.execute(data=joke.strip())
+
+
+    async def _logoai(self, text: str, page: int):
+        r = requests.request(
+            method='get',
+            url=f'https://www.brandcrowd.com/maker/logos/page{page}?Text={text}&isMobile=false'
+        )
+        try:
+            result = re.findall(
+                'src=\"(https://dynamic\.brandcrowd\.com/asset/logo/.*)\"\ alt', r.text
+            )
+        except SyntaxWarning:
+            pass
+
+        return await self.execute(
+            data=result
         )
