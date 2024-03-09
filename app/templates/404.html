@@ -2,147 +2,153 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Note found</title>
+    <title>Page 404 | HeroAPI</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap');
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            text-align: center;
-            font-family: "vazir", sans-serif;
-            background: black;
-            color: rgba(255, 255, 255, 0.8);
-            overflow: hidden !important;
+
+        :root {
+            --main-width: 80%;
+            --main-height: 90%;
+            --main-radius: 25px;
         }
+
+        body {
+            overflow-x: hidden;
+            font-size: 14px;
+            height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background-color: #000000;
+            background-image: linear-gradient(147deg, #000000 0%, #0f0f0f 74%);
+            color: #fff;
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            align-items: center;
+        }
+
         a {
             text-decoration: none;
+            color: #fefefe;
         }
-        canvas {
-            display: block;
+
+        /* card */
+        .main {
+            width: var(--main-width);
+            height: var(--main-height);
+            border-radius: var(--main-radius);
+            background-image: linear-gradient(to top left, rgba(15, 15, 15, 0.5), rgba(0, 0, 0, .7), rgba(10, 10, 10, .5));
+            border: 1px solid rgba(150, 150, 150, 0.10);
+            box-shadow: rgba(60, 60, 60, 0.1) 2px 2px 5px;
+            display: flex;
+            flex-direction: row;
+            z-index: 2;
+            overflow: hidden;
         }
-        .card {
-            background-color: rgba(10, 10, 10, 0.7);
-            border: rgba(50, 50, 50, 0.2) 1px solid;
-            position: absolute;
-            border-radius: 1.2rem;
-            width: 60%;
-            height: 70%;
-            box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.5);
-            color: #f0f0f0;
-            overflow-y: auto;
-            -webkit-backdrop-filter: blur(3px);
-            backdrop-filter: blur(3px);
-            z-index: 12;
+
+        /* image */
+        .main .image {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .main .image img {
+            max-width: 50%;
             user-select: none;
+            -webkit-animation: fly 4s linear infinite;
+            -o-animation: fly 4s linear infinite;
+            animation: fly 4s linear infinite;
         }
-        .texts {
+
+        @keyframes fly {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(10px);
+            }
+        }
+
+        /* text 404 */
+        .main .text-404 {
+            width: 50%;
             height: 100%;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-        }
-        .title_404 {
-            font-size: 12vw;
-        }
-        .text_404 {
-            font-size: 2vw;
-        }
-        .matrix {
-            color: #0f0;
-        }
-        .text_stroke {
-            color: transparent;
-            -webkit-text-stroke: 3px #0f0;
+            align-items: center;
         }
 
-        @media (max-width: 768px) {
-            .card {
-                width: 85%;
-            }
-            .title_404 {
-                font-size: 100px;
-            }
-            .text_404 {
-                font-size: 16px;
+        .main .text-404 h1 {
+            font-size: 9em;
+        }
+
+        .main .text-404 p {
+            font-size: 2em;
+            font-weight: 600;
+        }
+
+        .main .text-404 .back-btn {
+            margin: 1.8rem 0;
+            padding: 0.821rem 2rem;
+            border-radius: 8px;
+            border: 1px solid rgba(150, 150, 150, 0.40);
+        }
+
+        .main .text-404 .back-btn:hover {
+            border: 1px solid rgba(150, 150, 150, 0.60);
+        }
+
+        /* Menu bar */
+        .menu {
+            padding: 0.8rem;
+            z-index: 4;
+            position: absolute;
+            width: var(--main-width);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .image-box img {
+            max-width: 80%;
+            animation: GoIN 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) backwards;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        .image-box img:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes GoIN {
+            0% {
+                transform: translateX(-50px);
             }
         }
     </style>
 </head>
 <body>
-<div id="card" class="card" data-tilt data-tilt-max="8" data-tilt-speed="400" data-tilt-perspective="500">
-    <div class="texts">
-        <h1 class="title_404">
-            <span>4</span>
-            <span class="text_stroke">X</span>
-            <span>4</span>
-        </h1>
-        <p class="text_404" style="font-weight: 600">Oops! You are in the
-            <span class="matrix">matrix</span></p>
+<main id="main" class="main">
+    <div class="menu">
+        <h1 class="px-4 Logo">HeroAPI</h1>
     </div>
-</div>
-<canvas id="matrix_"></canvas>
-
-<script>
-    window.onload = Load;
-    window.onresize = getWindowSize;
-
-    const canvasTag = document.getElementById("matrix_");
-
-    function getWindowSize() {
-    canvasTag.height = window.innerHeight;
-    canvasTag.width = window.innerWidth;
-    }
-    function Load() {
-    getWindowSize();
-
-    const letter_size = 16; //letters size
-    const columnsNumber = canvasTag.width / letter_size;
-
-    let letters = [];
-    for (let i = 0; i < columnsNumber; i++) {
-        letters[i] = 1;
-    }
-    let context = canvasTag.getContext('2d');
-
-    function canvasCreator() {
-        context.fillStyle = "rgba(0,0,0,0.08)";
-        context.fillRect(0, 0, canvasTag.width, canvasTag.height);
-        context.fillStyle = "#0f0";
-        context.font = letter_size + "px arial";
-        let text;
-        let allText;
-        for (let i = 0; i < letters.length; i++) {
-            text = Create_Word();
-            allText = text.split("");
-            context.fillText(allText, i * letter_size, letters[i] * letter_size);
-
-            if (letters[i] * letter_size > canvasTag.height && Math.random() > 0.975) {
-                letters[i] = 0;
-            }
-            letters[i]++;
-        }
-    }
-
-    let numberText
-
-    function Create_Word() {
-        numberText = Math.floor((Math.random() * 94) + 33);
-        return String.fromCharCode(parseInt(numberText));
-    }
-
-    setInterval(canvasCreator, 80);
-
-    }
-
-</script>
+    <div class="text-404">
+        <h1>4 X 4</h1>
+        <p>Page not found!</p>
+        <a class="back-btn" href="https://heroapi.liara.run/docs">Documents</a>
+    </div>
+    <div class="image"><img id="big_image" src="https://mjavadh.github.io/4X4-Collection/Fantasy/Black%20Box/assets/astronaut.png" alt="#"></div>
+</main>
 </body>
 </html>

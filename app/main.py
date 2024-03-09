@@ -1,142 +1,104 @@
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, File, status
 from fastapi.templating import Jinja2Templates
-from .api.api import HeroAPI
 
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
+from typing import Annotated
+
+from app.api.api import HeroAPI
+
+
+api = HeroAPI()
 app = FastAPI(
     title='HeroAPI',
-    description='Free and open source api',
+    description='Free api and web service',
     contact={
-        'name': 'amirali irvany',
         'email': 'dev.amirali.irvany@gmail.com',
     },
-    license_info={
-        'name': 'MIT',
-        'url': 'https://github.com/metect/Heroapi/blob/main/LICENSE',
-    },
+    redoc_url=None,
 )
-templates = Jinja2Templates(directory='app/templates')
 
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-heroapi = HeroAPI()
-
-@app.exception_handler(404)
-async def custom_404_handler(request: Request, __) -> 'template page':
+@app.exception_handler(status.HTTP_404_NOT_FOUND)
+async def custom_404_handler(request: Request, __):
+    templates = Jinja2Templates(directory='app/templates')
     return templates.TemplateResponse(
         '404.html', {
             'request': request
         }
     )
 
-
-@app.get('/', status_code=status.HTTP_200_OK)
-async def main() -> dict:
-    '''displaying developer information
-    :return
-        status, developer name and ...
-    '''
-    return await heroapi._main()
-
-
-parameters: list = [{'item': 'auth', 'item': 'url', 'item': 'timeout'}]
-@app.get('/api/rubino', status_code=status.HTTP_200_OK)
-@app.post('/api/rubino', status_code=status.HTTP_200_OK)
-async def rubino(auth: str, url: str, timeout: float = 10) -> dict:
-    '''This api is used to get the information of the post(s) in Rubino Messenger
-    :param url:
-        The link of the desired post. Example: `https://rubika.ir/post/xxxxxx`
-    :param timeout:
-        For manage timeout when the rubika server
-    :return:
-        Full post information
-
-    If you want more details, go to this address: https://github.com/metect/myrino
-    '''
-    return await heroapi._rubino(auth=auth, url=url, timeout=timeout)
-
-
-parameters: list = [{'item': 'text'}]
 @app.get('/api/font', status_code=status.HTTP_200_OK)
 @app.post('/api/font', status_code=status.HTTP_200_OK)
-async def font(text: str = 'Heroapi') -> dict:
-    '''This function is for generating fonts. Currently only English language is supported
-    :param text:
-        The text you want the font to be applied to
-    '''
-    return await heroapi._font(text=text)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def font(request: Request, text: str) -> dict:
+    '''Generate ascii fonts. Currently only English language is supported'''
+    return await api.font(text=text)
 
 
-parameters: list = [{'item': 'text'}]
-@app.get('/api/lang', status_code=status.HTTP_200_OK)
-@app.post('/api/lang', status_code=status.HTTP_200_OK)
-async def lang_detect(text: str) -> dict:
-    '''This function is to identify the language of a text
-    :param text:
-        Your desired text
-    :return:
-        example: `en` or `fa`
-
-    Powered by the `langdetetc` library
-    '''
-    return await heroapi._lang_detect(text=text)
-
-
-parameters: list = [{'item': 'text', 'item': 'to_lang', 'item': 'from_lang'}]
-@app.get('/api/translate', status_code=status.HTTP_200_OK)
-@app.post('/api/translate', status_code=status.HTTP_200_OK)
-async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
-    '''This API, which is based on the Google Translate API, is used to translate texts'''
-    return await heroapi._translate(text=text, to_lang=to_lang, from_lang=from_lang)
-
-
-parameters: list = [{'item': 'count', 'item': 'lang'}]
 @app.get('/api/faketext', status_code=status.HTTP_200_OK)
 @app.post('/api/faketext', status_code=status.HTTP_200_OK)
-async def fake_text(count: int = 100, lang: str = 'en_US') -> dict:
-    '''This api is used to generate fake text
-    :param count
-        Number of words, example >>> `10`
-    :param lang
-        desired language, example >>> `en_US` or `fa_IR`
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def fake_text(request: Request, count: int = 100, lang: str = 'en_US') -> dict:
+    '''Production fake text'''
+    return await api.fake_text(count=count, lang=lang)
 
-    Power taken from the library `Faker`
-    '''
-    return await heroapi._faketext(count=count, lang=lang)
+
+@app.get('/api/rubino', status_code=status.HTTP_200_OK)
+@app.post('/api/rubino', status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> dict:
+    '''This api is used to get the information of the post(s) in Rubino Messenger'''
+    return await api.rubino(auth=auth, url=url, timeout=timeout)
+
+
+@app.get('/api/lang', status_code=status.HTTP_200_OK)
+@app.post('/api/lang', status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def language_detect(request: Request, text: str) -> dict:
+    '''Identifying the language of texts'''
+    return await api.language_detect(text=text)
+
+
+@app.get('/api/translate', status_code=status.HTTP_200_OK)
+@app.post('/api/translate', status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def translate(request: Request, text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
+    '''Translation of texts based on the Google Translate engine'''
+    return await api.translate(text=text, to_lang=to_lang, from_lang=from_lang)
 
 
 @app.get('/api/datetime', status_code=status.HTTP_200_OK)
 @app.post('/api/datetime', status_code=status.HTTP_200_OK)
-async def datetime(tr_num: str = 'en') -> dict:
-    '''This api is used to display date and time in solar'''
-    return await heroapi._datetime(tr_num=tr_num)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def datetime(request: Request, tr_num: str = 'en') -> dict:
+    '''Display detailed information about the date of the solar calendar'''
+    return await api.datetime(tr_num=tr_num)
 
 
-@app.get('/api/usd', status_code=status.HTTP_200_OK)
-@app.post('/api/usd', status_code=status.HTTP_200_OK)
-async def _usd() -> dict:
-    '''api to get live currency prices from the `https://irarz.com` website'''
-    return await heroapi.usd()
+@app.get('/api/location', status_code=status.HTTP_200_OK)
+@app.post('/api/location', status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def location(request: Request, text: str, latitude: int, longitude: int) -> dict:
+    '''Web service to get location and map'''
+    return await api.location(text=text, latitude=latitude, longitude=longitude)
 
 
-parameters: list = [{'item': 'text'}]
+@app.get('/api/image2ascii', status_code=status.HTTP_200_OK)
+@app.post('/api/image2ascii', status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def ascii_art(request: Request, image: Annotated[bytes, File()]) -> dict:
+    '''Convert image to ascii art'''
+    return await api.ascii_art(image=image)
+
+
 @app.get('/api/bard', status_code=status.HTTP_200_OK)
 @app.post('/api/bard', status_code=status.HTTP_200_OK)
-async def bard(text : str) -> dict:
-    '''bard artificial intelligence api'''
-    return await heroapi._bard(text=text)
-
-
-@app.get('/api/joke', status_code=status.HTTP_200_OK)
-@app.post('/api/joke', status_code=status.HTTP_200_OK)
-async def joke() -> dict:
-    '''Happy jokes web service. It has about 80 different jokes'''
-    return await heroapi._joke()
-
-
-parameters: list = [{'item': 'text', 'item': 'page'}]
-@app.get('/api/logo', status_code=status.HTTP_200_OK)
-@app.post('/api/logo', status_code=status.HTTP_200_OK)
-async def logo(text: str, page: int) -> dict:
-    '''This api is for logo generation.
-    Powered by https://www.brandcrowd.com
-    '''
-    return await heroapi._logoai(text=text, page=page)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def bard_ai(request: Request, prompt: str) -> dict:
+    '''Bard artificial intelligence web service'''
+    return await api.bard_ai(prompt=prompt)
