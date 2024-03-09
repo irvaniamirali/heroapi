@@ -2,14 +2,6 @@
 
 ### Free and open source api 
 
-## API List
-- __rubino downloder__
-- __google translate__
-- __fake text__
-- __usd__
-- __font__
-- __language detect__
-
 
 ## Documents
 - [Telegram channel](https://t.me/Heroapi)
