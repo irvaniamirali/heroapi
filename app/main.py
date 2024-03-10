@@ -102,3 +102,11 @@ async def ascii_art(request: Request, image: Annotated[bytes, File()]) -> dict:
 async def bard_ai(request: Request, prompt: str) -> dict:
     '''Bard artificial intelligence web service'''
     return await api.bard_ai(prompt=prompt)
+
+
+@app.get('/api/news', status_code=status.HTTP_200_OK)
+@app.post('/api/news', status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def news(request: Request):
+    '''Show random news. Connected to the site www.tasnimnews.com'''
+    return await api.news()
