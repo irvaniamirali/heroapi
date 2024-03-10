@@ -64,9 +64,7 @@ async def custom_404_handler(request: Request, __):
 async def font(request: Request, text: str) -> dict:
     '''Generate ascii fonts. Currently only English language is supported'''
     if langdetect.detect(text) in ['fa', 'ar', 'ur']:
-        return await self.execute(
-            status=False, err_message='Currently, Persian language is not supported'
-        )
+        return await outter(success=False, err_message='Currently, Persian language is not supported')
     else:
         with open('app/jsonfiles/f.json', 'r') as f:
             fonts = json.load(f)
