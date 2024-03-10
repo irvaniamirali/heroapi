@@ -5,12 +5,22 @@ from fastapi.templating import Jinja2Templates
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
+
 from typing import Annotated
+import moviepy.editor
+import os
+import requests
+import jalali.Jalalian
+import PIL.Image
+import urllib.parse
+import re
+import html
+import langdetect
+import json
+import random
+import faker
+import bs4
 
-from app.api.api import HeroAPI
-
-
-api = HeroAPI()
 app = FastAPI(
     title='HeroAPI',
     description='Free api and web service',
@@ -24,6 +34,20 @@ limiter = Limiter(key_func=get_remote_address)
 app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+async def outter(success: bool, data: dict = None, err_message: str = None) -> dict:
+    '''Create json for output'''
+    return {
+        'success': success,
+        'dev': 'amirali irvany',
+        'url': 'https://t.me/HeroAPI',
+        'github': 'https://github.com/metect/HeroAPI',
+        'result': {
+            'out': data,
+            'err_message': err_message
+        },
+    }
+
+
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
 async def custom_404_handler(request: Request, __):
     templates = Jinja2Templates(directory='app/templates')
@@ -33,12 +57,41 @@ async def custom_404_handler(request: Request, __):
         }
     )
 
+
 @app.get('/api/font', status_code=status.HTTP_200_OK)
 @app.post('/api/font', status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def font(request: Request, text: str) -> dict:
     '''Generate ascii fonts. Currently only English language is supported'''
-    return await api.font(text=text)
+    if langdetect.detect(text) in ['fa', 'ar', 'ur']:
+        return await self.execute(
+            status=False, err_message='Currently, Persian language is not supported'
+        )
+    else:
+        with open('app/jsonfiles/f.json', 'r') as f:
+            fonts = json.load(f)
+
+        converted_text = ''
+        for count in range(0, len(fonts)):
+            for char in text:
+                if char.isalpha():
+                    char_index = ord(char.lower()) - 97
+                    converted_text += fonts[str(count)][char_index]
+                else:
+                    converted_text += char
+
+            converted_text += '\n'
+            result = converted_text.split('\n')[0:-1]
+    return {
+        'success': True,
+        'dev': 'amirali irvany',
+        'url': 'https://t.me/HeroAPI',
+        'github': 'https://github.com/metect/HeroAPI',
+        'result': {
+            'out': FileResponse(path=FILE_PATH_MP3, filename=FILE_PATH_MP3),
+            'err_message': None
+        },
+    }
 
 
 @app.get('/api/faketext', status_code=status.HTTP_200_OK)
@@ -110,7 +163,7 @@ async def bard_ai(request: Request, prompt: str) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def news(request: Request) -> dict:
     '''Show random news. Connected to the site www.tasnimnews.com'''
-    return await ap@app.get('/api/news', status_code=status.HTTP_200_OK)
+    pass
 
 
 @app.get('/api/video2mp3', status_code=status.HTTP_200_OK)
@@ -118,6 +171,10 @@ async def news(request: Request) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def video_to_mp3(request: Request, video: Annotated[bytes, File()]):
     '''Remove audio from video web service'''
-    FILE_PATH = 'app/tmpfiles/sound.mp3'
-    sound_byte =  await api.video_to_mp3(video=video)
+    FILE_PATH = 'app/tmpfiles/video.mp4'
+    with open(FILE_PATH, 'wb') as file:
+        file.write(video)
+
+    video = moviepy.editor.VideoFileClip(FILE_PATH)
+    video.audio.write_audiofile('app/tmpfiles/sound.mp3')
     return FileResponse(path=FILE_PATH, filename=FILE_PATH)
