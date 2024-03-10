@@ -196,11 +196,18 @@ class HeroAPI:
         request = requests.request(
             'get', f'https://www.tasnimnews.com/fa/top-stories'
         )
-        time = re.findall(r'<time><i class=\"fa fa-clock-o\"></i>(.*?)</time>', request.text)
+        rand_num = random.randint(0, 9)
+        build_data = lambda value : value[rand_num].strip()
+        # parser data from website https://www.tasnimnews.com/fa/top-stories
         title = re.findall(r'<h2 class=\"title \">(.*?)</h2>', request.text)
         description = re.findall(r'<h4 class=\"lead\">(.*?)</h4>', request.text)
+        time = re.findall(r'<time><i class=\"fa fa-clock-o\"></i>(.*?)</time>', request.text)
+        full_url = re.findall('<article class=\"list-item \"><a href=\"(.*?)\">', request.text)
         return await self.execute(
             data={
-                'title': title[0], 'description': description[0], 'time': time[0]
+                'title': re.sub('&quot', '', build_data(title)),
+                'description': build_data(description),
+                'time': build_data(time),
+                'full_url': f'https://www.tasnimnews.com{build_data(full_url)}',
             }
         )
