@@ -81,17 +81,9 @@ async def font(request: Request, text: str) -> dict:
                     converted_text += char
 
             converted_text += '\n'
-            result = converted_text.split('\n')[0:-1]
-    return {
-        'success': True,
-        'dev': 'amirali irvany',
-        'url': 'https://t.me/HeroAPI',
-        'github': 'https://github.com/metect/HeroAPI',
-        'result': {
-            'out': FileResponse(path=FILE_PATH_MP3, filename=FILE_PATH_MP3),
-            'err_message': None
-        },
-    }
+            final_values = converted_text.split('\n')[0:-1]
+
+    return await outter(success=True, data=final_values)
 
 
 @app.get('/api/faketext', status_code=status.HTTP_200_OK)
@@ -113,7 +105,27 @@ async def fake_text(request: Request, count: int = 100, lang: str = 'en_US') -> 
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> dict:
     '''This api is used to get the information of the post(s) in Rubino Messenger'''
-    return await api.rubino(auth=auth, url=url, timeout=timeout)
+    payload: dict = {
+        'api_version': '0',
+        'auth': auth,
+        'client': {
+            'app_name': 'Main',
+            'app_version': '3.0.1',
+            'package': 'app.rubino.main',
+            'lang_code': 'en',
+            'platform': 'PWA'
+        },
+        'data': {
+            'share_link': url.split('/')[-1],
+            'profile_id': None
+        },
+        'method': 'getPostByShareLink'
+    }
+    base_url: str = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
+    responce = requests.request(
+        method='get', url=base_url, json=payload
+    )
+    return await outter(success=True, data=responce.json())
 
 
 @app.get('/api/lang', status_code=status.HTTP_200_OK)
@@ -121,7 +133,13 @@ async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> 
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def language_detect(request: Request, text: str) -> dict:
     '''Identifying the language of texts'''
-    return await api.language_detect(text=text)
+    try:
+        return await outter(success=True, data=langdetect.detect(text))
+    except langdetect.LangDetectException:
+        return await outter(
+            success=False,
+            err_message='The value of the `text` parameter is not invalid'
+        )
 
 
 @app.get('/api/translate', status_code=status.HTTP_200_OK)
@@ -129,7 +147,19 @@ async def language_detect(request: Request, text: str) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def translate(request: Request, text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''Translation of texts based on the Google Translate engine'''
-    return await api.translate(text=text, to_lang=to_lang, from_lang=from_lang)
+    base_url: str = 'https://translate.google.com'
+    final_url: str = f'{base_url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
+    r = requests.request(
+        method='get', url=final_url, headers={
+            'User-Agent':
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
+        }
+    )
+    if r.status_code == 200:
+        result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', r.text)
+        return await outter(success=True, data=html.unescape(result[0]))
+    else:
+        return await outter(success=False, data='A problem has occurred on our end')
 
 
 @app.get('/api/datetime', status_code=status.HTTP_200_OK)
@@ -137,7 +167,8 @@ async def translate(request: Request, text: str, to_lang: str = 'auto', from_lan
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def datetime(request: Request, tr_num: str = 'en') -> dict:
     '''Display detailed information about the date of the solar calendar'''
-    return await api.datetime(tr_num=tr_num)
+    current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
+    return await outter(success=True, data=current_date)
 
 
 @app.get('/api/location', status_code=status.HTTP_200_OK)
@@ -145,7 +176,18 @@ async def datetime(request: Request, tr_num: str = 'en') -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def location(request: Request, text: str, latitude: int, longitude: int) -> dict:
     '''Web service to get location and map'''
-    return await api.location(text=text, latitude=latitude, longitude=longitude)
+    access_key: str = os.getenv(key='NESHAN_KEY')
+    base_url: str = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
+    r = requests.request(
+        method='get', url=base_url, headers={
+            'Api-Key': access_key
+        }
+    )
+    if r.status_code == 200:
+        final_value: dict = r.json()
+        return await outter(success=True, data=final_value)
+    else:
+        return await outter(success=False, err_message='A problem occurred on the server side')
 
 
 @app.get('/api/image2ascii', status_code=status.HTTP_200_OK)
@@ -153,7 +195,24 @@ async def location(request: Request, text: str, latitude: int, longitude: int) -
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def ascii_art(request: Request, image: Annotated[bytes, File()]) -> dict:
     '''Convert image to ascii art'''
-    return await api.ascii_art(image=image)
+    with open('app/tmpfiles/image.png', 'wb') as file_byte:
+        file_byte.write(image)
+
+    image = PIL.Image.open('app/tmpfiles/image.png')
+    width, height = image.size
+    aspect_ratio = height / width
+    new_height = aspect_ratio * 120 * 0.55
+    img = image.resize((120, int(new_height)))
+
+    img = img.convert('L')
+    pixels = img.getdata()
+
+    CHARACTERS = ['B', 'S', '#', '&', '@', '$', '%', '*', '!', ':', '.']
+    new_pixels = [CHARACTERS[pixel // 25] for pixel in pixels]
+    new_pixels, new_pixels_count = ''.join(new_pixels), len(new_pixels)
+    ascii_image = [new_pixels[index:index + 120]
+    for index in range(0, new_pixels_count, 120)]
+    return await outter(success=True, data='\n'.join(ascii_image))
 
 
 @app.get('/api/bard', status_code=status.HTTP_200_OK)
