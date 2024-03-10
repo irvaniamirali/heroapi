@@ -10,6 +10,7 @@ import json
 import random
 import faker
 import bs4
+import moviepy.editor
 
 class HeroAPI:
 
@@ -211,3 +212,12 @@ class HeroAPI:
                 'full_url': f'https://www.tasnimnews.com{build_data(full_url)}',
             }
         )
+
+
+    async def video_to_mp3(self, video) -> dict:
+        FILE_PATH = 'app/tmpfiles/video.mp4'
+        with open(FILE_PATH, 'wb') as file:
+            file.write(video)
+
+        video = moviepy.editor.VideoFileClip(FILE_PATH)
+        video.audio.write_audiofile('app/tmpfiles/sound.mp3')
