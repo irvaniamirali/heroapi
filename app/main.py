@@ -161,7 +161,16 @@ async def ascii_art(request: Request, image: Annotated[bytes, File()]) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def bard_ai(request: Request, prompt: str) -> dict:
     '''Bard artificial intelligence web service'''
-    return await api.bard_ai(prompt=prompt)
+    base_url: str = 'https://api.safone.dev/'
+    request = requests.request(
+        method='get', url=f'{base_url}bard?message={prompt}'
+    )
+    if request.status_code == 200:
+        final_responce = request.json()
+        responce = final_responce['candidates'][0]['content']['parts'][0]['text']
+        return await outter(success=True, data=responce)
+    else:
+        return await outter(success=False, err_message='A problem has occurred on our end')
 
 
 @app.get('/api/news', status_code=status.HTTP_200_OK)
