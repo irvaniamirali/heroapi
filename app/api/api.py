@@ -190,3 +190,17 @@ class HeroAPI:
             )
         else:
             return await self.execute(data=faker.Faker([lang]).text(count))
+
+
+    async def news(self) -> dict:
+        request = requests.request(
+            'get', f'https://www.tasnimnews.com/fa/top-stories'
+        )
+        time = re.findall(r'<time><i class=\"fa fa-clock-o\"></i>(.*?)</time>', request.text)
+        title = re.findall(r'<h2 class=\"title \">(.*?)</h2>', request.text)
+        description = re.findall(r'<h4 class=\"lead\">(.*?)</h4>', request.text)
+        return await self.execute(
+            data={
+                'title': title[0], 'description': description[0], 'time': time[0]
+            }
+        )
