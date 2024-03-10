@@ -99,7 +99,13 @@ async def font(request: Request, text: str) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def fake_text(request: Request, count: int = 100, lang: str = 'en_US') -> dict:
     '''Production fake text'''
-    return await api.fake_text(count=count, lang=lang)
+    MAXIMUM_REQUEST = 999
+    if count >= MAXIMUM_REQUEST:
+        return await outter(
+            success=False, err_message='The amount is too big. Send a smaller number `count`'
+        )
+    else:
+        return await outter(success=True, data=faker.Faker([lang]).text(count))
 
 
 @app.get('/api/rubino', status_code=status.HTTP_200_OK)
@@ -163,7 +169,24 @@ async def bard_ai(request: Request, prompt: str) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def news(request: Request) -> dict:
     '''Show random news. Connected to the site www.tasnimnews.com'''
-    pass
+    request = requests.request(
+        'get', f'https://www.tasnimnews.com/fa/top-stories'
+    )
+    rand_num = random.randint(0, 9)
+    build_data = lambda value: value[rand_num].strip()
+    title = re.findall(r'<h2 class=\"title \">(.*?)</h2>', request.text)
+    description = re.findall(r'<h4 class=\"lead\">(.*?)</h4>', request.text)
+    time = re.findall(r'<time><i class=\"fa fa-clock-o\"></i>(.*?)</time>', request.text)
+    full_url = re.findall('<article class=\"list-item \"><a href=\"(.*?)\">', request.text)
+    return await outter(
+        success=True,
+        data={
+            'title': re.sub('&quot', '', build_data(title)),
+            'description': build_data(description),
+            'time': build_data(time),
+            'full_url': f'https://www.tasnimnews.com{build_data(full_url)}',
+        }
+    )
 
 
 @app.get('/api/video2mp3', status_code=status.HTTP_200_OK)
