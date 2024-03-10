@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, File, status
+from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -107,6 +108,16 @@ async def bard_ai(request: Request, prompt: str) -> dict:
 @app.get('/api/news', status_code=status.HTTP_200_OK)
 @app.post('/api/news', status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def news(request: Request):
+async def news(request: Request) -> dict:
     '''Show random news. Connected to the site www.tasnimnews.com'''
-    return await api.news()
+    return await ap@app.get('/api/news', status_code=status.HTTP_200_OK)
+
+
+@app.get('/api/video2mp3', status_code=status.HTTP_200_OK)
+@app.post('/api/video2mp3', status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def video_to_mp3(request: Request, video: Annotated[bytes, File()]):
+    '''Remove audio from video web service'''
+    FILE_PATH = 'app/tmpfiles/sound.mp3'
+    sound_byte =  await api.video_to_mp3(video=video)
+    return FileResponse(path=FILE_PATH, filename=FILE_PATH)
