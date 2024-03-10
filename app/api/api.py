@@ -181,13 +181,3 @@ class HeroAPI:
             return await self.execute(status=True, data=ai_responce)
         else:
             return await self.execute(status=False, err_message='A problem has occurred on our end')
-
-
-    async def fake_text(self, count: str, lang: str) -> dict:
-        MAX_VALUE = 999
-        if count >= MAX_VALUE:
-            return await self.execute(
-                status=False, err_message='The amount is too big. Send a smaller number `count`'
-            )
-        else:
-            return await self.execute(data=faker.Faker([lang]).text(count))
