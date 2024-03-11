@@ -300,6 +300,7 @@ async def video_to_mp3(request: Request, video: Annotated[bytes, File()]):
 @app.post('/api/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def icon(request: Request, text: str) -> dict:
+    '''Web search service and icon search'''
     request = requests.request(
         method='GET', url=f'https://icon-icons.com/search/icons/?filtro={text}'
     )
@@ -321,16 +322,4 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
         string += computed_value[i]
 
     string += ']'
-    outter_value = []
-    for item in range(0, 9):
-        try:
-            final_value = literal_eval(node_or_string=string)
-            outter_value.append(final_value[item])
-        except IndexError:
-            return await outter(success=False, err_message='Your desired item was not found')
-        except SyntaxError:
-            return await outter(
-                success=False, err_message='A problem has occurred on our end. Please try again'
-            )
-
-    return await outter(success=True, data=outter_value)
+    return await outter(success=True, data=literal_eval(node_or_string=string))
