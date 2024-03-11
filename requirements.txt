@@ -6,6 +6,8 @@ charset-normalizer==3.3.2
 click==8.1.7
 decorator==4.4.2
 Deprecated==1.2.14
+dnspython==2.6.1
+email_validator==2.1.1
 Faker==23.2.1
 fastapi==0.109.2
 h11==0.14.0

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, File, status
 from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -23,12 +24,14 @@ import bs4
 
 app = FastAPI(
     title='HeroAPI',
-    description='Free api and web service',
+    description='Free and open source api',
     contact={
         'email': 'dev.amirali.irvany@gmail.com',
     },
-    redoc_url=None,
 )
+
+templates = Jinja2Templates(directory='app/templates')
+app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
 
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
@@ -50,7 +53,6 @@ async def outter(success: bool, data: dict = None, err_message: str = None) -> d
 
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
 async def custom_404_handler(request: Request, __):
-    templates = Jinja2Templates(directory='app/templates')
     return templates.TemplateResponse(
         '404.html', {
             'request': request
@@ -58,8 +60,8 @@ async def custom_404_handler(request: Request, __):
     )
 
 
-@app.get('/api/font', status_code=status.HTTP_200_OK)
-@app.post('/api/font', status_code=status.HTTP_200_OK)
+@app.get('/api/font', tags=['Art'], status_code=status.HTTP_200_OK)
+@app.post('/api/font', tags=['Art'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def font(request: Request, text: str) -> dict:
     '''Generate ascii fonts. Currently only English language is supported'''
@@ -84,22 +86,34 @@ async def font(request: Request, text: str) -> dict:
     return await outter(success=True, data=final_values)
 
 
-@app.get('/api/faketext', status_code=status.HTTP_200_OK)
-@app.post('/api/faketext', status_code=status.HTTP_200_OK)
+@app.get('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
+@app.post('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def fake_text(request: Request, count: int = 100, lang: str = 'en_US') -> dict:
+async def fake_text(request: Request, item: str, count: int = 100, lang: str = 'en_US') -> dict:
     '''Production fake text'''
-    MAXIMUM_REQUEST = 999
-    if count >= MAXIMUM_REQUEST:
+    MAXIMUM_REQUEST: int = 100
+    if count > MAXIMUM_REQUEST:
         return await outter(
             success=False, err_message='The amount is too big. Send a smaller number `count`'
         )
     else:
-        return await outter(success=True, data=faker.Faker([lang]).text(count))
+        final_values = []
+        if item == 'text':
+            return await outter(success=True, data=faker.Faker([lang]).text(count))
+        elif item == 'name':
+            for i in range(count):
+                final_values.append(faker.Faker([lang]).name())
+
+            return await outter(success=True, data=final_values)
+        elif item == 'email':
+            for i in range(count):
+                final_values.append(faker.Faker([lang]).email())
+
+            return await outter(success=True, data=final_values)
 
 
-@app.get('/api/rubino', status_code=status.HTTP_200_OK)
-@app.post('/api/rubino', status_code=status.HTTP_200_OK)
+@app.get('/api/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
+@app.post('/api/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> dict:
     '''This api is used to get the information of the post(s) in Rubino Messenger'''
@@ -126,8 +140,8 @@ async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> 
     return await outter(success=True, data=responce.json())
 
 
-@app.get('/api/lang', status_code=status.HTTP_200_OK)
-@app.post('/api/lang', status_code=status.HTTP_200_OK)
+@app.get('/api/lang', tags=['Identify language'], status_code=status.HTTP_200_OK)
+@app.post('/api/lang', tags=['Identify language'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def language_detect(request: Request, text: str) -> dict:
     '''Identifying the language of texts'''
@@ -140,8 +154,8 @@ async def language_detect(request: Request, text: str) -> dict:
         )
 
 
-@app.get('/api/translate', status_code=status.HTTP_200_OK)
-@app.post('/api/translate', status_code=status.HTTP_200_OK)
+@app.get('/api/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
+@app.post('/api/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def translate(request: Request, text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''Translation of texts based on the Google Translate engine'''
@@ -160,8 +174,8 @@ async def translate(request: Request, text: str, to_lang: str = 'auto', from_lan
         return await outter(success=False, data='A problem has occurred on our end')
 
 
-@app.get('/api/datetime', status_code=status.HTTP_200_OK)
-@app.post('/api/datetime', status_code=status.HTTP_200_OK)
+@app.get('/api/datetime', tags=['Data & time'], status_code=status.HTTP_200_OK)
+@app.post('/api/datetime', tags=['Data & time'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def datetime(request: Request, tr_num: str = 'en') -> dict:
     '''Display detailed information about the date of the solar calendar'''
@@ -169,8 +183,8 @@ async def datetime(request: Request, tr_num: str = 'en') -> dict:
     return await outter(success=True, data=current_date)
 
 
-@app.get('/api/location', status_code=status.HTTP_200_OK)
-@app.post('/api/location', status_code=status.HTTP_200_OK)
+@app.get('/api/location', tags=['Location'], status_code=status.HTTP_200_OK)
+@app.post('/api/location', tags=['Location'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def location(request: Request, text: str, latitude: int, longitude: int) -> dict:
     '''Web service to get location and map'''
@@ -188,8 +202,8 @@ async def location(request: Request, text: str, latitude: int, longitude: int) -
         return await outter(success=False, err_message='A problem occurred on the server side')
 
 
-@app.get('/api/image2ascii', status_code=status.HTTP_200_OK)
-@app.post('/api/image2ascii', status_code=status.HTTP_200_OK)
+@app.get('/api/image2ascii', tags=['Art'], status_code=status.HTTP_200_OK)
+@app.post('/api/image2ascii', tags=['Art'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def ascii_art(request: Request, image: Annotated[bytes, File()]) -> dict:
     '''Convert image to ascii art'''
@@ -213,8 +227,8 @@ async def ascii_art(request: Request, image: Annotated[bytes, File()]) -> dict:
     return await outter(success=True, data='\n'.join(ascii_image))
 
 
-@app.get('/api/bard', status_code=status.HTTP_200_OK)
-@app.post('/api/bard', status_code=status.HTTP_200_OK)
+@app.get('/api/bard', tags=['AI'], status_code=status.HTTP_200_OK)
+@app.post('/api/bard', tags=['AI'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def bard_ai(request: Request, prompt: str) -> dict:
     '''Bard artificial intelligence web service'''
@@ -230,8 +244,8 @@ async def bard_ai(request: Request, prompt: str) -> dict:
         return await outter(success=False, err_message='A problem has occurred on our end')
 
 
-@app.get('/api/news', status_code=status.HTTP_200_OK)
-@app.post('/api/news', status_code=status.HTTP_200_OK)
+@app.get('/api/news', tags=['News'], status_code=status.HTTP_200_OK)
+@app.post('/api/news', tags=['News'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def news(request: Request) -> dict:
     '''Show random news. Connected to the site www.tasnimnews.com'''
@@ -255,8 +269,8 @@ async def news(request: Request) -> dict:
     )
 
 
-@app.get('/api/video2mp3', status_code=status.HTTP_200_OK)
-@app.post('/api/video2mp3', status_code=status.HTTP_200_OK)
+@app.get('/api/video2mp3', tags=['Video'], status_code=status.HTTP_200_OK)
+@app.post('/api/video2mp3', tags=['Video'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def video_to_mp3(request: Request, video: Annotated[bytes, File()]):
     '''Remove audio from video web service'''
