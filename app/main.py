@@ -147,7 +147,7 @@ async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> 
     }
     base_url: str = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
     responce = requests.request(
-        method='get', url=base_url, json=payload
+        method='GET', url=base_url, json=payload
     )
     return await outter(success=True, data=responce.json())
 
@@ -174,7 +174,7 @@ async def translate(request: Request, text: str, to_lang: str = 'auto', from_lan
     base_url: str = 'https://translate.google.com'
     final_url: str = f'{base_url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
     r = requests.request(
-        method='get', url=final_url, headers={
+        method='GET', url=final_url, headers={
             'User-Agent':
                 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
         }
@@ -203,7 +203,7 @@ async def location(request: Request, text: str, latitude: int, longitude: int) -
     access_key: str = os.getenv(key='NESHAN_KEY')
     base_url: str = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
     r = requests.request(
-        method='get', url=base_url, headers={
+        method='GET', url=base_url, headers={
             'Api-Key': access_key
         }
     )
@@ -246,7 +246,7 @@ async def bard_ai(request: Request, prompt: str) -> dict:
     '''Bard artificial intelligence web service'''
     base_url: str = 'https://api.safone.dev/'
     request = requests.request(
-        method='get', url=f'{base_url}bard?message={prompt}'
+        method='GET', url=f'{base_url}bard?message={prompt}'
     )
     if request.status_code == 200:
         final_responce = request.json()
@@ -262,7 +262,7 @@ async def bard_ai(request: Request, prompt: str) -> dict:
 async def news(request: Request) -> dict:
     '''Show random news. Connected to the site www.tasnimnews.com'''
     request = requests.request(
-        'get', f'https://www.tasnimnews.com/fa/top-stories'
+        'GET', f'https://www.tasnimnews.com/fa/top-stories'
     )
     rand_num = random.randint(0, 9)
     build_data = lambda value: value[rand_num].strip()
@@ -293,3 +293,14 @@ async def video_to_mp3(request: Request, video: Annotated[bytes, File()]):
     video = moviepy.editor.VideoFileClip(FILE_PATH)
     video.audio.write_audiofile('app/tmpfiles/sound.mp3')
     return FileResponse(path=FILE_PATH, filename=FILE_PATH)
+
+
+@app.get('/api/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
+@app.post('/api/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def icon(request: Request, text: str) -> dict:
+    request = requests.request(
+        method='GET', url=f'https://icon-icons.com/search/icons/?filtro={text}'
+    )
+    icons = re.findall(r'data-original=\"(https:\/\/cdn\.icon-icons\.com\/.*\.png)\"', request.text)
+    return await outter(success=True, data=icons)
