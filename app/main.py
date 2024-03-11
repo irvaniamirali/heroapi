@@ -88,22 +88,34 @@ async def font(request: Request, text: str) -> dict:
     return await outter(success=True, data=final_values)
 
 
-@app.get('/api/faketext', tags=['Fake data'], status_code=status.HTTP_200_OK)
-@app.post('/api/faketext', tags=['Fake data'], status_code=status.HTTP_200_OK)
+@app.get('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
+@app.post('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def fake_text(request: Request, count: int = 100, lang: str = 'en_US') -> dict:
+async def fake_text(request: Request, item: str, count: int = 100, lang: str = 'en_US') -> dict:
     '''Production fake text'''
-    MAXIMUM_REQUEST = 999
-    if count >= MAXIMUM_REQUEST:
+    MAXIMUM_REQUEST: int = 100
+    if count > MAXIMUM_REQUEST:
         return await outter(
             success=False, err_message='The amount is too big. Send a smaller number `count`'
         )
     else:
-        return await outter(success=True, data=faker.Faker([lang]).text(count))
+        final_values = []
+        if item == 'text':
+            return await outter(success=True, data=faker.Faker([lang]).text(count))
+        elif item == 'name':
+            for i in range(count):
+                final_values.append(faker.Faker([lang]).name())
+
+            return await outter(success=True, data=final_values)
+        elif item == 'email':
+            for i in range(count):
+                final_values.append(faker.Faker([lang]).email())
+
+            return await outter(success=True, data=final_values)
 
 
-@app.get('/api/rubino', tags=['Media downloder'], status_code=status.HTTP_200_OK)
-@app.post('/api/rubino', tags=['Media downloder'], status_code=status.HTTP_200_OK)
+@app.get('/api/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
+@app.post('/api/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> dict:
     '''This api is used to get the information of the post(s) in Rubino Messenger'''
