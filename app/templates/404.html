@@ -5,138 +5,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Page 404 | HeroAPI</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap');
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --main-width: 80%;
-            --main-height: 90%;
-            --main-radius: 25px;
-        }
-
-        body {
-            overflow-x: hidden;
-            font-size: 14px;
-            height: 100vh;
-            font-family: 'Poppins', sans-serif;
-            background-color: #000000;
-            background-image: linear-gradient(147deg, #000000 0%, #0f0f0f 74%);
-            color: #fff;
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: center;
-            align-items: center;
-        }
-
-        a {
-            text-decoration: none;
-            color: #fefefe;
-        }
-
-        /* card */
-        .main {
-            width: var(--main-width);
-            height: var(--main-height);
-            border-radius: var(--main-radius);
-            background-image: linear-gradient(to top left, rgba(15, 15, 15, 0.5), rgba(0, 0, 0, .7), rgba(10, 10, 10, .5));
-            border: 1px solid rgba(150, 150, 150, 0.10);
-            box-shadow: rgba(60, 60, 60, 0.1) 2px 2px 5px;
-            display: flex;
-            flex-direction: row;
-            z-index: 2;
-            overflow: hidden;
-        }
-
-        /* image */
-        .main .image {
-            width: 50%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
-        }
-
-        .main .image img {
-            max-width: 50%;
-            user-select: none;
-            -webkit-animation: fly 4s linear infinite;
-            -o-animation: fly 4s linear infinite;
-            animation: fly 4s linear infinite;
-        }
-
-        @keyframes fly {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(10px);
-            }
-        }
-
-        /* text 404 */
-        .main .text-404 {
-            width: 50%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .main .text-404 h1 {
-            font-size: 9em;
-        }
-
-        .main .text-404 p {
-            font-size: 2em;
-            font-weight: 600;
-        }
-
-        .main .text-404 .back-btn {
-            margin: 1.8rem 0;
-            padding: 0.821rem 2rem;
-            border-radius: 8px;
-            border: 1px solid rgba(150, 150, 150, 0.40);
-        }
-
-        .main .text-404 .back-btn:hover {
-            border: 1px solid rgba(150, 150, 150, 0.60);
-        }
-
-        /* Menu bar */
-        .menu {
-            padding: 0.8rem;
-            z-index: 4;
-            position: absolute;
-            width: var(--main-width);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .image-box img {
-            max-width: 80%;
-            animation: GoIN 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) backwards;
-            cursor: pointer;
-            transition: 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
-
-        .image-box img:hover {
-            transform: scale(1.1);
-        }
-
-        @keyframes GoIN {
-            0% {
-                transform: translateX(-50px);
-            }
-        }
-    </style>
+    <link href="{{ url_for('static', path='/css/style.css') }}" rel="stylesheet">
 </head>
 <body>
 <main id="main" class="main">
@@ -146,9 +15,8 @@
     <div class="text-404">
         <h1>4 X 4</h1>
         <p>Page not found!</p>
-        <a class="back-btn" href="https://heroapi.liara.run/docs">Documents</a>
-    </div>
-    <div class="image"><img id="big_image" src="https://mjavadh.github.io/4X4-Collection/Fantasy/Black%20Box/assets/astronaut.png" alt="#"></div>
+        <a class="back-btn" href="https://HeroAPI.liara.run/docs">Documents</a>
+    </div><div class="image"><img id="big_image" src="{{ url_for('static', path='image.png') }}" alt="#"/></div>
 </main>
 </body>
 </html>
