@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, File, status
 from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.openapi.docs import get_swagger_ui_html
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -20,7 +21,7 @@ import langdetect
 import json
 import random
 import faker
-import bs4
+# import bs4
 
 app = FastAPI(
     title='HeroAPI',
@@ -28,6 +29,8 @@ app = FastAPI(
     contact={
         'email': 'dev.amirali.irvany@gmail.com',
     },
+    docs_url=None,
+    redoc_url=None
 )
 
 templates = Jinja2Templates(directory='app/templates')
@@ -49,6 +52,15 @@ async def outter(success: bool, data: dict = None, err_message: str = None) -> d
             'err_message': err_message
         },
     }
+
+
+@app.get('/docs', include_in_schema=False)
+async def swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url='/openapi.json',
+        title='HeroAPI',
+        swagger_favicon_url='app/static/favicon.png',
+    )
 
 
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
