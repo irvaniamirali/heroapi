@@ -5,7 +5,7 @@
 
 ## Documents
 - [Telegram channel](https://t.me/Heroapi)
-- [Fastapi Documents](https://Heroapi.liara.run/docs) 
+- [Swagger Documents](https://Heroapi.liara.run/docs) 
 
 
 ### License
