@@ -9,6 +9,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from typing import Annotated
+from ast import literal_eval
 import moviepy.editor
 import os
 import requests
@@ -304,3 +305,28 @@ async def icon(request: Request, text: str) -> dict:
     )
     icons = re.findall(r'data-original=\"(https:\/\/cdn\.icon-icons\.com\/.*\.png)\"', request.text)
     return await outter(success=True, data=icons)
+
+
+@app.get('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
+    '''Web search service in [Divar](https://divar.ir)'''
+    request = requests.request(method='GET', url=f'https://divar.ir/s/{city}?q={query}').text
+    start, finish = request.rfind('['), request.rfind(']')
+
+    string = ''
+    computed_value = list(request)[start:finish]
+    for i in range(len(computed_value)):
+        string += computed_value[i]
+
+    string += ']'
+    outter_value = []
+    for item in range(0, 9):
+        final_value = literal_eval(node_or_string=string)
+        try:
+            outter_value.append(final_value[item])
+        except IndexError:
+            return await outter(success=False, err_message='Your desired item was not found')
+
+    return await outter(success=True, data=outter_value)
