@@ -1,6 +1,9 @@
 from fastapi import FastAPI, Request, File, status
 from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.openapi.utils import get_openapi
+from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -23,12 +26,14 @@ import bs4
 
 app = FastAPI(
     title='HeroAPI',
-    description='Free api and web service',
+    description='Free and open source api',
     contact={
         'email': 'dev.amirali.irvany@gmail.com',
     },
-    redoc_url=None,
 )
+
+templates = Jinja2Templates(directory='app/templates')
+app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
 
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
@@ -50,7 +55,6 @@ async def outter(success: bool, data: dict = None, err_message: str = None) -> d
 
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
 async def custom_404_handler(request: Request, __):
-    templates = Jinja2Templates(directory='app/templates')
     return templates.TemplateResponse(
         '404.html', {
             'request': request
