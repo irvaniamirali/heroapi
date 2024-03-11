@@ -323,10 +323,14 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
     string += ']'
     outter_value = []
     for item in range(0, 9):
-        final_value = literal_eval(node_or_string=string)
         try:
+            final_value = literal_eval(node_or_string=string)
             outter_value.append(final_value[item])
         except IndexError:
             return await outter(success=False, err_message='Your desired item was not found')
+        except SyntaxError:
+            return await outter(
+                success=False, err_message='A problem has occurred on our end. Please try again'
+            )
 
     return await outter(success=True, data=outter_value)
