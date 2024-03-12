@@ -42,7 +42,7 @@ app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 async def outter(success: bool, data: dict = None, err_message: str = None) -> dict:
-    '''Create json for output'''
+    '''Makeing json for output'''
     return {
         'success': success,
         'dev': 'amirali irvany',
@@ -292,7 +292,7 @@ async def video_to_mp3(request: Request, video: Annotated[bytes, File()]):
         file.write(video)
 
     video = moviepy.editor.VideoFileClip(FILE_PATH)
-    video.audio.write_audiofile('app/tmpfiles/sound.mp3')
+    video.audio.write_audiofile('app/tmpfiles/sound.mp3', logger=None)
     return FileResponse(path=FILE_PATH, filename=FILE_PATH)
 
 
