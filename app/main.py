@@ -292,7 +292,7 @@ async def video_to_mp3(request: Request, video: Annotated[bytes, File()]):
         file.write(video)
 
     video = moviepy.editor.VideoFileClip(FILE_PATH)
-    video.audio.write_audiofile('app/tmpfiles/sound.mp3')
+    video.audio.write_audiofile('app/tmpfiles/sound.mp3', logger=None)
     return FileResponse(path=FILE_PATH, filename=FILE_PATH)
 
 
