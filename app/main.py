@@ -260,26 +260,32 @@ async def bard_ai(request: Request, prompt: str) -> dict:
 @app.get('/api/news', tags=['News'], status_code=status.HTTP_200_OK)
 @app.post('/api/news', tags=['News'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def news(request: Request) -> dict:
+async def news(request: Request, page: int = 1) -> dict:
     '''Show random news. Connected to the site www.tasnimnews.com'''
-    request = requests.request(
-        'GET', f'https://www.tasnimnews.com/fa/top-stories'
-    )
-    rand_num = random.randint(0, 9)
-    build_data = lambda value: value[rand_num].strip()
-    title = re.findall(r'<h2 class=\"title \">(.*?)</h2>', request.text)
-    description = re.findall(r'<h4 class=\"lead\">(.*?)</h4>', request.text)
-    time = re.findall(r'<time><i class=\"fa fa-clock-o\"></i>(.*?)</time>', request.text)
-    full_url = re.findall('<article class=\"list-item \"><a href=\"(.*?)\">', request.text)
-    return await outter(
-        success=True,
-        data={
-            'title': re.sub('&quot', '', build_data(title)),
-            'description': build_data(description),
-            'time': build_data(time),
-            'full_url': f'https://www.tasnimnews.com{build_data(full_url)}',
-        }
-    )
+    base_url = 'https://www.tasnimnews.com'
+    request = requests.request('GET', f'{base_url}/fa/top-stories?page={page}')
+    if request.status_code != requests.codes.ok:
+        return await outter(success=False, data='A problem has occurred on our end')
+
+    soup = bs4.BeautifulSoup(request.text, 'html.parser')
+    article_snippets = soup.find_all('article', class_='list-item')
+
+    search_result = list()
+    for article_snippet in article_snippets:
+        title = article_snippet.find('h2', class_='title').text.strip()
+        description = article_snippet.find('h4').text.strip()
+        image = article_snippet.find('img', loading='lazy', src=True)
+        url = article_snippet.find('a', href=True)
+        search_result.append(
+            dict(
+                title=title,
+                description=description,
+                url=base_url + url['href'],
+                image=image['src']
+            )
+        )
+
+    return await outter(success=True, data=search_result)
 
 
 @app.get('/api/video2mp3', tags=['Video'], status_code=status.HTTP_200_OK)
