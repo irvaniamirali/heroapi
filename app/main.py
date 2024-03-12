@@ -272,14 +272,14 @@ async def news(request: Request, page: int = 1) -> dict:
 
     search_result = list()
     for article_snippet in article_snippets:
-        title = article_snippet.find('h2', class_='title').get_text()
-        description = article_snippet.find('h4').get_text()
-        url = article_snippet.find('a', href=True)
+        title = article_snippet.find('h2', class_='title').text.strip()
+        description = article_snippet.find('h4').text.strip()
         image = article_snippet.find('img', loading='lazy', src=True)
+        url = article_snippet.find('a', href=True)
         search_result.append(
             dict(
-                title=title.strip(),
-                description=description.strip(),
+                title=title,
+                description=description,
                 url=base_url + url['href'],
                 image=image['src']
             )
