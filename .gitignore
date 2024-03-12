@@ -1,7 +1,5 @@
-# my changes
 .idea/
-__pycache__/
-
+fun.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
