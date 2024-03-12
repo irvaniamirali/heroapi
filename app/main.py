@@ -22,7 +22,7 @@ import langdetect
 import json
 import random
 import faker
-# import bs4
+import bs4
 
 app = FastAPI(
     title='HeroAPI',
@@ -336,3 +336,32 @@ async def github_search(request: Request, query: str, per_page: int = 30, page: 
     url = 'https://api.github.com/search/topics?q={}&per_page={}&page={}'.format(query, per_page, page)
     responce = requests.request(method='GET', url=url, headers=headers)
     return await outter(success=True, data=responce.json())
+
+
+@app.get('/api/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
+@app.post('/api/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def pypi_search(request: Request, query: str) -> dict:
+    query = '+'.join(query.split())
+    response = requests.get(f'https://pypi.org/search/?q={query}')
+    if response.status_code != requests.codes.ok:
+        return await outter(success=False, data='A problem has occurred on our end')
+
+    soup = bs4.BeautifulSoup(response.text, 'html.parser')
+    package_snippets = soup.find_all('a', class_='package-snippet')
+    search_results = list()
+    for package_snippet in package_snippets:
+        span_elems = package_snippet.find_all('span')
+        name = span_elems[0].text.strip()
+        version = span_elems[1].text.strip()
+        release_date = span_elems[2].text.strip()
+        desc = package_snippet.p.text.strip()
+        search_results.append(
+            dict(
+                name=name,
+                version=version,
+                release_date=release_date,
+                description=desc
+            )
+        )
+    return await outter(success=True, data=search_results)
