@@ -42,7 +42,7 @@ app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 async def outter(success: bool, data: dict = None, err_message: str = None) -> dict:
-    '''Create json for output'''
+    '''Makeing json for output'''
     return {
         'success': success,
         'dev': 'amirali irvany',
