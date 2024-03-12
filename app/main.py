@@ -305,10 +305,10 @@ async def video_to_mp3(request: Request, video: Annotated[bytes, File()]):
 @app.get('/api/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
 @app.post('/api/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def icon(request: Request, text: str) -> dict:
+async def icon(request: Request, text: str, page: int = 1) -> dict:
     '''Web search service and icon search'''
     request = requests.request(
-        method='GET', url=f'https://icon-icons.com/search/icons/?filtro={text}'
+        method='GET', url=f'https://icon-icons.com/search/icons/?filtro={text}&page={page}'
     )
     icons = re.findall(r'data-original=\"(https:\/\/cdn\.icon-icons\.com\/.*\.png)\"', request.text)
     return await outter(success=True, data=icons)
