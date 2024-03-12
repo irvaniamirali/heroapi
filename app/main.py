@@ -323,3 +323,16 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
 
     string += ']'
     return await outter(success=True, data=literal_eval(node_or_string=string))
+
+
+@app.get('/api/github', tags=['Github'], status_code=status.HTTP_200_OK)
+@app.post('/api/github', tags=['Github'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def github_search(request: Request, query: str, per_page: int = 30, page: int = 1) -> dict:
+    '''Github topic search web service'''
+    headers = {
+        'Accept': 'application/vnd.github+json'
+    }
+    url = 'https://api.github.com/search/topics?q={}&per_page={}&page={}'.format(query, per_page, page)
+    responce = requests.request(method='GET', url=url, headers=headers)
+    return await outter(success=True, data=responce.json())
