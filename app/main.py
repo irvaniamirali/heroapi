@@ -29,7 +29,7 @@ app = FastAPI(
     description='Free and open source api',
     contact={
         'name': 'amirali irvany',
-        'url': 'metect.github.io',
+        'url': 'https://metect.github.io',
         'email': 'dev.amirali.irvany@gmail.com',
     },
     terms_of_service='https://t.me/HeroAPI',
