@@ -216,6 +216,36 @@ async def location(request: Request, text: str, latitude: int, longitude: int) -
         return await outter(success=False, err_message='A problem occurred on the server side')
 
 
+
+@app.get('/api/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
+@app.post('/api/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def music_fa(request: Request, query: str, page: int = 1) -> dict:
+    request = requests.request('GET', f'https://music-fa.com/search/{query}/page/{page}')
+    if request.status_code != requests.codes.ok:
+        return await outter(success=False, data='A problem has occurred on our end')
+
+    soup = bs4.BeautifulSoup(request.text, 'html.parser')
+    article_snippets = soup.find_all('article', class_='mf_pst')
+
+    search_result = list()
+    for article_snippet in article_snippets:
+        title = article_snippet['data-artist']
+        image_snippet = article_snippet.find('img', src=True)
+        images = re.findall('https://music-fa\.com/wp-content/uploads/.*?\.jpg', str(image_snippet))
+        music_snippet = article_snippet.find('span', class_='play')
+        link_for_download = music_snippet['data-song']
+        search_result.append(
+            dict(
+                title=title,
+                images=images,
+                link_for_download=link_for_download
+            )
+        )
+
+    return await outter(success=True, data=search_result)
+
+
 @app.get('/api/news', tags=['News'], status_code=status.HTTP_200_OK)
 @app.post('/api/news', tags=['News'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
