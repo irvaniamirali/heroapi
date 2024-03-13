@@ -28,7 +28,14 @@ app = FastAPI(
     title='HeroAPI',
     description='Free and open source api',
     contact={
+        'name': 'amirali irvany',
+        'url': 'metect.github.io',
         'email': 'dev.amirali.irvany@gmail.com',
+    },
+    terms_of_service='https://t.me/HeroAPI',
+    license_info={
+        'name': 'Released under MIT LICENSE',
+        'url': 'https://spdx.org/licenses/MIT.html'
     },
     docs_url=None,
     redoc_url=None
@@ -305,30 +312,13 @@ async def video_to_mp3(request: Request, video: Annotated[bytes, File()]):
 @app.get('/api/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
 @app.post('/api/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def icon(request: Request, text: str) -> dict:
+async def icon(request: Request, text: str, page: int = 1) -> dict:
     '''Web search service and icon search'''
     request = requests.request(
-        method='GET', url=f'https://icon-icons.com/search/icons/?filtro={text}'
+        method='GET', url=f'https://icon-icons.com/search/icons/?filtro={text}&page={page}'
     )
-    icons = re.findall(r'data-original=\"(https:\/\/cdn\.icon-icons\.com\/.*\.png)\"', request.text)
-    return await outter(success=True, data=icons)
-
-
-@app.get('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
-@app.post('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
-    '''Web search service in [Divar](https://divar.ir)'''
-    request = requests.request(method='GET', url=f'https://divar.ir/s/{city}?q={query}').text
-    start, finish = request.rfind('['), request.rfind(']')
-
-    string = ''
-    computed_value = list(request)[start:finish]
-    for i in range(len(computed_value)):
-        string += computed_value[i]
-
-    string += ']'
-    return await outter(success=True, data=literal_eval(node_or_string=string))
+    search_result = re.findall(r'data-original=\"(https:\/\/cdn\.icon-icons\.com\/.*\.png)\"', request.text)
+    return await outter(success=True, data=search_result)
 
 
 @app.get('/api/github', tags=['Github'], status_code=status.HTTP_200_OK)
@@ -371,3 +361,20 @@ async def pypi_search(request: Request, query: str) -> dict:
             )
         )
     return await outter(success=True, data=search_results)
+
+
+@app.get('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
+    '''Web search service in [Divar](https://divar.ir)'''
+    request = requests.request(method='GET', url=f'https://divar.ir/s/{city}?q={query}').text
+    start, finish = request.rfind('['), request.rfind(']')
+
+    string = ''
+    computed_value = list(request)[start:finish]
+    for i in range(len(computed_value)):
+        string += computed_value[i]
+
+    string += ']'
+    return await outter(success=True, data=literal_eval(node_or_string=string))
