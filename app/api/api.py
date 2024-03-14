@@ -97,3 +97,23 @@ class HeroAPI:
     async def datetime(self):
         current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
         return await self.execute(success=True, data=current_date)
+
+    async def faker(self, item: str, count: int, lang: str):
+        MAXIMUM_REQUEST: int = 100
+        if count > MAXIMUM_REQUEST:
+            return await self.execute(
+                success=False, err_message='The amount is too big. Send a smaller number `count`'
+            )
+        else:
+            final_values = list()
+            if item == 'text':
+                return await self.execute(success=True, data=faker.Faker([lang]).text(count))
+            elif item == 'name':
+                for i in range(count):
+                    final_values.append(faker.Faker([lang]).name())
+
+            elif item == 'email':
+                for i in range(count):
+                    final_values.append(faker.Faker([lang]).email())
+
+        return await self.execute(success=True, data=final_values)
