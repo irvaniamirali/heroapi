@@ -92,3 +92,8 @@ class HeroAPI:
                 final_values = converted_text.split('\n')[0:-1]
 
         return await self.execute(success=True, data=final_values)
+
+
+    async def datetime(self):
+        current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
+        return await self.execute(success=True, data=current_date)
