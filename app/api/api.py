@@ -240,4 +240,14 @@ class HeroAPI:
 
         result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
         return await self.execute(success=True, data=html.unescape(result[0]))
-    
+
+
+    async def video2audio(self, video: bytes):
+        FILE_PATH = 'app/tmpfiles/video.mp4'
+        with open(FILE_PATH, 'wb') as file:
+            file.write(video)
+
+        video = moviepy.editor.VideoFileClip(FILE_PATH)
+        video.audio.write_audiofile('app/tmpfiles/sound.mp3', logger=None)
+        result_bytes = open('app/tmpfiles/sound.mp3', 'rb')
+        return 'app/tmpfiles/sound.mp3'
