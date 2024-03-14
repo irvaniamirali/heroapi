@@ -38,4 +38,12 @@ class HeroAPI:
         )
 
 
+    async def bard_ai(self, prompt: str):
+        url: str = 'https://api.safone.dev/'
+        request = requests.request(method='GET', url=f'{url}bard?message={prompt}')
+        if request.status_code != requests.codes.ok:
+            return await self.execute(success=False, err_message='A problem has occurred on our end')
 
+        final_responce = request.json()
+        responce = final_responce['candidates'][0]['content']['parts'][0]['text']
+        return await self.execute(success=True, data=responce)
