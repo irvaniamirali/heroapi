@@ -47,3 +47,24 @@ class HeroAPI:
         final_responce = request.json()
         responce = final_responce['candidates'][0]['content']['parts'][0]['text']
         return await self.execute(success=True, data=responce)
+
+
+    async def asci_art(self, image: bytes):
+        with open('app/tmpfiles/image.png', 'wb') as file_byte:
+            file_byte.write(image)
+
+        image = PIL.Image.open('app/tmpfiles/image.png')
+        width, height = image.size
+        aspect_ratio = height / width
+        new_height = aspect_ratio * 120 * 0.55
+        img = image.resize((120, int(new_height)))
+
+        img = img.convert('L')
+        pixels = img.getdata()
+
+        CHARACTERS = ['B', 'S', '#', '&', '@', '$', '%', '*', '!', ':', '.']
+        new_pixels = [CHARACTERS[pixel // 25] for pixel in pixels]
+        new_pixels, new_pixels_count = ''.join(new_pixels), len(new_pixels)
+        ascii_image = [new_pixels[index:index + 120]
+        for index in range(0, new_pixels_count, 120)]
+        return await self.execute(success=True, data='\n'.join(ascii_image))
