@@ -128,3 +128,19 @@ class HeroAPI:
                 success=False,
                 err_message='The value of the `text` parameter is not invalid'
             )
+
+
+    async def location(self, text: str, latitude: float, longitude: float):
+        access_key: str = os.getenv(key='NESHAN_KEY')
+        base_url: str = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
+        request = requests.request(
+            method='GET', url=base_url, headers={
+                'Api-Key': access_key
+            }
+        )
+        if request.status_code != requests.codes.ok:
+            return await self.execute(
+                success=False, err_message='A problem occurred on the server side'
+            )
+
+        return await self.execute(success=True, data=request.json())
