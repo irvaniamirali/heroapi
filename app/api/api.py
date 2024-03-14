@@ -265,7 +265,7 @@ class HeroAPI:
         return await self.execute(success=True, data=responce.json())
 
 
-    async def pypi_search(self):
+    async def pypi_search(self, query: str):
         query = '+'.join(query.split())
         request = requests.request(method='GET', url=f'https://pypi.org/search/?q={query}')
         if request.status_code != requests.codes.ok:
@@ -290,3 +290,20 @@ class HeroAPI:
             )
 
         return await self.execute(success=True, data=search_results)
+
+
+    async def divar_search(self, query: str, city: str):
+        request = requests.request(method='GET', url=f'https://divar.ir/s/{city}?q={query}')
+        if request.status_code != requests.codes.ok:
+            return await self.execute(success=False, data='A problem has occurred on our end')
+
+        request = request.text
+        start, finish = request.rfind('['), request.rfind(']')
+
+        string = ''
+        computed_value = list(request)[start:finish]
+        for i in range(len(computed_value)):
+            string += computed_value[i]
+
+        string += ']'
+        return await self.execute(success=True, data=literal_eval(node_or_string=string))
