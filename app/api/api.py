@@ -172,3 +172,30 @@ class HeroAPI:
             )
 
         return await self.execute(success=True, data=search_result)
+
+
+    async def news(self, page: int):
+        url = 'https://www.tasnimnews.com'
+        request = requests.request('GET', f'{url}/fa/top-stories?page={page}')
+        if request.status_code != requests.codes.ok:
+            return await self.execute(success=False, data='A problem has occurred on our end')
+
+        soup = bs4.BeautifulSoup(request.text, 'html.parser')
+        article_snippets = soup.find_all('article', class_='list-item')
+
+        search_result = list()
+        for article_snippet in article_snippets:
+            title = article_snippet.find('h2', class_='title').text.strip()
+            description = article_snippet.find('h4').text.strip()
+            image = article_snippet.find('img', src=True)
+            url = article_snippet.find('a', href=True)
+            search_result.append(
+                dict(
+                    title=title,
+                    description=description,
+                    url=base_url + url['href'],
+                    image=image['src']
+                )
+            )
+
+        return await self.execute(success=True, data=search_result)
