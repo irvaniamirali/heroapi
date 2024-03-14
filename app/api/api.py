@@ -224,3 +224,20 @@ class HeroAPI:
             return await self.execute(success=False, data='A problem has occurred on our end')
 
         return await self.execute(success=True, data=request.json())
+
+
+    async def translator(self, text: str, from_lang: str, to_lang: str):
+        url = 'https://translate.google.com'
+        final_url = f'{url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
+        request = requests.request(
+            method='GET', url=final_url, headers={
+                'User-Agent':
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
+            }
+        )
+        if request.status_code != requests.codes.ok:
+            return await self.execute(success=False, data='A problem has occurred on our end')
+
+        result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
+        return await self.execute(success=True, data=html.unescape(result[0]))
+    
