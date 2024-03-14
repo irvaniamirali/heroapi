@@ -94,7 +94,7 @@ class HeroAPI:
         return await self.execute(success=True, data=final_values)
 
 
-    async def datetime(self):
+    async def datetime(self, tr_num):
         current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
         return await self.execute(success=True, data=current_date)
 
@@ -188,12 +188,12 @@ class HeroAPI:
             title = article_snippet.find('h2', class_='title').text.strip()
             description = article_snippet.find('h4').text.strip()
             image = article_snippet.find('img', src=True)
-            url = article_snippet.find('a', href=True)
+            full_url = article_snippet.find('a', href=True)
             search_result.append(
                 dict(
                     title=title,
                     description=description,
-                    url=base_url + url['href'],
+                    url=url + full_url['href'],
                     image=image['src']
                 )
             )
@@ -262,7 +262,7 @@ class HeroAPI:
         if request.status_code != requests.codes.ok:
             return await self.execute(success=False, data='A problem has occurred on our end')
 
-        return await self.execute(success=True, data=responce.json())
+        return await self.execute(success=True, data=request.json())
 
 
     async def pypi_search(self, query: str):
@@ -271,7 +271,7 @@ class HeroAPI:
         if request.status_code != requests.codes.ok:
             return await self.execute(success=False, data='A problem has occurred on our end')
 
-        soup = bs4.BeautifulSoup(response.text, 'html.parser')
+        soup = bs4.BeautifulSoup(request.text, 'html.parser')
         package_snippets = soup.find_all('a', class_='package-snippet')
         search_results = list()
         for package_snippet in package_snippets:
