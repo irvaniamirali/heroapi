@@ -219,7 +219,7 @@ class HeroAPI:
             'method': 'getPostByShareLink'
         }
         url = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
-        request = requests.request(method='GET', url=base_url, json=payload)
+        request = requests.request(method='GET', url=url, json=payload)
         if request.status_code != requests.codes.ok:
             return await self.execute(success=False, data='A problem has occurred on our end')
 
