@@ -52,7 +52,7 @@ async def outter(success: bool, data: dict = None, err_message: str = None) -> d
     '''Makeing json for output'''
     return {
         'success': success,
-        'dev': 'amirali irvany',
+        'dev': 'Hero Team',
         'url': 'https://t.me/HeroAPI',
         'github': 'https://github.com/metect/HeroAPI',
         'result': {
@@ -378,3 +378,9 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
 
     string += ']'
     return await outter(success=True, data=literal_eval(node_or_string=string))
+
+@app.get('/api/mamad', tags=['Mamad'], status_code=status.HTTP_200_OK)
+@app.post('api/mamad', tags=['Mamad'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def mamad(returner):
+    return await outter(success=True, data=returner)
