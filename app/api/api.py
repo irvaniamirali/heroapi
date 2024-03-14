@@ -251,3 +251,15 @@ class HeroAPI:
         video.audio.write_audiofile('app/tmpfiles/sound.mp3', logger=None)
         result_bytes = open('app/tmpfiles/sound.mp3', 'rb')
         return 'app/tmpfiles/sound.mp3'
+
+
+    async def github_search(self, query: str, per_page: int, page: int):
+        headers = {
+            'Accept': 'application/vnd.github+json'
+        }
+        url = 'https://api.github.com/search/topics?q={}&per_page={}&page={}'.format(query, per_page, page)
+        request = requests.request(method='GET', url=url, headers=headers)
+        if request.status_code != requests.codes.ok:
+            return await self.execute(success=False, data='A problem has occurred on our end')
+
+        return await self.execute(success=True, data=responce.json())
