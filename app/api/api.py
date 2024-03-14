@@ -199,3 +199,28 @@ class HeroAPI:
             )
 
         return await self.execute(success=True, data=search_result)
+
+
+    async def rubino(self, auth: str, url: str, timeout: float):
+        payload: dict = {
+            'api_version': '0',
+            'auth': auth,
+            'client': {
+                'app_name': 'Main',
+                'app_version': '3.0.1',
+                'package': 'app.rubino.main',
+                'lang_code': 'en',
+                'platform': 'PWA'
+            },
+            'data': {
+                'share_link': url.split('/')[-1],
+                'profile_id': None
+            },
+            'method': 'getPostByShareLink'
+        }
+        url = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
+        request = requests.request(method='GET', url=base_url, json=payload)
+        if request.status_code != requests.codes.ok:
+            return await self.execute(success=False, data='A problem has occurred on our end')
+
+        return await self.execute(success=True, data=request.json())
