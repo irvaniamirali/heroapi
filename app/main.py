@@ -25,8 +25,6 @@ import faker
 import bs4
 import jdatetime
 
-# Instances
-api = HeroAPI()
 app = FastAPI(
     title='HeroAPI',
     description='Free and open source api',
