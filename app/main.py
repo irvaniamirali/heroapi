@@ -367,7 +367,7 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
     '''Web search service in [Divar](https://divar.ir)'''
     request = requests.request(method='GET', url=f'https://divar.ir/s/{city}?q={query}')
     if request.status_code != requests.codes.ok:
-        return await self.execute(success=False, data='A problem has occurred on our end')
+        return await execute(success=False, data='A problem has occurred on our end')
 
     request = request.text
     start, finish = request.rfind('['), request.rfind(']')
@@ -379,4 +379,4 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
 
     values += ']'
     final_values = literal_eval(node_or_string=values)
-    return await self.execute(success=True, data=final_values)
+    return await execute(success=True, data=final_values)
