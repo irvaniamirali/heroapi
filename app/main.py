@@ -92,8 +92,9 @@ async def bard_ai(request: Request, prompt: str) -> dict:
     if request.status_code != requests.codes.ok:
         return await self.execute(success=False, err_message='A problem has occurred on our end')
 
-    final_responce = request.json()
-    responce = final_responce['candidates'][0]['content']['parts'][0]['text']
+    responce = request.json()
+    final_responce = responce['candidates'][0]['content']['parts'][0]['text']
+    return await execute(success=True, data=final_responce)
 
 
 @app.get('/api/image2ascii', tags=['Art'], status_code=status.HTTP_200_OK)
