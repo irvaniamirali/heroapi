@@ -88,7 +88,7 @@ async def bard_ai(request: Request, prompt: str) -> dict:
     url: str = 'https://api.safone.dev/'
     request = requests.request(method='GET', url=f'{url}bard?message={prompt}')
     if request.status_code != requests.codes.ok:
-        return await self.execute(success=False, err_message='A problem has occurred on our end')
+        return await execute(success=False, err_message='A problem has occurred on our end')
 
     responce = request.json()
     final_responce = responce['candidates'][0]['content']['parts'][0]['text']
