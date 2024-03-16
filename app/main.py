@@ -110,7 +110,27 @@ async def ascii_art(request: Request, image: Annotated[bytes, File()]) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def font(request: Request, text: str) -> dict:
     '''Generate ascii fonts. Currently only English language is supported'''
-    return await api.font(text=text)
+    if langdetect.detect(text) in ['fa', 'ar', 'ur']:
+        return await execute(
+            success=False, err_message='Currently, Persian language is not supported'
+        )
+    else:
+        with open('app/jsonfiles/font.json', 'r') as f:
+            fonts = json.load(f)
+
+        converted_text = str()
+        for count in range(0, len(fonts)):
+            for char in text:
+                if char.isalpha():
+                    char_index = ord(char.lower()) - 97
+                    converted_text += fonts[str(count)][char_index]
+                else:
+                    converted_text += char
+
+            converted_text += '\n'
+            final_values = converted_text.split('\n')[0:-1]
+
+        return await execute(success=True, data=final_values)
 
 
 @app.get('/api/datetime', tags=['Data & time'], status_code=status.HTTP_200_OK)
