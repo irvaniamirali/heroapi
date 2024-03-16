@@ -102,7 +102,7 @@ async def bard_ai(request: Request, prompt: str) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def ascii_art(request: Request, image: Annotated[bytes, File()]) -> dict:
     '''Convert image to ascii art'''
-    return await api.asci_art(image=image)
+    return await execute(success=True, data=None)
 
 
 @app.get('/api/font', tags=['Art'], status_code=status.HTTP_200_OK)
