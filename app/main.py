@@ -355,6 +355,33 @@ async def github_repo_search(
     return await execute(success=True, data=request.json())
 
 
+@app.get('/api/github-users-search', tags=['Github'], status_code=status.HTTP_200_OK)
+@app.post('/api/github-users-search', tags=['Github'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def github_users_search(
+        request: Request,
+        query: str,
+        sort: str = 'followers',
+        order: str = 'desc',
+        per_page: int = 30,
+        page: int = 1,
+) -> dict:
+    '''Github users search web service
+    sortlist repository: "followers", "repositories", "joined"
+    '''
+    headers = {
+        'Accept': 'application/vnd.github+json'
+    }
+    url = 'https://api.github.com/search/users?q=%s&sort=%s&order=%s&per_page=%s&page=%s'
+    request = requests.request(
+        method='GET', url=url % (query, sort, order, per_page, page), headers=headers
+    )
+    if request.status_code != requests.codes.ok:
+        return await execute(success=False, data='A problem has occurred on our end')
+
+    return await execute(success=True, data=request.json())
+
+
 @app.get('/api/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
 @app.post('/api/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
