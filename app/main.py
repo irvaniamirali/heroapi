@@ -140,6 +140,14 @@ async def datetime(request: Request, tr_num: str = 'en') -> dict:
     return await execute(success=True, data=current_date)
 
 
+@app.get('/api/shamsi-to-miladi', tags=['Date & time'], status_code=status.HTTP_200_OK)
+@app.post('/api/shamsi-to-miladi', tags=['Date & time'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def shamsi_to_miladi(request: Request, day: int, month: int, year: int) -> dict:
+    result_date = jdatetime.date (day=day, month=month, year=year).togregorian()
+    return await execute(success=True, data=result_date)
+
+
 @app.get('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
 @app.post('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
@@ -310,14 +318,6 @@ async def translate(request: Request, text: str, to_lang: str = 'auto', from_lan
 
     result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
     return await execute(success=True, data=html.unescape(result[0]))
-
-
-@app.get('/api/shamsi-to-miladi', tags=['Date & time'], status_code=status.HTTP_200_OK)
-@app.post('/api/shamsi-to-miladi', tags=['Date & time'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def shamsi_to_miladi(request: Request, day: int, month: int, year: int) -> dict:
-    result_date = jdatetime.date (day=day, month=month, year=year).togregorian()
-    return await execute(success=True, data=result_date)
 
 
 @app.get('/api/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
