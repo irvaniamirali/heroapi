@@ -4,12 +4,13 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html
 
+from flask import request
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 from typing import Annotated
 
-from app.api.api import HeroAPI
+from api import HeroAPI
 
 # Instances
 api = HeroAPI()
@@ -174,3 +175,58 @@ async def pypi_search(request: Request, query: str) -> dict:
 async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
     '''Web search service in [Divar](https://divar.ir)'''
     return await api.divar_search(query=query, city=city)
+
+@app.get('/api/arz/v1', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/arz/v1', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def arz_price_v1(request: Request) -> dict:
+    '''arz price v1'''
+    return await api.arz_price_v1()
+
+@app.get('/api/arz/v2', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/arz/v2', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def arz_price_v2(request: Request) -> dict:
+    return await api.arz_price_v2()
+
+@app.get('/api/gold', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/gold', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def gold(request: Request) -> dict:
+    return await api.gold()
+
+@app.get('/api/car', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/car', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def car(request: Request) -> dict:
+    return await api.car_price()
+
+@app.get('/api/arz-digital', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/arz-digital', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def arz_digital(request: Request) -> dict:
+    return await api.arz_digital_price()
+
+@app.get('/api/national-code-check', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/national-code-check', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def national_code_check(request: Request, code: int) -> dict:
+    return await api.national_code_check(code)
+
+@app.get('/api/fake-national-code', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/fake-national-code', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def fake_national_code(request: Request, city: int = 137) -> dict:
+    return await api.fake_national_code()
+
+@app.get('/api/password-generator', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/password-generator', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def password_generator(request: Request, k: int = 10) -> dict:
+    return await api.password_generator()
+
+@app.get('/api/shamsi-to-miladi', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/shamsi-to-miladi', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def shamsi_to_miladi(request: Request, year: int, month: int, day: int) -> dict:
+    return await api.shamsi_to_miladi(year, month, day)

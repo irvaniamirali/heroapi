@@ -11,12 +11,33 @@ import langdetect
 import json
 import random
 import faker
-import bs4
+from bs4 import BeautifulSoup
 import jdatetime
+from persiantools.jdatetime import JalaliDate
+import string
 
 class HeroAPI:
-    def __init__(self):
+    async def __init__(self):
         pass
+
+    def p_to_e_int(self, number_in_persian):
+        english_number = ''
+        for char in number_in_persian:
+            if char.isdigit():
+                english_number += char
+        return int(english_number)
+
+    def p_to_e_str(self, number_in_persian):
+        persian_to_english = {
+        '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
+        '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9'}
+        english_number = ''
+        for digit in number_in_persian:
+            if digit in persian_to_english:
+                english_number += persian_to_english[digit]
+            else:
+                english_number += digit
+        return english_number
 
 
     async def execute(
@@ -151,7 +172,7 @@ class HeroAPI:
         if request.status_code != requests.codes.ok:
             return await self.execute(success=False, data='A problem has occurred on our end')
 
-        soup = bs4.BeautifulSoup(request.text, 'html.parser')
+        soup = BeautifulSoup(request.text, 'html.parser')
         article_snippets = soup.find_all('article', class_='mf_pst')
 
         search_result = list()
@@ -180,7 +201,7 @@ class HeroAPI:
         if request.status_code != requests.codes.ok:
             return await self.execute(success=False, data='A problem has occurred on our end')
 
-        soup = bs4.BeautifulSoup(request.text, 'html.parser')
+        soup = BeautifulSoup(request.text, 'html.parser')
         article_snippets = soup.find_all('article', class_='list-item')
 
         search_result = list()
@@ -271,7 +292,7 @@ class HeroAPI:
         if request.status_code != requests.codes.ok:
             return await self.execute(success=False, data='A problem has occurred on our end')
 
-        soup = bs4.BeautifulSoup(request.text, 'html.parser')
+        soup = BeautifulSoup(request.text, 'html.parser')
         package_snippets = soup.find_all('a', class_='package-snippet')
         search_results = list()
         for package_snippet in package_snippets:
@@ -307,3 +328,109 @@ class HeroAPI:
 
         string += ']'
         return await self.execute(success=True, data=literal_eval(node_or_string=string))
+
+    async def arz_price_v1(self) -> list:
+        result = []
+
+        html = BeautifulSoup(requests.get("https://www.tasnimnews.com/fa/currency").text, "html.parser")
+
+        all = html.find_all("div", {"class":"coins-container"})[-1].table.tbody.find_all("tr")
+
+        for i in range(len(all)):
+            info = all[i].find_all("td")
+            name = info[0].text.replace("قیمت ", "")
+            price = self.self.p_to_e_int(info[1].text)
+            change = info[2].text
+            low = self.p_to_e_int(info[3].text)
+            high = self.p_to_e_int(info[4].text)
+            update = self.p_to_e_str(info[5].text)
+            result.append({"name":name, "price":price, "change":change, "low":low, "high":high, "update":update})
+        return await self.execute(success=True, data=result)
+
+    async def arz_price_v2(self):
+        result = {}
+        html = BeautifulSoup(requests.get("https://irarz.com").text, "html.parser")
+        result["dollar"] = self.p_to_e_int(html.find("span", {"id":"usdmax"}).text)
+        result["harati_dollar"] = self.p_to_e_int(html.find("span", {"id":"afghan_usd"}).text)
+        result["dollar_dolati"] = self.p_to_e_int(html.find("span", {"id":"bank_usd"}).text) * 10
+        result["euro"] = self.p_to_e_int(html.find("span", {"id":"price_eur"}).text)
+        result["euro_dolati"] = self.p_to_e_int(html.find("span", {"id":"bank_eur"}).text) * 10
+        return await self.execute(success=True, data=result)
+
+    async def gold_price(self):
+        result = {}
+        html = BeautifulSoup(requests.get("https://irarz.com").text, "html.parser")
+        result["coin"] = self.p_to_e_int(html.find("span", {"id":"sekeb"}).text)
+        result["half_coin"] = self.p_to_e_int(html.find("span", {"id":"nim"}).text)
+        result["quarter_coin"] = self.p_to_e_int(html.find("span", {"id":"rob"}).text)
+        result["gerami_coin"] = self.p_to_e_int(html.find("span", {"id":"gerami"}).text)
+        result["gold18"] = self.p_to_e_int(html.find("span", {"id":"geram18"}).text)
+        result["gold24"] = self.p_to_e_int(html.find("span", {"id":"geram24"}).text)
+        result["mesghal_gold"] = self.p_to_e_int(html.find("span", {"id":"mesghal"}).text)
+        return await self.execute(success=True, data=result)
+
+    async def arz_digital_price(self):
+        result = {}
+        html = BeautifulSoup(requests.get("https://irarz.com").text, "html.parser")
+        result["btc"] = float(self.p_to_e_str(html.find("span", {"id":"crypto-btc"}).text).replace(",", ""))
+        result["eth"] = float(self.p_to_e_str(html.find("span", {"id":"crypto-eth"}).text).replace(",", ""))
+        result["ada"] = float(self.p_to_e_str(html.find("span", {"id":"crypto-ada"}).text).replace(",", ""))
+        result["doge"] = float(self.p_to_e_str(html.find("span", {"id":"crypto-doge"}).text).replace(",", ""))
+        result["xrp"] = float(self.p_to_e_str(html.find("span", {"id":"crypto-xrp"}).text).replace(",", ""))
+        result["trx"] = float(self.p_to_e_str(html.find("span", {"id":"crypto-trx"}).text).replace(",", ""))
+        return await self.execute(success=True, data=result)
+
+    async def national_code_check(self, code):
+        code = str(code)
+        if not code.isnumeric() or len(code) != 10:
+            return await self.execute(success=True, data=False)
+        total = 0
+        control_digit = int(code[-1])
+        for digit, index in zip(code, range(10, 1, -1)):
+            total += int(digit) * index
+        reminder = total % 11
+        if reminder < 2:
+            if reminder == control_digit:
+                return await self.execute(success=True, data=True)
+        else:
+            if 11 - reminder == control_digit:
+                return await self.execute(success=True, data=True)
+        return await self.execute(success=True, data=False)
+
+    async def fake_national_code(self, city: str):
+        rnd = random.randint(100000, 999999)
+        for i in range(10):
+            check = self.national_code_check(f"{city}{rnd}{i}")
+            if check:
+                result = int(f"{city}{rnd}{i}")
+                break
+        return await self.execute(success=True, data=result)
+
+    async def car_price(self):
+        result = {}
+        html = BeautifulSoup(requests.get("https://irarz.com/car").text, "html.parser")
+        all = html.find_all("div", {"class":"card"})
+        for i in range(len(all)):
+            company_name = all[i].find("div", {"class":"card-body"}).find("div", {"class":"text-center"}).h2.span.text
+            company_logo = all[i].find("div", {"class":"card-body"}).find("div", {"class":"text-center"}).h2.img.attrs["src"]
+            all_products = all[i].find("div", {"class":"card-body"}).find("table", {"class":"table table-striped"}).tbody.find_all("tr")
+            products_list = []
+            for i in range(len(all_products)):
+                info = all_products[i].find_all("td")
+                name = info[0].text
+                model = self.p_to_e_int(info[1].text)
+                price = self.p_to_e_int(info[2].span.text)
+                products_list.append({"name":name, "model":model, "price":price})
+            result[company_name] = {"logo":company_logo, "products":products_list}
+        return await self.execute(success=True, data=result)
+
+    async def password_generator(self, k: int):
+        result = ""
+        rand = random.choices(string.ascii_letters + string.digits + string.printable, k=k)
+        for i in rand:
+            result += i
+        return await self.execute(success=True, data=result)
+
+    async def shamsi_to_miladi(self, year: int, month: int, day: int):
+        result = JalaliDate(year, month, day).to_gregorian()
+        return await self.execute(success=True, data=result)
