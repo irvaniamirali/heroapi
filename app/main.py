@@ -52,6 +52,18 @@ app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
+async def execute(success: bool = True, data: dict = None, err_message: str = None) -> dict:
+    '''Making outter json for responce web services'''
+    return dict(
+        success=success,
+        dev='Hero Team',
+        url='https://t.me/HeroAPI',
+        github='https://github.com/metect/HeroAPI',
+        data=data,
+        err_message=err_message
+    )
+
+
 @app.get('/docs', include_in_schema=False)
 async def swagger_ui_html():
     return get_swagger_ui_html(
