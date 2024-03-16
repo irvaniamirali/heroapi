@@ -365,4 +365,18 @@ async def pypi_search(request: Request, query: str) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
     '''Web search service in [Divar](https://divar.ir)'''
-    return await api.divar_search(query=query, city=city)
+    request = requests.request(method='GET', url=f'https://divar.ir/s/{city}?q={query}')
+    if request.status_code != requests.codes.ok:
+        return await self.execute(success=False, data='A problem has occurred on our end')
+
+    request = request.text
+    start, finish = request.rfind('['), request.rfind(']')
+
+    values = str()
+    computed_value = list(request)[start:finish]
+    for i in range(len(computed_value)):
+        values += computed_value[i]
+
+    values += ']'
+    final_values = literal_eval(node_or_string=values)
+    return await self.execute(success=True, data=final_values)
