@@ -143,21 +143,12 @@ async def translate(request: Request, text: str, to_lang: str = 'auto', from_lan
     return await api.translator(text=text, from_lang=from_lang, to_lang=to_lang)
 
 
-@app.get('/api/video2mp3', tags=['Video'], status_code=status.HTTP_200_OK)
-@app.post('/api/video2mp3', tags=['Video'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def video_to_mp3(request: Request, video: Annotated[bytes, File()]):
-    '''Remove audio from video web service'''
-    FILE_PATH = await api.video2audio(video=video)
-    return FileResponse(path=FILE_PATH, filename=FILE_PATH)
-
-
-@app.get('/api/github', tags=['Github'], status_code=status.HTTP_200_OK)
-@app.post('/api/github', tags=['Github'], status_code=status.HTTP_200_OK)
+@app.get('/api/github-topic', tags=['Github'], status_code=status.HTTP_200_OK)
+@app.post('/api/github-topic', tags=['Github'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def github_search(request: Request, query: str, per_page: int = 30, page: int = 1) -> dict:
     '''Github topic search web service'''
-    return await api.github_search(query=query, per_page=per_page, page=page)
+    return await api.github_topic_search(query=query, per_page=per_page, page=page)
 
 
 @app.get('/api/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
