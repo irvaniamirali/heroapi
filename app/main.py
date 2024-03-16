@@ -9,7 +9,21 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 from typing import Annotated
 
-from app.api.api import HeroAPI
+from ast import literal_eval
+import moviepy.editor
+import os
+import requests
+import jalali.Jalalian
+import PIL.Image
+import urllib.parse
+import re
+import html
+import langdetect
+import json
+import random
+import faker
+import bs4
+import jdatetime
 
 # Instances
 api = HeroAPI()
@@ -37,6 +51,7 @@ limiter = Limiter(key_func=get_remote_address)
 app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
 @app.get('/docs', include_in_schema=False)
 async def swagger_ui_html():
     return get_swagger_ui_html(
@@ -60,7 +75,13 @@ async def custom_404_handler(request: Request, __):
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def bard_ai(request: Request, prompt: str) -> dict:
     '''Bard artificial intelligence web service'''
-    return await api.bard_ai(prompt=prompt)
+    url: str = 'https://api.safone.dev/'
+    request = requests.request(method='GET', url=f'{url}bard?message={prompt}')
+    if request.status_code != requests.codes.ok:
+        return await self.execute(success=False, err_message='A problem has occurred on our end')
+
+    final_responce = request.json()
+    responce = final_responce['candidates'][0]['content']['parts'][0]['text']
 
 
 @app.get('/api/image2ascii', tags=['Art'], status_code=status.HTTP_200_OK)
