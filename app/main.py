@@ -44,11 +44,7 @@ app = FastAPI(
 )
 
 templates = Jinja2Templates(directory='templates')
-try:
-    app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
-except RuntimeError:
-    print('/static directory used for static-files-directory')
-    app.mount('/static', StaticFiles(directory='static'), name='static')
+app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
 
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
@@ -72,7 +68,7 @@ async def swagger_ui_html():
     return get_swagger_ui_html(
         openapi_url='/openapi.json',
         title='HeroAPI',
-        swagger_favicon_url='static/favicon.png',
+        swagger_favicon_url='app/static/favicon.png',
     )
 
 
@@ -118,7 +114,7 @@ async def font(request: Request, text: str) -> dict:
             success=False, err_message='Currently, Persian language is not supported'
         )
     else:
-        with open('jsonfiles/font.json', 'r') as f:
+        with open('app/jsonfiles/font.json', 'r') as f:
             fonts = json.load(f)
 
         converted_text = str()
