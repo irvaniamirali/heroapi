@@ -4,8 +4,6 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html
 
-from jinja2.exceptions import TemplateNotFound
-
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -45,7 +43,7 @@ app = FastAPI(
     redoc_url=None
 )
 
-templates = Jinja2Templates(directory='templates')
+templates = Jinja2Templates(directory='app/templates')
 app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
 
 limiter = Limiter(key_func=get_remote_address)
@@ -76,19 +74,11 @@ async def swagger_ui_html():
 
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
 async def custom_404_handler(request: Request, __):
-    try:
-        return templates.TemplateResponse(
-            '404.html', {
-                'request': request
-            }
-        )
-    except TemplateNotFound:
-        templates = Jinja2Templates(directory='app/templates')
-        return templates.TemplateResponse(
-            '404.html', {
-                'request': request
-            }
-        )
+    return templates.TemplateResponse(
+        '404.html', {
+            'request': request
+        }
+    )
 
 
 @app.get('/api/bard', tags=['AI'], status_code=status.HTTP_200_OK)
