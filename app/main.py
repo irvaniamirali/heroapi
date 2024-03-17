@@ -436,6 +436,27 @@ async def passwd_generator(request: Request, len_: int) -> dict:
     return await execute(success=True, data=password)
 
 
+@app.get('/api/gold-price', tags=['USD'], status_code=status.HTTP_200_OK)
+@app.post('/api/gold-price', tags=['USD'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def gold_price(request: Request) -> dict:
+    '''Web service showing the exact price of gold in Iranian Rial'''
+    request = requests.request(method='GET', url='https://irarz.com')
+    if request.status_code != requests.codes.ok:
+        return await execute(success=False, data='A problem has occurred on our end')
+
+    result_search = dict()
+    html_span = bs4.BeautifulSoup(request.text, 'html.parser')
+    result_search['coin'] = html_span.find('span', id='sekeb').text.strip()
+    result_search['half_coin'] = html_span.find('span', id='nim').text.strip()
+    result_search['quarter_coin'] = html_span.find('span', id='rob').text.strip()
+    result_search['gerami_coin'] = html_span.find('span', id='gerami').text.strip()
+    result_search['gold18'] = html_span.find('span', id='geram18').text.strip()
+    result_search['gold24'] = html_span.find('span', id='geram24').text.strip()
+    result_search['mesghal_gold'] = html_span.find('span', id='mesghal').text.strip()
+    return await execute(success=True, data=result_search)
+
+
 @app.get('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
 @app.post('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
@@ -456,24 +477,3 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
     values += ']'
     final_values = literal_eval(node_or_string=values)
     return await execute(success=True, data=final_values)
-
-
-@app.get('/api/gold-price', tags=['USD'], status_code=status.HTTP_200_OK)
-@app.post('/api/gold-price', tags=['USD'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def gold_price(request: Request) -> dict:
-    '''Web service showing the exact price of gold in Iranian Rial'''
-    request = requests.request(method='GET', url='https://irarz.com')
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-    result_search = dict()
-    html_span = bs4.BeautifulSoup(request.text, 'html.parser')
-    result_search["coin"] = html_span.find('span', id='sekeb').text.strip()
-    result_search["half_coin"] = html_span.find('span', id='nim').text.strip()
-    result_search["quarter_coin"] = html_span.find('span', id='rob').text.strip()
-    result_search["gerami_coin"] = html_span.find('span', id='gerami').text.strip()
-    result_search["gold18"] = html_span.find('span', id='geram18').text.strip()
-    result_search["gold24"] = html_span.find('span', id='geram24').text.strip()
-    result_search["mesghal_gold"] = html_span.find('span', id='mesghal').text.strip()
-    return await execute(success=True, data=result_search)
