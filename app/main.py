@@ -43,8 +43,12 @@ app = FastAPI(
     redoc_url=None
 )
 
-templates = Jinja2Templates(directory='app/templates')
-app.mount('/static', StaticFiles(directory='static'), name='static')
+templates = Jinja2Templates(directory='templates')
+try:
+    app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
+except RuntimeError:
+    print('/static dir used for static-files-fir')
+    app.mount('/static', StaticFiles(directory='static'), name='static')
 
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
