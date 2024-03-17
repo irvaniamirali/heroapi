@@ -348,7 +348,7 @@ async def github_repo_search(
         per_page: int = 30,
         page: int = 1
 ) -> dict:
-    '''Github repository search web service
+    '''Github repository search web service.
     sortlist repository: "stars", "forks", "help-wanted-issues", "updated"
     '''
     headers = {
@@ -375,7 +375,7 @@ async def github_users_search(
         per_page: int = 30,
         page: int = 1,
 ) -> dict:
-    '''Github users search web service
+    '''Github users search web service.
     sortlist repository: "followers", "repositories", "joined"
     '''
     headers = {
@@ -423,6 +423,19 @@ async def pypi_search(request: Request, query: str) -> dict:
     return await execute(success=True, data=search_results)
 
 
+@app.get('/api/passwd-generator', tags=['Password generator'], status_code=status.HTTP_200_OK)
+@app.post('/api/passwd-generator', tags=['Password generator'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def passwd_generator(request: Request, len_: int) -> dict:
+    '''Generate a random password'''
+    password = str()
+    for char in range(len_):
+        random_number = random.randint(0, 94)
+        password += string.printable[random_number]
+
+    return await execute(success=True, data=password)
+
+
 @app.get('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
 @app.post('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
@@ -443,16 +456,3 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
     values += ']'
     final_values = literal_eval(node_or_string=values)
     return await execute(success=True, data=final_values)
-
-
-@app.get('/api/passwd-generator', tags=['Password generator'], status_code=status.HTTP_200_OK)
-@app.post('/api/passwd-generator', tags=['Password generator'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def passwd_generator(request: Request, len_: int) -> dict:
-    '''Generate a random password'''
-    password = str()
-    for char in range(len_):
-        random_number = random.randint(0, 94)
-        password += string.printable[random_number]
-
-    return await execute(success=True, data=password)
