@@ -44,7 +44,7 @@ app = FastAPI(
 )
 
 templates = Jinja2Templates(directory='app/templates')
-app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
+app.mount('/static', StaticFiles(directory='static'), name='static')
 
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
