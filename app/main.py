@@ -24,6 +24,7 @@ import random
 import faker
 import bs4
 import jdatetime
+import string
 
 app = FastAPI(
     title='HeroAPI',
@@ -138,6 +139,14 @@ async def datetime(request: Request, tr_num: str = 'en') -> dict:
     '''Display detailed information about the date of the solar calendar'''
     current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
     return await execute(success=True, data=current_date)
+
+
+@app.get('/api/shamsi-to-miladi', tags=['Date & time'], status_code=status.HTTP_200_OK)
+@app.post('/api/shamsi-to-miladi', tags=['Date & time'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def shamsi_to_miladi(request: Request, day: int, month: int, year: int) -> dict:
+    result_date = jdatetime.date (day=day, month=month, year=year).togregorian()
+    return await execute(success=True, data=result_date)
 
 
 @app.get('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
@@ -328,6 +337,60 @@ async def github_topic_search(request: Request, query: str, per_page: int = 30, 
     return await execute(success=True, data=request.json())
 
 
+@app.get('/api/github-repo-search', tags=['Github'], status_code=status.HTTP_200_OK)
+@app.post('/api/github-repo-search', tags=['Github'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def github_repo_search(
+        request: Request,
+        name: str,
+        sort: str = 'stars',
+        order: str = 'desc',
+        per_page: int = 30,
+        page: int = 1
+) -> dict:
+    '''Github repository search web service.
+    sortlist repository: "stars", "forks", "help-wanted-issues", "updated"
+    '''
+    headers = {
+        'Accept': 'application/vnd.github+json'
+    }
+    url = 'https://api.github.com/search/repositories?q=%s&s=%s&order=%s&per_page=%s&page=%s'
+    request = requests.request(
+        method='GET', url=url % (name, sort, order, per_page, page), headers=headers
+    )
+    if request.status_code != requests.codes.ok:
+        return await execute(success=False, data='A problem has occurred on our end')
+
+    return await execute(success=True, data=request.json())
+
+
+@app.get('/api/github-users-search', tags=['Github'], status_code=status.HTTP_200_OK)
+@app.post('/api/github-users-search', tags=['Github'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def github_users_search(
+        request: Request,
+        query: str,
+        sort: str = 'followers',
+        order: str = 'desc',
+        per_page: int = 30,
+        page: int = 1,
+) -> dict:
+    '''Github users search web service.
+    sortlist repository: "followers", "repositories", "joined"
+    '''
+    headers = {
+        'Accept': 'application/vnd.github+json'
+    }
+    url = 'https://api.github.com/search/users?q=%s&sort=%s&order=%s&per_page=%s&page=%s'
+    request = requests.request(
+        method='GET', url=url % (query, sort, order, per_page, page), headers=headers
+    )
+    if request.status_code != requests.codes.ok:
+        return await execute(success=False, data='A problem has occurred on our end')
+
+    return await execute(success=True, data=request.json())
+
+
 @app.get('/api/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
 @app.post('/api/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
@@ -358,6 +421,48 @@ async def pypi_search(request: Request, query: str) -> dict:
         )
 
     return await execute(success=True, data=search_results)
+
+
+@app.get('/api/passwd-generator', tags=['Password generator'], status_code=status.HTTP_200_OK)
+@app.post('/api/passwd-generator', tags=['Password generator'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def passwd_generator(request: Request, len_: int) -> dict:
+    '''Generate a random password'''
+    password = str()
+    for char in range(len_):
+        random_number = random.randint(0, 94)
+        password += string.printable[random_number]
+
+    return await execute(success=True, data=password)
+
+
+@app.get('/api/usd', tags=['USD'], status_code=status.HTTP_200_OK)
+@app.post('/api/usd', tags=['USD'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def usd(request: Request) -> dict:
+    '''Web service showing the exact price of digital currency, gold, etc. in Iranian rials'''
+    request = requests.request(method='GET', url='https://irarz.com')
+    if request.status_code != requests.codes.ok:
+        return await execute(success=False, data='A problem has occurred on our end')
+
+    result_search = dict()
+    html_span = bs4.BeautifulSoup(request.text, 'html.parser')
+    result_search['dollar'] = html_span.find("span", id='usdmax').text.strip()
+    result_search['euro'] = html_span.find("span", id='price_eur').text.strip()
+    result_search['btc'] = html_span.find('span', id='crypto-btc').text.strip()
+    result_search['eth'] = html_span.find('span', id='crypto-eth').text.strip()
+    result_search['ada'] = html_span.find('span', id='crypto-ada').text.strip()
+    result_search['doge'] = html_span.find('span', id='crypto-doge').text.strip()
+    result_search['xrp'] = html_span.find('span', id='crypto-xrp').text.strip()
+    result_search['trx'] = html_span.find('span', id='crypto-trx').text.strip()
+    result_search['coin'] = html_span.find('span', id='sekeb').text.strip()
+    result_search['half_coin'] = html_span.find('span', id='nim').text.strip()
+    result_search['quarter_coin'] = html_span.find('span', id='rob').text.strip()
+    result_search['gerami_coin'] = html_span.find('span', id='gerami').text.strip()
+    result_search['gold18'] = html_span.find('span', id='geram18').text.strip()
+    result_search['gold24'] = html_span.find('span', id='geram24').text.strip()
+    result_search['mesghal_gold'] = html_span.find('span', id='mesghal').text.strip()
+    return await execute(success=True, data=result_search)
 
 
 @app.get('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
