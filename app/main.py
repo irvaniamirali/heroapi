@@ -24,6 +24,7 @@ import random
 import faker
 import bs4
 import jdatetime
+import string
 
 app = FastAPI(
     title='HeroAPI',
@@ -442,3 +443,16 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
     values += ']'
     final_values = literal_eval(node_or_string=values)
     return await execute(success=True, data=final_values)
+
+
+@app.get('/api/passwd-generator', tags=['Password generator'], status_code=status.HTTP_200_OK)
+@app.post('/api/passwd-generator', tags=['Password generator'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def passwd_generator(request: Request, len_: int) -> dict:
+    '''Generate a random password'''
+    password = str()
+    for char in range(len_):
+        random_number = random.randint(0, 94)
+        password += string.printable[random_number]
+
+    return await execute(success=True, data=password)
