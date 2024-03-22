@@ -469,6 +469,7 @@ async def usd(request: Request) -> dict:
 @app.post('/api/arz', tags=['USD'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def arz(request: Request):
+    '''Web search service and currency price search on the site [tasnimnews.com](https://www.tasnimnews.com/fa/currency)'''
     search_result = list()
     request = requests.request(method='GET', url='https://www.tasnimnews.com/fa/currency')
     if request.status_code != requests.codes.ok:
@@ -479,11 +480,6 @@ async def arz(request: Request):
     containers = html.find_all('div', class_='coins-container')[-1].table.tbody.find_all('tr')
     for container in range(len(containers)):
         info = containers[container].find_all('td')
-        price = info[1].text
-        change = info[2].text
-        low = info[3].text
-        high = info[4].text
-        update = info[5].text
         search_result.append(
             dict(
                 name=info[0].text.replace('قیمت ', ''),
@@ -502,6 +498,7 @@ async def arz(request: Request):
 @app.post('/api/car-price', tags=['USD'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def car_price(request: Request) -> dict:
+    '''Web search service and car price search on the site [irarz.com](https://irarz.com/car)'''
     search_result = dict()
     request = requests.request(method='GET', url='https://irarz.com/car')
     if request.status_code != requests.codes.ok:
