@@ -518,3 +518,26 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
     values += ']'
     final_values = literal_eval(node_or_string=values)
     return await execute(success=True, data=final_values)
+
+
+@app.get('/api/national-code-check', tags=['Other'], status_code=status.HTTP_200_OK)
+@app.post('/api/national-code-check', tags=['Other'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def national_code_check(request: Request, code: int) -> dict:
+    code = str(code)
+    if not code.isnumeric() or len(code) != 10:
+        return await execute(success=True, data=False)
+
+    total = 0
+    control_digit = int(code[-1])
+    for digit, index in zip(code, range(10, 1, -1)):
+        total += int(digit) * index
+    reminder = total % 11
+    if reminder < 2:
+        if reminder == control_digit:
+            return await execute(success=True, data=True)
+    else:
+        if 11 - reminder == control_digit:
+            return await execute(success=True, data=True)
+
+    return await execute(success=True, data=False)
