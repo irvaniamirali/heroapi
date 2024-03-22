@@ -465,6 +465,39 @@ async def usd(request: Request) -> dict:
     return await execute(success=True, data=result_search)
 
 
+@app.get('/api/arz', tags=['USD'], status_code=status.HTTP_200_OK)
+@app.post('/api/arz', tags=['USD'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def arz(request: Request):
+    search_result = list()
+    request = requests.request(method='GET', url='https://www.tasnimnews.com/fa/currency')
+    if request.status_code != requests.codes.ok:
+        return await execute(success=False, data='A problem has occurred on our end')
+
+
+    html = bs4.BeautifulSoup(request.text, 'html.parser')
+    containers = html.find_all('div', class_='coins-container')[-1].table.tbody.find_all('tr')
+    for container in range(len(containers)):
+        info = containers[container].find_all('td')
+        price = info[1].text
+        change = info[2].text
+        low = info[3].text
+        high = info[4].text
+        update = info[5].text
+        search_result.append(
+            dict(
+                name=info[0].text.replace('قیمت ', ''),
+                price=info[1].text,
+                change=info[2].text,
+                low=info[3].text,
+                high=info[4].text,
+                update=info[5].text
+            )
+        )
+
+    return await execute(success=True, data=search_result)
+
+
 @app.get('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
 @app.post('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
