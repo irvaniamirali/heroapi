@@ -436,25 +436,18 @@ async def passwd_generator(request: Request, len_: int) -> dict:
     return await execute(success=True, data=password)
 
 
-@app.get('/api/usd', tags=['USD'], status_code=status.HTTP_200_OK)
-@app.post('/api/usd', tags=['USD'], status_code=status.HTTP_200_OK)
+
+@app.get('/api/gold-price', tags=['USD'], status_code=status.HTTP_200_OK)
+@app.post('/api/gold-price', tags=['USD'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def usd(request: Request) -> dict:
-    '''Web service showing the exact price of digital currency, gold, etc. in Iranian rials'''
+async def gold_price(request: Request) -> dict:
+    '''Web service showing the exact price of gold in Iranian Rial'''
     request = requests.request(method='GET', url='https://irarz.com')
     if request.status_code != requests.codes.ok:
         return await execute(success=False, data='A problem has occurred on our end')
 
     result_search = dict()
     html_span = bs4.BeautifulSoup(request.text, 'html.parser')
-    result_search['dollar'] = html_span.find("span", id='usdmax').text.strip()
-    result_search['euro'] = html_span.find("span", id='price_eur').text.strip()
-    result_search['btc'] = html_span.find('span', id='crypto-btc').text.strip()
-    result_search['eth'] = html_span.find('span', id='crypto-eth').text.strip()
-    result_search['ada'] = html_span.find('span', id='crypto-ada').text.strip()
-    result_search['doge'] = html_span.find('span', id='crypto-doge').text.strip()
-    result_search['xrp'] = html_span.find('span', id='crypto-xrp').text.strip()
-    result_search['trx'] = html_span.find('span', id='crypto-trx').text.strip()
     result_search['coin'] = html_span.find('span', id='sekeb').text.strip()
     result_search['half_coin'] = html_span.find('span', id='nim').text.strip()
     result_search['quarter_coin'] = html_span.find('span', id='rob').text.strip()
@@ -555,6 +548,7 @@ async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
 @app.post('/api/national-code-check', tags=['Other'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def national_code_check(request: Request, code: int) -> dict:
+    '''Verifying the accuracy of Iran's national code'''
     code = str(code)
     if not code.isnumeric() or len(code) != 10:
         return await execute(success=True, data=False)
