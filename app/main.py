@@ -498,6 +498,40 @@ async def arz(request: Request):
     return await execute(success=True, data=search_result)
 
 
+@app.get('/api/car-price', tags=['USD'], status_code=status.HTTP_200_OK)
+@app.post('/api/car-price', tags=['USD'], status_code=status.HTTP_200_OK)
+@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
+async def car_price(request: Request) -> dict:
+    search_result = dict()
+    request = requests.request(method='GET', url='https://irarz.com/car')
+    if request.status_code != requests.codes.ok:
+        return await execute(success=False, data='A problem has occurred on our end')
+
+    html = bs4.BeautifulSoup(request.text, 'html.parser')
+    cards = html.find_all('div', class_='card')
+    for card in range(len(cards)):
+        company_name = cards[card].find('div', class_='card-body').find('div', class_='text-center').h2.span.text
+        company_logo = cards[card].find('div', class_='card-body').find('div', class_='text-center').h2.img.attrs['src']
+        all_products = cards[card].find('div', class_='card-body').find('table', class_='table table-striped').tbody.find_all('tr')
+
+        products_list = list()
+        for i in range(len(all_products)):
+            info = all_products[i].find_all('td')
+            products_list.append(
+                dict(
+                    name=info[0].text,
+                    model=info[1].text,
+                    price=info[2].text
+                )
+            )
+
+        search_result[company_name] = {
+            'logo': 'https://irarz.com' + company_logo, 'products': products_list
+        }
+
+    return await execute(success=True, data=search_result)
+
+
 @app.get('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
 @app.post('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
