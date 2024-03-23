@@ -27,14 +27,14 @@ import jdatetime
 import string
 
 app = FastAPI(
-    title='HeroAPI',
+    title='ohmyapi',
     description='Free and open source api',
     contact={
         'name': 'amirali irvany',
         'url': 'https://metect.github.io',
         'email': 'dev.amirali.irvany@gmail.com',
     },
-    terms_of_service='https://t.me/HeroAPI',
+    terms_of_service='https://t.me/ohmyapi',
     license_info={
         'name': 'Released under MIT LICENSE',
         'url': 'https://spdx.org/licenses/MIT.html'
@@ -55,9 +55,9 @@ async def execute(success: bool = True, data: dict = None, err_message: str = No
     '''Making outter json for responce web services'''
     return dict(
         success=success,
-        dev='Hero Team',
-        url='https://t.me/HeroAPI',
-        github='https://github.com/metect/HeroAPI',
+        dev='amirali irvany',
+        url='https://t.me/ohmyapi',
+        github='https://github.com/metect/ohmyapi',
         data=data,
         err_message=err_message
     )
@@ -67,7 +67,7 @@ async def execute(success: bool = True, data: dict = None, err_message: str = No
 async def swagger_ui_html():
     return get_swagger_ui_html(
         openapi_url='/openapi.json',
-        title='HeroAPI',
+        title='ohmyapi',
         swagger_favicon_url='app/static/favicon.png',
     )
 
