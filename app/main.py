@@ -200,17 +200,7 @@ async def github_users_search(
     '''Github users search web service.
     sortlist repository: "followers", "repositories", "joined"
     '''
-    headers = {
-        'Accept': 'application/vnd.github+json'
-    }
-    url = 'https://api.github.com/search/users?q=%s&sort=%s&order=%s&per_page=%s&page=%s'
-    request = requests.request(
-        method='GET', url=url % (query, sort, order, per_page, page), headers=headers
-    )
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-    return await execute(success=True, data=request.json())
+    return await api.github_user_search(query=query, sort=sort, order=order, per_page=per_page, page=page)
 
 
 @app.get('/api/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)

@@ -246,3 +246,18 @@ class ohmyapi:
             return await execute(success=False, data='A problem has occurred on our end')
 
         return await self.execute(success=True, data=request.json())
+
+
+    async def github_user_search(self, query: str, sort: str, order: str, per_page: int, page: int) -> dict:
+        headers = {
+            'Accept': 'application/vnd.github+json'
+        }
+        url = 'https://api.github.com/search/users?q=%s&sort=%s&order=%s&per_page=%s&page=%s'
+        request = requests.request(
+            method='GET', url=url % (query, sort, order, per_page, page), headers=headers
+        )
+        if request.status_code != requests.codes.ok:
+            return await self.execute(success=False, data='A problem has occurred on our end')
+
+        return await self.execute(success=True, data=request.json())
+
