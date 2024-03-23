@@ -150,28 +150,6 @@ async def news(request: Request, page: int = 1) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> dict:
     '''This api is used to get the information of the post(s) in Rubino Messenger'''
-    payload: dict = {
-        'api_version': '0',
-        'auth': auth,
-        'client': {
-            'app_name': 'Main',
-            'app_version': '3.0.1',
-            'package': 'app.rubino.main',
-            'lang_code': 'en',
-            'platform': 'PWA'
-        },
-        'data': {
-            'share_link': url.split('/')[-1],
-            'profile_id': None
-        },
-        'method': 'getPostByShareLink'
-    }
-    url = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
-    request = requests.request(method='GET', url=url, timeout=timeout, json=payload)
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-    return await execute(success=True, data=request.json())
 
 
 @app.get('/api/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
