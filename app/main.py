@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Request, File, status
-from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html
@@ -9,12 +8,9 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 from typing import Annotated
 
-from ast import literal_eval
-import moviepy.editor
 import os
 import requests
 import jalali.Jalalian
-import PIL.Image
 import urllib.parse
 import re
 import html
@@ -24,7 +20,6 @@ import random
 import faker
 import bs4
 import jdatetime
-import string
 
 app = FastAPI(
     title='ohmyapi',
@@ -96,14 +91,6 @@ async def bard_ai(request: Request, prompt: str) -> dict:
     return await execute(success=True, data=final_responce)
 
 
-@app.get('/api/image2ascii', tags=['Art'], status_code=status.HTTP_200_OK)
-@app.post('/api/image2ascii', tags=['Art'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def ascii_art(request: Request, image: Annotated[bytes, File()]) -> dict:
-    '''Convert image to ascii art'''
-    return await execute(success=True, data=None)
-
-
 @app.get('/api/font', tags=['Art'], status_code=status.HTTP_200_OK)
 @app.post('/api/font', tags=['Art'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
@@ -145,7 +132,7 @@ async def datetime(request: Request, tr_num: str = 'en') -> dict:
 @app.post('/api/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def shamsi_to_miladi(request: Request, day: int, month: int, year: int) -> dict:
-    result_date = jdatetime.date (day=day, month=month, year=year).togregorian()
+    result_date = jdatetime.date(day=day, month=month, year=year).togregorian()
     return await execute(success=True, data=result_date)
 
 
@@ -153,7 +140,7 @@ async def shamsi_to_miladi(request: Request, day: int, month: int, year: int) ->
 @app.post('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def fake_text(request: Request, item: str, count: int = 100, lang: str = 'en') -> dict:
-    '''Production fake data'''
+    '''Production fake data. items: (`text`, `text`, `email`)'''
     MAXIMUM_REQUEST: int = 100
     if count > MAXIMUM_REQUEST:
         return await execute(
@@ -219,17 +206,17 @@ async def music_fa(request: Request, query: str, page: int = 1) -> dict:
         return await execute(success=False, data='A problem has occurred on our end')
 
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
-    article_snippets = soup.find_all('article', class_='mf_pst')
+    articles = soup.find_all('article', class_='mf_pst')
 
     search_result = list()
-    for article_snippet in article_snippets:
-        title = article_snippet['data-artist'].strip()
-        image_snippet = article_snippet.find('img', src=True)
+    for article in articles:
+        title = article['data-artist'].strip()
+        image_snippet = article.find('img', src=True)
         images = re.findall(
             r'https://music-fa\.com/wp-content/uploads/.*?\.jpg', str(image_snippet)
         )
-        music_snippet = article_snippet.find('span', class_='play')
-        link_for_download = music_snippet['data-song']
+        music = article.find('span', class_='play')
+        link_for_download = music['data-song']
         search_result.append(
             dict(
                 title=title,
@@ -252,14 +239,14 @@ async def news(request: Request, page: int = 1) -> dict:
         return await execute(success=False, data='A problem has occurred on our end')
 
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
-    article_snippets = soup.find_all('article', class_='list-item')
+    articles = soup.find_all('article', class_='list-item')
 
     search_result = list()
-    for article_snippet in article_snippets:
-        title = article_snippet.find('h2', class_='title').text.strip()
-        description = article_snippet.find('h4').text.strip()
-        image = article_snippet.find('img', src=True)
-        full_url = article_snippet.find('a', href=True)
+    for article in articles:
+        title = article.find('h2', class_='title').text.strip()
+        description = article.find('h4').text.strip()
+        image = article.find('img', src=True)
+        full_url = article.find('a', href=True)
         search_result.append(
             dict(
                 title=title,
@@ -294,7 +281,7 @@ async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> 
         'method': 'getPostByShareLink'
     }
     url = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
-    request = requests.request(method='GET', url=url, json=payload)
+    request = requests.request(method='GET', url=url, timeout=timeout, json=payload)
     if request.status_code != requests.codes.ok:
         return await execute(success=False, data='A problem has occurred on our end')
 
@@ -421,148 +408,3 @@ async def pypi_search(request: Request, query: str) -> dict:
         )
 
     return await execute(success=True, data=search_results)
-
-
-@app.get('/api/passwd-generator', tags=['Password generator'], status_code=status.HTTP_200_OK)
-@app.post('/api/passwd-generator', tags=['Password generator'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def passwd_generator(request: Request, len_: int) -> dict:
-    '''Generate a random password'''
-    password = str()
-    for char in range(len_):
-        random_number = random.randint(0, 94)
-        password += string.printable[random_number]
-
-    return await execute(success=True, data=password)
-
-
-
-@app.get('/api/gold-price', tags=['USD'], status_code=status.HTTP_200_OK)
-@app.post('/api/gold-price', tags=['USD'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def gold_price(request: Request) -> dict:
-    '''Web service showing the exact price of gold in Iranian Rial'''
-    request = requests.request(method='GET', url='https://irarz.com')
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-    result_search = dict()
-    html_span = bs4.BeautifulSoup(request.text, 'html.parser')
-    result_search['coin'] = html_span.find('span', id='sekeb').text.strip()
-    result_search['half_coin'] = html_span.find('span', id='nim').text.strip()
-    result_search['quarter_coin'] = html_span.find('span', id='rob').text.strip()
-    result_search['gerami_coin'] = html_span.find('span', id='gerami').text.strip()
-    result_search['gold18'] = html_span.find('span', id='geram18').text.strip()
-    result_search['gold24'] = html_span.find('span', id='geram24').text.strip()
-    result_search['mesghal_gold'] = html_span.find('span', id='mesghal').text.strip()
-    return await execute(success=True, data=result_search)
-
-
-@app.get('/api/arz', tags=['USD'], status_code=status.HTTP_200_OK)
-@app.post('/api/arz', tags=['USD'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def arz(request: Request):
-    '''Web search service and currency price search on the site [tasnimnews.com](https://www.tasnimnews.com/fa/currency)'''
-    search_result = list()
-    request = requests.request(method='GET', url='https://www.tasnimnews.com/fa/currency')
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-
-    html = bs4.BeautifulSoup(request.text, 'html.parser')
-    containers = html.find_all('div', class_='coins-container')[-1].table.tbody.find_all('tr')
-    for container in range(len(containers)):
-        info = containers[container].find_all('td')
-        search_result.append(
-            dict(
-                name=info[0].text.replace('قیمت ', ''),
-                price=info[1].text,
-                change=info[2].text,
-                low=info[3].text,
-                high=info[4].text,
-                update=info[5].text
-            )
-        )
-
-    return await execute(success=True, data=search_result)
-
-
-@app.get('/api/car-price', tags=['USD'], status_code=status.HTTP_200_OK)
-@app.post('/api/car-price', tags=['USD'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def car_price(request: Request) -> dict:
-    '''Web search service and car price search on the site [irarz.com](https://irarz.com/car)'''
-    search_result = dict()
-    request = requests.request(method='GET', url='https://irarz.com/car')
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-    html = bs4.BeautifulSoup(request.text, 'html.parser')
-    cards = html.find_all('div', class_='card')
-    for card in range(len(cards)):
-        company_name = cards[card].find('div', class_='card-body').find('div', class_='text-center').h2.span.text
-        company_logo = cards[card].find('div', class_='card-body').find('div', class_='text-center').h2.img.attrs['src']
-        all_products = cards[card].find('div', class_='card-body').find('table', class_='table table-striped').tbody.find_all('tr')
-
-        products_list = list()
-        for i in range(len(all_products)):
-            info = all_products[i].find_all('td')
-            products_list.append(
-                dict(
-                    name=info[0].text,
-                    model=info[1].text,
-                    price=info[2].text
-                )
-            )
-
-        search_result[company_name] = {
-            'logo': 'https://irarz.com' + company_logo, 'products': products_list
-        }
-
-    return await execute(success=True, data=search_result)
-
-
-@app.get('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
-@app.post('/api/divar', tags=['Other'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def divar(request: Request, query: str, city: str = 'tehran') -> dict:
-    '''Web search service in [Divar](https://divar.ir)'''
-    request = requests.request(method='GET', url=f'https://divar.ir/s/{city}?q={query}')
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-    request = request.text
-    start, finish = request.rfind('['), request.rfind(']')
-
-    values = str()
-    computed_value = list(request)[start:finish]
-    for i in range(len(computed_value)):
-        values += computed_value[i]
-
-    values += ']'
-    final_values = literal_eval(node_or_string=values)
-    return await execute(success=True, data=final_values)
-
-
-@app.get('/api/national-code-check', tags=['Other'], status_code=status.HTTP_200_OK)
-@app.post('/api/national-code-check', tags=['Other'], status_code=status.HTTP_200_OK)
-@limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def national_code_check(request: Request, code: int) -> dict:
-    '''Verifying the accuracy of Iran's national code'''
-    code = str(code)
-    if not code.isnumeric() or len(code) != 10:
-        return await execute(success=True, data=False)
-
-    total = 0
-    control_digit = int(code[-1])
-    for digit, index in zip(code, range(10, 1, -1)):
-        total += int(digit) * index
-    reminder = total % 11
-    if reminder < 2:
-        if reminder == control_digit:
-            return await execute(success=True, data=True)
-    else:
-        if 11 - reminder == control_digit:
-            return await execute(success=True, data=True)
-
-    return await execute(success=True, data=False)
