@@ -220,3 +220,15 @@ class ohmyapi:
 
         result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
         return await self.execute(success=True, data=html.unescape(result[0]))
+
+
+    async def github_topic_search(self, query: str, per_page: int = 30, page: int = 1) -> dict:
+        headers = {
+            'Accept': 'application/vnd.github+json'
+        }
+        url = 'https://api.github.com/search/topics?q=%s&per_page=%s&page=%s'
+        request = requests.request(method='GET', url=url % (query, per_page, page), headers=headers)
+        if request.status_code != requests.codes.ok:
+            return await self.execute(success=False, data='A problem has occurred on our end')
+
+        return await self.execute(success=True, data=request.json())

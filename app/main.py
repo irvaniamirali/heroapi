@@ -166,15 +166,7 @@ async def translate(request: Request, text: str, to_lang: str = 'auto', from_lan
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def github_topic_search(request: Request, query: str, per_page: int = 30, page: int = 1) -> dict:
     '''Github topic search web service'''
-    headers = {
-        'Accept': 'application/vnd.github+json'
-    }
-    url = 'https://api.github.com/search/topics?q=%s&per_page=%s&page=%s'
-    request = requests.request(method='GET', url=url % (query, per_page, page), headers=headers)
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-    return await execute(success=True, data=request.json())
+    return await api.github_topic_search(query=query, per_page=per_page, page=page)
 
 
 @app.get('/api/github-repo-search', tags=['Github'], status_code=status.HTTP_200_OK)
