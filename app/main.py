@@ -94,6 +94,7 @@ async def datetime(request: Request, tr_num: str = 'en') -> dict:
 @app.post('/api/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def convert_date(request: Request, day: int, month: int, year: int) -> dict:
+    '''Convert Shamsi date to Gregorian'''
     return await api.convert_date(day=day, month=month, year=year)
 
 
