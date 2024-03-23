@@ -87,8 +87,7 @@ async def font(request: Request, text: str) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def datetime(request: Request, tr_num: str = 'en') -> dict:
     '''Display detailed information about the date of the solar calendar'''
-    current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
-    return await execute(success=True, data=current_date)
+    return await api.datetime(tr_num=tr_num)
 
 
 @app.get('/api/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
