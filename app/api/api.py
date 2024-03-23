@@ -110,4 +110,17 @@ class ohmyapi:
                 success=False,
                 err_message='The value of the `text` parameter is not invalid'
             )
-    
+
+
+    async def location(self, text: str, latitude: float, longitude: float) -> dict:
+        access_key = os.getenv(key='NESHAN_KEY')
+        url = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
+        request = requests.request(
+            method='GET', url=url, headers={
+                'Api-Key': access_key
+            }
+        )
+        if request.status_code != requests.codes.ok:
+            return await self.execute(success=False, err_message='A problem has occurred on our end')
+
+        return await self.execute(success=True, data=request.json())

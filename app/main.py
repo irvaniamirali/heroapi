@@ -126,19 +126,7 @@ async def language_detect(request: Request, text: str) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def location(request: Request, text: str, latitude: float, longitude: float) -> dict:
     '''Web service to get location and map'''
-    access_key = os.getenv(key='NESHAN_KEY')
-    url = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
-    request = requests.request(
-        method='GET', url=url, headers={
-            'Api-Key': access_key
-        }
-    )
-    if request.status_code != requests.codes.ok:
-        return await execute(
-            success=False, err_message='A problem occurred on the server side'
-        )
-
-    return await execute(success=True, data=request.json())
+    return await api.location(text=text, latitude=latitude, longitude=longitude)
 
 
 @app.get('/api/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
