@@ -111,14 +111,7 @@ async def fake_data(request: Request, item: str, count: int = 100, lang: str = '
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def language_detect(request: Request, text: str) -> dict:
     '''Identifying the language of texts'''
-    try:
-        result_detected = langdetect.detect(text)
-        return await execute(success=True, data=result_detected)
-    except langdetect.LangDetectException:
-        return await execute(
-            success=False,
-            err_message='The value of the `text` parameter is not invalid'
-        )
+    return await api.language_detect(text=text)
 
 
 @app.get('/api/location', tags=['Location'], status_code=status.HTTP_200_OK)
