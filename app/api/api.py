@@ -99,3 +99,15 @@ class ohmyapi:
                     final_values.append(faker.Faker([lang]).email())
 
         return await self.execute(success=True, data=final_values)
+
+
+    async def language_detect(self, text: str) -> dict:
+        try:
+            result_detected = langdetect.detect(text)
+            return await self.execute(success=True, data=result_detected)
+        except langdetect.LangDetectException:
+            return await self.execute(
+                success=False,
+                err_message='The value of the `text` parameter is not invalid'
+            )
+    
