@@ -6,21 +6,11 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
-from typing import Annotated
 
-import os
-import requests
-import jalali.Jalalian
-import urllib.parse
-import re
-import html
-import langdetect
-import json
-import random
-import faker
-import bs4
-import jdatetime
+from app.api.api import ohmyapi
 
+# Instances
+api = ohmyapi()
 app = FastAPI(
     title='ohmyapi',
     description='Free and open source api',
@@ -81,14 +71,7 @@ async def custom_404_handler(request: Request, __):
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def bard_ai(request: Request, prompt: str) -> dict:
     '''Bard artificial intelligence web service'''
-    url: str = 'https://api.safone.dev/'
-    request = requests.request(method='GET', url=f'{url}bard?message={prompt}')
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, err_message='A problem has occurred on our end')
-
-    responce = request.json()
-    final_responce = responce['candidates'][0]['content']['parts'][0]['text']
-    return await execute(success=True, data=final_responce)
+    return await api.bard(prompt=prompt)
 
 
 @app.get('/api/font', tags=['Art'], status_code=status.HTTP_200_OK)
@@ -96,27 +79,7 @@ async def bard_ai(request: Request, prompt: str) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def font(request: Request, text: str) -> dict:
     '''Generate ascii fonts. Currently only English language is supported'''
-    if langdetect.detect(text) in ['fa', 'ar', 'ur']:
-        return await execute(
-            success=False, err_message='Currently, Persian language is not supported'
-        )
-    else:
-        with open('app/jsonfiles/font.json', 'r') as f:
-            fonts = json.load(f)
-
-        converted_text = str()
-        for count in range(0, len(fonts)):
-            for char in text:
-                if char.isalpha():
-                    char_index = ord(char.lower()) - 97
-                    converted_text += fonts[str(count)][char_index]
-                else:
-                    converted_text += char
-
-            converted_text += '\n'
-            final_values = converted_text.split('\n')[0:-1]
-
-        return await execute(success=True, data=final_values)
+    return await api.font(text=text)
 
 
 @app.get('/api/datetime', tags=['Data & time'], status_code=status.HTTP_200_OK)
