@@ -206,6 +206,6 @@ async def github_users_search(
 @app.get('/api/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
 @app.post('/api/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def pypi_search(request: Request, query: str) -> dict:
+async def pypi_package_search(request: Request, query: str) -> dict:
     '''PyPi package search web service'''
     return await api.pypi_package_search(query=query)
