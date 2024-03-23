@@ -124,3 +124,31 @@ class ohmyapi:
             return await self.execute(success=False, err_message='A problem has occurred on our end')
 
         return await self.execute(success=True, data=request.json())
+
+
+    async def music_fa(self, query: str, page: int) -> dict:
+        request = requests.request('GET', f'https://music-fa.com/search/{query}/page/{page}')
+        if request.status_code != requests.codes.ok:
+            return await self.execute(success=False, data='A problem has occurred on our end')
+
+        soup = bs4.BeautifulSoup(request.text, 'html.parser')
+        articles = soup.find_all('article', class_='mf_pst')
+
+        search_result = list()
+        for article in articles:
+            title = article['data-artist'].strip()
+            image_snippet = article.find('img', src=True)
+            images = re.findall(
+                r'https://music-fa\.com/wp-content/uploads/.*?\.jpg', str(image_snippet)
+            )
+            music = article.find('span', class_='play')
+            link_for_download = music['data-song']
+            search_result.append(
+                dict(
+                    title=title,
+                    images=images,
+                    link_for_download=link_for_download
+                )
+            )
+
+        return await self.execute(success=True, data=search_result)
