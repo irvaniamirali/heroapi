@@ -183,17 +183,7 @@ async def github_repo_search(
     '''Github repository search web service.
     sortlist repository: "stars", "forks", "help-wanted-issues", "updated"
     '''
-    headers = {
-        'Accept': 'application/vnd.github+json'
-    }
-    url = 'https://api.github.com/search/repositories?q=%s&s=%s&order=%s&per_page=%s&page=%s'
-    request = requests.request(
-        method='GET', url=url % (name, sort, order, per_page, page), headers=headers
-    )
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-    return await execute(success=True, data=request.json())
+    return await api.github_repo_search(name=name, sort=sort, order=order, per_page=per_page, page=page)
 
 
 @app.get('/api/github-users-search', tags=['Github'], status_code=status.HTTP_200_OK)
