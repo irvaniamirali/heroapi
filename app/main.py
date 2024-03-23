@@ -150,6 +150,7 @@ async def news(request: Request, page: int = 1) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> dict:
     '''This api is used to get the information of the post(s) in Rubino Messenger'''
+    return await api.rubino(auth=auth, url=url, timeout=timeout)
 
 
 @app.get('/api/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
@@ -157,19 +158,7 @@ async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> 
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def translate(request: Request, text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''Translation of texts based on the Google Translate engine'''
-    url = 'https://translate.google.com'
-    final_url = f'{url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
-    request = requests.request(
-        method='GET', url=final_url, headers={
-            'User-Agent':
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
-        }
-    )
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-    result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
-    return await execute(success=True, data=html.unescape(result[0]))
+    return await api.translate(text=text, to_lang=to_lang, from_lang=from_lang)
 
 
 @app.get('/api/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
