@@ -243,7 +243,7 @@ class ohmyapi:
             method='GET', url=url % (name, sort, order, per_page, page), headers=headers
         )
         if request.status_code != requests.codes.ok:
-            return await execute(success=False, data='A problem has occurred on our end')
+            return await self.execute(success=False, data='A problem has occurred on our end')
 
         return await self.execute(success=True, data=request.json())
 
