@@ -101,26 +101,9 @@ async def convert_date(request: Request, day: int, month: int, year: int) -> dic
 @app.get('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
 @app.post('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def fake_text(request: Request, item: str, count: int = 100, lang: str = 'en') -> dict:
-    '''Production fake data. items: (`text`, `text`, `email`)'''
-    MAXIMUM_REQUEST: int = 100
-    if count > MAXIMUM_REQUEST:
-        return await execute(
-            success=False, err_message='The amount is too big. Send a smaller number `count`'
-        )
-    else:
-        final_values = list()
-        if item == 'text':
-            return await execute(success=True, data=faker.Faker([lang]).text(count))
-        elif item == 'name':
-            for i in range(count):
-                final_values.append(faker.Faker([lang]).name())
-
-        elif item == 'email':
-            for i in range(count):
-                final_values.append(faker.Faker([lang]).email())
-
-    return await execute(success=True, data=final_values)
+async def fake_data(request: Request, item: str, count: int = 100, lang: str = 'en') -> dict:
+    '''Production fake data. items: (`text`, `name`, `email`)'''
+    return await api.fake_data(item=item, count=count, lang=lang)
 
 
 @app.get('/api/lang', tags=['Identify language'], status_code=status.HTTP_200_OK)

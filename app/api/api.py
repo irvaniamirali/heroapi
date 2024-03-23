@@ -78,3 +78,24 @@ class ohmyapi:
     async def convert_date(self, day: int, month: int, year: int) -> dict:
         result_date = jdatetime.date(day=day, month=month, year=year).togregorian()
         return await self.execute(success=True, data=result_date)
+
+
+    async def fake_data(self, item: str, count: int, lang: str) -> dict:
+        MAXIMUM_REQUEST: int = 100
+        if count > MAXIMUM_REQUEST:
+            return await self.execute(
+                success=False, err_message='The amount is too big. Send a smaller number `count`'
+            )
+        else:
+            final_values = list()
+            if item == 'text':
+                return await self.execute(success=True, data=faker.Faker([lang]).text(count))
+            elif item == 'name':
+                for i in range(count):
+                    final_values.append(faker.Faker([lang]).name())
+
+            elif item == 'email':
+                for i in range(count):
+                    final_values.append(faker.Faker([lang]).email())
+
+        return await self.execute(success=True, data=final_values)
