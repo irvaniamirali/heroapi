@@ -142,30 +142,7 @@ async def music_fa(request: Request, query: str, page: int = 1) -> dict:
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
 async def news(request: Request, page: int = 1) -> dict:
     '''Web service to display news. onnected to the site www.tasnimnews.com'''
-    url = 'https://www.tasnimnews.com'
-    request = requests.request('GET', f'{url}/fa/top-stories?page={page}')
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, data='A problem has occurred on our end')
-
-    soup = bs4.BeautifulSoup(request.text, 'html.parser')
-    articles = soup.find_all('article', class_='list-item')
-
-    search_result = list()
-    for article in articles:
-        title = article.find('h2', class_='title').text.strip()
-        description = article.find('h4').text.strip()
-        image = article.find('img', src=True)
-        full_url = article.find('a', href=True)
-        search_result.append(
-            dict(
-                title=title,
-                description=description,
-                url=url + full_url['href'],
-                image=image['src']
-            )
-        )
-
-    return await execute(success=True, data=search_result)
+    return await api.news(page=page)
 
 
 @app.get('/api/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
