@@ -93,9 +93,8 @@ async def datetime(request: Request, tr_num: str = 'en') -> dict:
 @app.get('/api/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
 @app.post('/api/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
 @limiter.limit(limit_value=LIMITER_TIME, key_func=get_remote_address)
-async def shamsi_to_miladi(request: Request, day: int, month: int, year: int) -> dict:
-    result_date = jdatetime.date(day=day, month=month, year=year).togregorian()
-    return await execute(success=True, data=result_date)
+async def convert_date(request: Request, day: int, month: int, year: int) -> dict:
+    return await api.convert_date(day=day, month=month, year=year)
 
 
 @app.get('/api/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)

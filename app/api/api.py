@@ -73,3 +73,8 @@ class ohmyapi:
     async def datetime(self, tr_num: str) -> dict:
         current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
         return await self.execute(success=True, data=current_date)
+
+
+    async def convert_date(self, day: int, month: int, year: int) -> dict:
+        result_date = jdatetime.date(day=day, month=month, year=year).togregorian()
+        return await self.execute(success=True, data=result_date)
