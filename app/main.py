@@ -7,19 +7,19 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from app.api.api import ohmyapi
+from app.api.api import sharkAPI
 
 # Instances
-api = ohmyapi()
+api = sharkAPI()
 app = FastAPI(
-    title='ohmyapi',
+    title='sharkAPI',
     description='Free and open source api',
     contact={
         'name': 'amirali irvany',
         'url': 'https://metect.github.io',
         'email': 'dev.amirali.irvany@gmail.com',
     },
-    terms_of_service='https://t.me/ohmyapi',
+    terms_of_service='https://t.me/sharkAPI',
     license_info={
         'name': 'Released under MIT LICENSE',
         'url': 'https://spdx.org/licenses/MIT.html'
@@ -36,23 +36,11 @@ app.state.limiter, LIMITER_TIME = limiter, '1000/minute'
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-async def execute(success: bool = True, data: dict = None, err_message: str = None) -> dict:
-    '''Making outter json for responce web services'''
-    return dict(
-        success=success,
-        dev='amirali irvany',
-        url='https://t.me/ohmyapi',
-        github='https://github.com/metect/ohmyapi',
-        data=data,
-        err_message=err_message
-    )
-
-
 @app.get('/docs', include_in_schema=False)
 async def swagger_ui_html():
     return get_swagger_ui_html(
         openapi_url='/openapi.json',
-        title='ohmyapi',
+        title='sharkAPI',
         swagger_favicon_url='app/static/favicon.png',
     )
 
