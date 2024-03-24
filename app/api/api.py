@@ -11,7 +11,7 @@ import faker
 import bs4
 import jdatetime
 
-class ohmyapi:
+class sharkAPI:
 
     def __init__(
             self,
@@ -25,6 +25,7 @@ class ohmyapi:
 
 
     async def execute(self, success: bool = True, data: dict = None, err_message: dict = None) -> dict:
+        '''Making outter json for responce web services'''
         return dict(
             success=success,
             dev='amirali irvany',
