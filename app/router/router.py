@@ -338,3 +338,22 @@ async def pypi_package_search(query: str) -> dict:
         )
 
     return execute(success=True, data=search_results)
+
+
+@router.get('/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
+@router.post('/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
+async def icon(query: str, page: int = 1) -> dict:
+    '''Get the icon from icon-icons.com'''
+    request = requests.request(method='GET', url=f'https://icon-icons.com/search/icons/?filtro={query}')
+    if request.status_code != requests.codes.ok:
+        return execute(success=False, data='A problem has occurred on our end')
+
+    soup = bs4.BeautifulSoup(request.text, 'html.parser')
+    icons = soup.find_all('div', class_='icon-preview')
+
+    search_result = list()
+    for icon in icons:
+        data_original = icon.find('img', class_='lazy', src=True)
+        search_result.append(data_original['data-original'])
+
+    return execute(success=True, data=search_result)
