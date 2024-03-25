@@ -16,14 +16,13 @@ import jdatetime
 
 router = APIRouter(prefix='/api')
 
-def execute(success: bool = True, data: dict = None, err_message: dict = None) -> dict:
+def execute(success: bool = True, data: dict = None) -> dict:
     return dict(
         success=success,
         dev='amirali irvany',
         url='https://t.me/sharkAPI',
         github='https://github.com/metect/sharkAPI',
         data=data,
-        err_message=err_message
     )
 
 
@@ -47,7 +46,10 @@ async def bard_ai(prompt: str) -> dict:
 async def font(text: str) -> dict:
     '''Generate ascii fonts. Currently only English language is supported'''
     if langdetect.detect(text) in ['fa', 'ar', 'ur']:
-        return execute(success=False, err_message='Currently, Persian language is not supported')
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Currently, Persian language is not supported'
+        )
     else:
         with open('app/jsonfiles/font.json', 'r') as f:
             fonts = json.load(f)
@@ -88,8 +90,9 @@ async def convert_date(day: int, month: int, year: int) -> dict:
 async def fake_data(item: str, count: int = 100, lang: str = 'en') -> dict:
     '''Production fake data. items: (`text`, `name`, `email`)'''
     if count > 100:
-        return execute(
-            success=False, err_message='The amount is too big. Send a smaller number `count`'
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='The amount is too big. Send a smaller number `count`'
         )
     else:
         final_values = list()
@@ -114,8 +117,9 @@ async def language_detect(text: str) -> dict:
         result_detected = langdetect.detect(text)
         return execute(success=True, data=result_detected)
     except langdetect.LangDetectException:
-        return execute(
-            success=False, err_message='The value of the `text` parameter is not invalid'
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='The value of the `text` parameter is not invalid'
         )
 
 
@@ -131,7 +135,10 @@ async def location(text: str, latitude: float, longitude: float) -> dict:
         }
     )
     if request.status_code != requests.codes.ok:
-        return execute(success=False, err_message='A problem has occurred on our end')
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
 
     return execute(success=True, data=request.json())
 
@@ -142,7 +149,10 @@ async def music_fa(query: str, page: int = 1) -> dict:
     '''Search and search web service on the [music-fa](https://music-fa.com) site'''
     request = requests.request('GET', f'https://music-fa.com/search/{query}/page/{page}')
     if request.status_code != requests.codes.ok:
-        return execute(success=False, data='A problem has occurred on our end')
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
 
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
     articles = soup.find_all('article', class_='mf_pst')
@@ -174,7 +184,10 @@ async def news(page: int = 1) -> dict:
     url = 'https://www.tasnimnews.com'
     request = requests.request('GET', f'{url}/fa/top-stories?page={page}')
     if request.status_code != requests.codes.ok:
-        return execute(success=False, data='A problem has occurred on our end')
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
 
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
     articles = soup.find_all('article', class_='list-item')
@@ -220,7 +233,10 @@ async def rubino(auth: str, url: str, timeout: float = 10) -> dict:
     url = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
     request = requests.request(method='GET', url=url, timeout=timeout, json=payload)
     if request.status_code != requests.codes.ok:
-        return execute(success=False, data='A problem has occurred on our end')
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
 
     return execute(success=True, data=request.json())
 
@@ -238,7 +254,10 @@ async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -
         }
     )
     if request.status_code != requests.codes.ok:
-        return execute(success=False, data='A problem has occurred on our end')
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
 
     result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
     return execute(success=True, data=html.unescape(result[0]))
@@ -254,7 +273,10 @@ async def github_topic_search(query: str, per_page: int = 30, page: int = 1) -> 
     url = 'https://api.github.com/search/topics?q=%s&per_page=%s&page=%s'
     request = requests.request(method='GET', url=url % (query, per_page, page), headers=headers)
     if request.status_code != requests.codes.ok:
-        return execute(success=False, data='A problem has occurred on our end')
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
 
     return execute(success=True, data=request.json())
 
@@ -279,7 +301,10 @@ async def github_repo_search(
         method='GET', url=url % (name, sort, order, per_page, page), headers=headers
     )
     if request.status_code != requests.codes.ok:
-        return execute(success=False, data='A problem has occurred on our end')
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
 
     return execute(success=True, data=request.json())
 
@@ -304,7 +329,10 @@ async def github_users_search(
         method='GET', url=url % (query, sort, order, per_page, page), headers=headers
     )
     if request.status_code != requests.codes.ok:
-        return execute(success=False, data='A problem has occurred on our end')
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
 
     return execute(success=True, data=request.json())
 
@@ -316,7 +344,10 @@ async def pypi_package_search(query: str) -> dict:
     query = '+'.join(query.split())
     request = requests.request(method='GET', url=f'https://pypi.org/search/?q={query}')
     if request.status_code != requests.codes.ok:
-        return execute(success=False, data='A problem has occurred on our end')
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
 
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
     package_snippets = soup.find_all('a', class_='package-snippet')
@@ -346,7 +377,10 @@ async def icon(query: str, page: int = 1) -> dict:
     '''Get the icon from icon-icons.com'''
     request = requests.request(method='GET', url=f'https://icon-icons.com/search/icons/?filtro={query}')
     if request.status_code != requests.codes.ok:
-        return execute(success=False, data='A problem has occurred on our end')
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
 
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
     icons = soup.find_all('div', class_='icon-preview')
