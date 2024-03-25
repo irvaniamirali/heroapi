@@ -29,7 +29,7 @@ def execute(success: bool = True, data: dict = None, err_message: dict = None) -
 
 @router.get('/bard', tags=['AI'], status_code=status.HTTP_200_OK)
 @router.post('/bard', tags=['AI'], status_code=status.HTTP_200_OK)
-async def bard_ai(request: Request, prompt: str) -> dict:
+async def bard_ai(prompt: str) -> dict:
     '''Bard artificial intelligence web service'''
     url = 'https://api.safone.dev/'
     request = requests.request(method='GET', url=f'{url}bard?message={prompt}')
@@ -44,7 +44,7 @@ async def bard_ai(request: Request, prompt: str) -> dict:
 
 @router.get('/font', tags=['Art'], status_code=status.HTTP_200_OK)
 @router.post('/font', tags=['Art'], status_code=status.HTTP_200_OK)
-async def font(request: Request, text: str) -> dict:
+async def font(text: str) -> dict:
     '''Generate ascii fonts. Currently only English language is supported'''
     if langdetect.detect(text) in ['fa', 'ar', 'ur']:
         return execute(success=False, err_message='Currently, Persian language is not supported')
@@ -69,7 +69,7 @@ async def font(request: Request, text: str) -> dict:
 
 @router.get('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
 @router.post('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
-async def datetime(request: Request, tr_num: str = 'en') -> dict:
+async def datetime(tr_num: str = 'en') -> dict:
     '''Display detailed information about the date of the solar calendar'''
     current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
     return execute(success=True, data=current_date)
@@ -77,7 +77,7 @@ async def datetime(request: Request, tr_num: str = 'en') -> dict:
 
 @router.get('/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
 @router.post('/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
-async def convert_date(request: Request, day: int, month: int, year: int) -> dict:
+async def convert_date(day: int, month: int, year: int) -> dict:
     '''Convert Shamsi date to Gregorian'''
     result_date = jdatetime.date(day=day, month=month, year=year).togregorian()
     return execute(success=True, data=result_date)
@@ -85,7 +85,7 @@ async def convert_date(request: Request, day: int, month: int, year: int) -> dic
 
 @router.get('/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
 @router.post('/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
-async def fake_data(request: Request, item: str, count: int = 100, lang: str = 'en') -> dict:
+async def fake_data(item: str, count: int = 100, lang: str = 'en') -> dict:
     '''Production fake data. items: (`text`, `name`, `email`)'''
     if count > 100:
         return execute(
@@ -108,7 +108,7 @@ async def fake_data(request: Request, item: str, count: int = 100, lang: str = '
 
 @router.get('/lang', tags=['Identify language'], status_code=status.HTTP_200_OK)
 @router.post('/lang', tags=['Identify language'], status_code=status.HTTP_200_OK)
-async def language_detect(request: Request, text: str) -> dict:
+async def language_detect(text: str) -> dict:
     '''Identifying the language of texts'''
     try:
         result_detected = langdetect.detect(text)
@@ -121,7 +121,7 @@ async def language_detect(request: Request, text: str) -> dict:
 
 @router.get('/location', tags=['Location'], status_code=status.HTTP_200_OK)
 @router.post('/location', tags=['Location'], status_code=status.HTTP_200_OK)
-async def location(request: Request, text: str, latitude: float, longitude: float) -> dict:
+async def location(text: str, latitude: float, longitude: float) -> dict:
     '''Web service to get location and map'''
     access_key = os.getenv(key='NESHAN_KEY')
     url = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
@@ -138,7 +138,7 @@ async def location(request: Request, text: str, latitude: float, longitude: floa
 
 @router.get('/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
 @router.post('/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
-async def music_fa(request: Request, query: str, page: int = 1) -> dict:
+async def music_fa(query: str, page: int = 1) -> dict:
     '''Search and search web service on the [music-fa](https://music-fa.com) site'''
     request = requests.request('GET', f'https://music-fa.com/search/{query}/page/{page}')
     if request.status_code != requests.codes.ok:
@@ -169,7 +169,7 @@ async def music_fa(request: Request, query: str, page: int = 1) -> dict:
 
 @router.get('/news', tags=['News'], status_code=status.HTTP_200_OK)
 @router.post('/news', tags=['News'], status_code=status.HTTP_200_OK)
-async def news(request: Request, page: int = 1) -> dict:
+async def news(page: int = 1) -> dict:
     '''Web service to display news. onnected to the site www.tasnimnews.com'''
     url = 'https://www.tasnimnews.com'
     request = requests.request('GET', f'{url}/fa/top-stories?page={page}')
@@ -199,7 +199,7 @@ async def news(request: Request, page: int = 1) -> dict:
 
 @router.get('/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
 @router.post('/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
-async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> dict:
+async def rubino(auth: str, url: str, timeout: float = 10) -> dict:
     '''This api is used to get the information of the post(s) in Rubino Messenger'''
     payload: dict = {
         'api_version': '0',
@@ -227,7 +227,7 @@ async def rubino(request: Request, auth: str, url: str, timeout: float = 10) -> 
 
 @router.get('/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
 @router.post('/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
-async def translate(request: Request, text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
+async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto') -> dict:
     '''Translation of texts based on the Google Translate engine'''
     url = 'https://translate.google.com'
     final_url = f'{url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
@@ -246,7 +246,7 @@ async def translate(request: Request, text: str, to_lang: str = 'auto', from_lan
 
 @router.get('/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
 @router.post('/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
-async def github_topic_search(request: Request, query: str, per_page: int = 30, page: int = 1) -> dict:
+async def github_topic_search(query: str, per_page: int = 30, page: int = 1) -> dict:
     '''Github topic search web service'''
     headers = {
         'Accept': 'application/vnd.github+json'
@@ -262,7 +262,6 @@ async def github_topic_search(request: Request, query: str, per_page: int = 30, 
 @router.get('/github-repo-search', tags=['Github'], status_code=status.HTTP_200_OK)
 @router.post('/github-repo-search', tags=['Github'], status_code=status.HTTP_200_OK)
 async def github_repo_search(
-        request: Request,
         name: str,
         sort: str = 'stars',
         order: str = 'desc',
@@ -288,7 +287,6 @@ async def github_repo_search(
 @router.get('/github-users-search', tags=['Github'], status_code=status.HTTP_200_OK)
 @router.post('/github-users-search', tags=['Github'], status_code=status.HTTP_200_OK)
 async def github_users_search(
-        request: Request,
         query: str,
         sort: str = 'followers',
         order: str = 'desc',
@@ -313,7 +311,7 @@ async def github_users_search(
 
 @router.get('/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
 @router.post('/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
-async def pypi_package_search(request: Request, query: str) -> dict:
+async def pypi_package_search(query: str) -> dict:
     '''PyPi package search web service'''
     query = '+'.join(query.split())
     request = requests.request(method='GET', url=f'https://pypi.org/search/?q={query}')
