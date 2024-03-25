@@ -5,7 +5,6 @@ from fastapi.openapi.docs import get_swagger_ui_html
 
 from app.router.router import router
 
-
 app = FastAPI(
     title='sharkAPI',
     description='Free and open source api',
@@ -43,5 +42,6 @@ async def custom_404_handler(request: Request, __):
         }
     )
 
-# include router from app/router/router.py
-app.include_router(router)
+
+if __name__ == 'app.main':
+    app.include_router(router)
