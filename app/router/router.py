@@ -399,7 +399,7 @@ async def icon(query: str, page: int = 1):
 async def random_anime():
     '''return random 4K anime picture'''
     request = requests.request(method='GET', url='https://pic.re/image')
-    with open('app/tmpfiles/anime.png', 'wb') as _file:
+    with open('app/tmpfiles/anime.png', 'wb+') as _file:
         _file.write(request.content)
 
     return FileResponse('app/tmpfiles/anime.png')
