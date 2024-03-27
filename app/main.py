@@ -33,7 +33,6 @@ async def swagger_ui_html():
         swagger_favicon_url='app/static/favicon.png',
     )
 
-
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
 async def custom_404_handler(request: Request, __):
     return templates.TemplateResponse(
