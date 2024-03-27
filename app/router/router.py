@@ -399,7 +399,40 @@ async def icon(query: str, page: int = 1):
 async def random_anime():
     '''return random 4K anime picture'''
     request = requests.request(method='GET', url='https://pic.re/image')
+    if request.status_code != requests.codes.ok:
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
+
     with open('app/tmpfiles/anime.png', 'wb+') as _file:
         _file.write(request.content)
 
     return FileResponse('app/tmpfiles/anime.png')
+
+
+@router.get('/domain-price', tags=['Domain'], status_code=status.HTTP_200_OK)
+@router.post('/domain-price', tags=['Domain'], status_code=status.HTTP_200_OK)
+async def domain_price():
+    '''Get Domain price from [parsvds.com](https://parsvds.com) web site'''
+    request = requests.request(method='GET', url=f'https://parsvds.com/domain/')
+    if request.status_code != requests.codes.ok:
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='A problem has occurred on our end'
+        )
+
+    soup = bs4.BeautifulSoup(request.text, 'html.parser')
+    table_rows = soup.find_all('tr')
+
+    search_result = list()
+    for row in table_rows[1:]:
+        domain = row.find_all('td')
+        price = row.find_all('td')
+        search_result.append(
+            dict(
+                domain=domain[0].text, price=price[1].text
+            )
+        )
+
+    return execute(success=True, data=search_result)
