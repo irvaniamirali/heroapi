@@ -20,9 +20,9 @@ router = APIRouter(prefix='/api')
 def execute(success: bool = True, data: dict = None) -> dict:
     return dict(
         success=success,
-        dev='amirali irvany',
-        url='https://t.me/sharkAPI',
-        github='https://github.com/metect/sharkAPI',
+        dev='Hero-Team',
+        url='https://t.me/HeroAPI',
+        github='https://github.com/Hero-API/HeroAPI',
         data=data,
     )
 
