@@ -1,5 +1,5 @@
 {
-  "app": "sharkapi",
+  "app": "heroapi",
   "platform": "docker",
   "port": "80"
 }

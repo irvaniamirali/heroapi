@@ -6,14 +6,14 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from app.router.router import router
 
 app = FastAPI(
-    title='sharkAPI',
+    title='HeroAPI',
     description='Free and open source api',
     contact={
         'name': 'amirali irvany',
         'url': 'https://metect.github.io',
         'email': 'dev.amirali.irvany@gmail.com',
     },
-    terms_of_service='https://t.me/sharkAPI',
+    terms_of_service='https://t.me/HeroAPI',
     license_info={
         'name': 'Released under MIT LICENSE',
         'url': 'https://spdx.org/licenses/MIT.html'
