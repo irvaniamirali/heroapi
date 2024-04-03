@@ -1,12 +1,12 @@
-# sharkAPI
+# HeroAPI
 
 ### Free and open source api 
 
 
 ## Documents
-- [Telegram channel](https://t.me/sharkapi)
+- [Telegram channel](https://t.me/HeroAPI)
 - [Swagger Documents](https://sharkapi.liara.run/docs) 
 
 
 ### License
-ohmyapi is released under the MIT License. See the bundled [LICENSE](https://github.com/metect/sharkapi/blob/main/LICENSE) file for details.
+ohmyapi is released under the MIT License. See the bundled [LICENSE](https://github.com/Hero-API/HeroAPI/blob/main/LICENSE) file for details.
