@@ -9,8 +9,8 @@ app = FastAPI(
     title='HeroAPI',
     description='Free and open source api',
     contact={
-        'name': 'amirali irvany',
-        'url': 'https://metect.github.io',
+        'name': 'HeroTeam',
+        'url': 'https://github.com/HeroAPI',
         'email': 'dev.amirali.irvany@gmail.com',
     },
     terms_of_service='https://t.me/HeroAPI',
@@ -29,8 +29,8 @@ app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
 async def swagger_ui_html():
     return get_swagger_ui_html(
         openapi_url='/openapi.json',
-        title='sharkAPI',
-        swagger_favicon_url='app/static/favicon.png',
+        title='HeroAPI',
+        swagger_favicon_url='app/static/favicon.jpg',
     )
 
 @app.exception_handler(status.HTTP_404_NOT_FOUND)

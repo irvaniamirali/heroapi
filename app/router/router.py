@@ -13,7 +13,8 @@ import random
 import faker
 import bs4
 import jdatetime
-
+import base64
+import codecs
 
 router = APIRouter(prefix='/api')
 
@@ -436,3 +437,20 @@ async def domain_price():
         )
 
     return execute(success=True, data=search_result)
+
+@router.get('/bs64encode', tags=['Base64'], status_code=status.HTTP_200_OK)
+@router.post('/bs64encode', tags=['Base64'], status_code=status.HTTP_200_OK)
+async def b64(Text : str):
+    b_string = codecs.encode(Text, 'utf-8')
+    output = base64.b64encode(b_string)
+    return output
+
+@router.get('/bs64decode', tags=['Base64'], status_code=status.HTTP_200_OK)
+@router.post('/bs64decode', tags=['Base64'], status_code=status.HTTP_200_OK)
+async def b64encode(Text : str):
+    b_string = codecs.encode(Text, 'utf-8')
+    try:
+        output = base64.b64decode(b_string)
+        return output
+    except:
+        return { "message" : "This Text Not Base64"}
