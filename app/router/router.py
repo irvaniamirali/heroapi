@@ -18,7 +18,7 @@ import codecs
 
 router = APIRouter(prefix='/api')
 
-def execute(success: bool = True, data: dict = None) -> dict:
+def execute(success: bool = True, data: dict = None, err_message: str = None) -> dict:
     return dict(
         success=success,
         dev='Hero-Team',
@@ -438,19 +438,21 @@ async def domain_price():
 
     return execute(success=True, data=search_result)
 
+
 @router.get('/bs64encode', tags=['Base64'], status_code=status.HTTP_200_OK)
 @router.post('/bs64encode', tags=['Base64'], status_code=status.HTTP_200_OK)
-async def b64(Text : str):
-    b_string = codecs.encode(Text, 'utf-8')
+async def b64(text : str) -> dict:
+    b_string = codecs.encode(text, 'utf-8')
     output = base64.b64encode(b_string)
-    return output
+    return execute(success=True, data=output)
+
 
 @router.get('/bs64decode', tags=['Base64'], status_code=status.HTTP_200_OK)
 @router.post('/bs64decode', tags=['Base64'], status_code=status.HTTP_200_OK)
-async def b64encode(Text : str):
-    b_string = codecs.encode(Text, 'utf-8')
+async def b64encode(text : str) -> dict:
+    b_string = codecs.encode(text, 'utf-8')
     try:
         output = base64.b64decode(b_string)
-        return output
+        return execute(success=True, data=output)
     except:
-        return { "message" : "This Text Not Base64"}
+        return execute(success=False, data='This Text Not Base64')
