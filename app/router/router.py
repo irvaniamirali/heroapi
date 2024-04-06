@@ -441,14 +441,15 @@ async def domain_price():
 
 @router.get('/bs64encode', tags=['Base64'], status_code=status.HTTP_200_OK)
 @router.post('/bs64encode', tags=['Base64'], status_code=status.HTTP_200_OK)
-async def b64(text : str):
+async def b64(text : str) -> dict:
     b_string = codecs.encode(text, 'utf-8')
     output = base64.b64encode(b_string)
+    return execute(success=True, data=output)
 
 
 @router.get('/bs64decode', tags=['Base64'], status_code=status.HTTP_200_OK)
 @router.post('/bs64decode', tags=['Base64'], status_code=status.HTTP_200_OK)
-async def b64encode(text : str):
+async def b64encode(text : str) -> dict:
     b_string = codecs.encode(text, 'utf-8')
     try:
         output = base64.b64decode(b_string)
