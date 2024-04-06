@@ -469,6 +469,6 @@ async def convert_image_to_ico_format(image: Annotated[bytes, File()]):
         _file.write(image)
 
     logo = Image.open(FILE_PATH)
-    ICO_FILE_PATH = FILE_PATH.split('/')[-1] + 'logo.ico'
-    logo.save(ICO_FILE_PATH, format='ICO')
+    ICO_FILE_PATH = re.sub('png', 'ico', FILE_PATH)
+    logo.save(ICO_FILE_PATH, format='ico')
     return FileResponse(ICO_FILE_PATH)
