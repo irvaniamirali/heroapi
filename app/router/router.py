@@ -414,7 +414,7 @@ async def random_anime():
 
 @router.get('/domain-price', tags=['Domain'], status_code=status.HTTP_200_OK)
 @router.post('/domain-price', tags=['Domain'], status_code=status.HTTP_200_OK)
-async def domain_price() -> dict:
+async def domain_price():
     '''Get Domain price from [parsvds.com](https://parsvds.com) web site'''
     request = requests.request(method='GET', url=f'https://parsvds.com/domain/')
     if request.status_code != requests.codes.ok:
