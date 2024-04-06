@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Request, HTTPException, status
+from fastapi import APIRouter, Request, File, HTTPException, status
 from fastapi.responses import FileResponse
+from typing import Annotated
 
 import os
 import requests
@@ -15,6 +16,7 @@ import bs4
 import jdatetime
 import base64
 import codecs
+from PIL import Image
 
 router = APIRouter(prefix='/api')
 
@@ -456,3 +458,17 @@ async def b64encode(text : str) -> dict:
         return execute(success=True, data=output)
     except:
         return execute(success=False, data='This Text Not Base64')
+
+
+@router.get('/png2ico', tags=['Image'], status_code=status.HTTP_200_OK)
+@router.post('/png2ico', tags=['Image'], status_code=status.HTTP_200_OK)
+async def convert_image_to_ico_format(image: Annotated[bytes, File()]):
+    '''Convert image in png format to ico'''
+    FILE_PATH = 'app/tmpfiles/logo.png'
+    with open(FILE_PATH, 'wb+') as _file:
+        _file.write(image)
+
+    logo = Image.open(FILE_PATH)
+    ICO_FILE_PATH = FILE_PATH.split('/')[-1] + 'logo.ico'
+    logo.save(ICO_FILE_PATH, format='ICO')
+    return FileResponse(ICO_FILE_PATH)
