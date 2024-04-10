@@ -9,4 +9,4 @@
 
 
 ### License
-HeroAPI is released under the MIT License. See the bundled [LICENSE](https://github.com/Hero-API/HeroAPI/blob/main/LICENSE) file for details.
+HeroAPI is released under the MIT License. See the bundled [LICENSE](https://github.com/metect/HeroAPI/blob/main/LICENSE) file for details.
