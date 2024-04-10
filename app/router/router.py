@@ -21,7 +21,7 @@ from PIL import Image
 
 router = APIRouter(prefix='/api')
 
-def execute(success: bool = True, data: Optional[dict, str] = None, err_message: Optional[str] = None):
+def execute(success: bool = True, data: Optional[dict] = None, err_message: Optional[str] = None):
     return dict(
         success=success,
         dev='Hero-Team',
