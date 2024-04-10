@@ -20,9 +20,11 @@ langdetect==1.0.9
 limits==3.10.1
 MarkupSafe==2.1.5
 packaging==24.0
+pillow==10.3.0
 pydantic==2.6.4
 pydantic_core==2.16.3
 python-dateutil==2.9.0.post0
+python-multipart==0.0.9
 pytz==2024.1
 requests==2.31.0
 six==1.16.0
@@ -34,4 +36,3 @@ typing_extensions==4.10.0
 urllib3==2.2.1
 uvicorn==0.29.0
 wrapt==1.16.0
-
