@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, File, HTTPException, status
 from fastapi.responses import FileResponse
-from typing import Annotated
+
+from typing import Annotated, Optional
 
 import os
 import requests
@@ -20,7 +21,7 @@ from PIL import Image
 
 router = APIRouter(prefix='/api')
 
-def execute(success: bool = True, data: dict = None, err_message: str = None) -> dict:
+def execute(success: bool = True, data: Optional[dict, str] = None, err_message: Optional[str] = None):
     return dict(
         success=success,
         dev='Hero-Team',
@@ -75,7 +76,7 @@ async def font(text: str):
 
 @router.get('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
 @router.post('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
-async def datetime(tr_num: str = 'en'):
+async def datetime(tr_num: Optional[str] = 'en'):
     '''Display detailed information about the date of the solar calendar'''
     current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
     return execute(success=True, data=current_date)
@@ -91,7 +92,7 @@ async def convert_date(day: int, month: int, year: int):
 
 @router.get('/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
 @router.post('/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
-async def fake_data(item: str, count: int = 100, lang: str = 'en'):
+async def fake_data(item: str, count: Optional[int] = 100, lang: Optional[str] = 'en'):
     '''Production fake data. items: (`text`, `name`, `email`)'''
     if count > 100:
         return HTTPException(
@@ -149,7 +150,7 @@ async def location(text: str, latitude: float, longitude: float):
 
 @router.get('/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
 @router.post('/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
-async def music_fa(query: str, page: int = 1):
+async def music_fa(query: str, page: Optional[int] = 1):
     '''Search and search web service on the [music-fa](https://music-fa.com) site'''
     request = requests.request('GET', f'https://music-fa.com/search/{query}/page/{page}')
     if request.status_code != requests.codes.ok:
@@ -183,7 +184,7 @@ async def music_fa(query: str, page: int = 1):
 
 @router.get('/news', tags=['News'], status_code=status.HTTP_200_OK)
 @router.post('/news', tags=['News'], status_code=status.HTTP_200_OK)
-async def news(page: int = 1):
+async def news(page: Optional[int] = 1):
     '''Web service to display news. onnected to the site www.tasnimnews.com'''
     url = 'https://www.tasnimnews.com'
     request = requests.request('GET', f'{url}/fa/top-stories?page={page}')
@@ -216,7 +217,7 @@ async def news(page: int = 1):
 
 @router.get('/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
 @router.post('/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
-async def rubino(auth: str, url: str, timeout: float = 10):
+async def rubino(auth: str, url: str, timeout: Optional[float] = 10):
     '''This api is used to get the information of the post(s) in Rubino Messenger'''
     payload: dict = {
         'api_version': '0',
@@ -247,7 +248,7 @@ async def rubino(auth: str, url: str, timeout: float = 10):
 
 @router.get('/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
 @router.post('/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
-async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto'):
+async def translate(text: str, to_lang: Optional[str] = 'auto', from_lang: Optional[str] = 'auto'):
     '''Translation of texts based on the Google Translate engine'''
     url = 'https://translate.google.com'
     final_url = f'{url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
@@ -269,7 +270,7 @@ async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto'):
 
 @router.get('/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
 @router.post('/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
-async def github_topic_search(query: str, per_page: int = 30, page: int = 1):
+async def github_topic_search(query: str, per_page: Optional[int] = 30, page: Optional[int] = 1):
     '''Github topic search web service'''
     headers = {
         'Accept': 'application/vnd.github+json'
@@ -289,10 +290,10 @@ async def github_topic_search(query: str, per_page: int = 30, page: int = 1):
 @router.post('/github-repo-search', tags=['Github'], status_code=status.HTTP_200_OK)
 async def github_repo_search(
         name: str,
-        sort: str = 'stars',
-        order: str = 'desc',
-        per_page: int = 30,
-        page: int = 1
+        sort: Optional[str] = 'stars',
+        order: Optional[str] = 'desc',
+        per_page: Optional[int] = 30,
+        page: Optional[int] = 1
 ):
     '''Github repository search web service.
     sortlist repository: "stars", "forks", "help-wanted-issues", "updated"
@@ -317,10 +318,10 @@ async def github_repo_search(
 @router.post('/github-users-search', tags=['Github'], status_code=status.HTTP_200_OK)
 async def github_users_search(
         query: str,
-        sort: str = 'followers',
-        order: str = 'desc',
-        per_page: int = 30,
-        page: int = 1,
+        sort: Optional[str] = 'followers',
+        order: Optional[str] = 'desc',
+        per_page: Optional[int] = 30,
+        page: Optional[int] = 1,
 ):
     '''Github users search web service.
     sortlist repository: "followers", "repositories", "joined"
@@ -377,7 +378,7 @@ async def pypi_package_search(query: str):
 
 @router.get('/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
 @router.post('/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
-async def icon(query: str, page: int = 1):
+async def icon(query: str, page: Optional[int] = 1):
     '''Get the icon from icon-icons.com'''
     request = requests.request(method='GET', url=f'https://icon-icons.com/search/icons/?filtro={query}')
     if request.status_code != requests.codes.ok:
