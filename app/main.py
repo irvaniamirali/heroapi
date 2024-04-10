@@ -30,7 +30,7 @@ async def swagger_ui_html():
     return get_swagger_ui_html(
         openapi_url='/openapi.json',
         title='HeroAPI',
-        swagger_favicon_url='app/static/favicon.jpg',
+        swagger_favicon_url='app/static/favicon.ico',
     )
 
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
