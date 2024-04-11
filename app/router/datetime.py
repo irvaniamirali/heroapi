@@ -15,6 +15,6 @@ async def datetime(tr_num: Optional[str] = 'en') -> dict:
         'success': True,
         'dev': 'Hero-Team',
         'url': 'https://t.me/HeroAPI',
-        'github': 'https://github.com/Hero-API/HeroAPI',
+        'github': 'https://github.com/metect/HeroAPI',
         'data': current_date
     }
