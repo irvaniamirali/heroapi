@@ -4,10 +4,11 @@ from fastapi.responses import FileResponse
 from typing import Annotated, Optional
 import requests
 import bs4
+import re
+from PIL import Image
 
 
 router = APIRouter(prefix='/api')
-
 
 @router.get('/github-topic-search', status_code=status.HTTP_200_OK)
 @router.post('/github-topic-search', status_code=status.HTTP_200_OK)
@@ -157,5 +158,21 @@ async def icon(responce: Response, query: str, page: Optional[int] = 1) -> dict:
 
     return {
         'success': True,
-        'data': search_results
+        'data': search_result
     }
+
+
+@router.get('/png2ico', status_code=status.HTTP_200_OK)
+@router.post('/png2ico', status_code=status.HTTP_200_OK)
+async def convert_image_to_ico_format(image: Annotated[bytes, File()]):
+    '''Convert image in png format to ico'''
+    FILE_PATH = 'app/tmpfiles/logo.png'
+    with open(FILE_PATH, 'wb+') as _file:
+        _file.write(image)
+
+    logo = Image.open(FILE_PATH)
+    ICO_FILE_PATH = re.sub('png', 'ico', FILE_PATH)
+    logo.save(ICO_FILE_PATH, format='ico')
+    return FileResponse(ICO_FILE_PATH)
+
+
