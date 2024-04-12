@@ -84,6 +84,32 @@ async def font(responce: Response, text: Optional[str] = 'HeroAPI') -> dict:
             'data': final_values
         }
 
+@router.get('/location', status_code=status.HTTP_200_OK)
+@router.post('/location', status_code=status.HTTP_200_OK)
+async def location(
+        responce: Response,
+        text: str,
+        latitude: Optional[float] = 0,
+        longitude: Optional[float] = 0
+) -> dict:
+    '''Web service to get location and map'''
+    access_key = os.getenv(key='NESHAN_KEY')
+    url = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
+    request = requests.request(
+        method='GET', url=url, headers={
+            'Api-Key': access_key
+        }
+    )
+    if request.status_code != requests.codes.ok:
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
+
+    return {
+        'success': True,
+        'data': request.json()
+    }
 
 @router.get('/lang', tags=['Language Detect'], status_code=status.HTTP_200_OK)
 @router.post('/lang', tags=['Language Detect'], status_code=status.HTTP_200_OK)
@@ -101,6 +127,34 @@ async def language_detect(responce: Response, text: str) -> dict:
             'success': False,
             'error_message': 'The value of the `text` parameter is not invalid'
         }
+
+
+@router.get('/location', tags=['Location'], status_code=status.HTTP_200_OK)
+@router.post('/location', tags=['Location'], status_code=status.HTTP_200_OK)
+async def location(
+        responce: Response,
+        text: str,
+        latitude: Optional[float] = 0,
+        longitude: Optional[float] = 0
+) -> dict:
+    '''Web service to get location and map'''
+    access_key = os.getenv(key='NESHAN_KEY')
+    url = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
+    request = requests.request(
+        method='GET', url=url, headers={
+            'Api-Key': access_key
+        }
+    )
+    if request.status_code != requests.codes.ok:
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
+
+    return {
+        'success': True,
+        'data': request.json()
+    }
 
 
 @router.get('/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
