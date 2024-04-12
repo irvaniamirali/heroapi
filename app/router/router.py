@@ -5,7 +5,6 @@ from typing import Annotated, Optional
 
 import os
 import requests
-import jalali.Jalalian
 import urllib.parse
 import re
 import html
@@ -14,205 +13,19 @@ import json
 import random
 import faker
 import bs4
-import jdatetime
 import base64
 import codecs
 from PIL import Image
 
 router = APIRouter(prefix='/api')
 
-def execute(success: bool = True, data: Optional[dict] = None, err_message: Optional[str] = None):
-    return dict(
-        success=success,
-        dev='Hero-Team',
-        url='https://t.me/HeroAPI',
-        github='https://github.com/Hero-API/HeroAPI',
-        data=data,
-    )
-
-
-@router.get('/bard', tags=['AI'], status_code=status.HTTP_200_OK)
-@router.post('/bard', tags=['AI'], status_code=status.HTTP_200_OK)
-async def bard_ai(prompt: str):
-    '''Bard artificial intelligence web service'''
-    url = 'https://api.safone.dev/'
-    request = requests.request(method='GET', url=f'{url}bard?message={prompt}')
-    if request.status_code != requests.codes.ok:
-        return await execute(success=False, err_message='A problem has occurred on our end')
-
-    responce = request.json()
-    final_responce = responce['candidates'][0]['content']['parts'][0]['text']
-    return execute(success=True, data=final_responce)
-
-
-
-@router.get('/font', tags=['Art'], status_code=status.HTTP_200_OK)
-@router.post('/font', tags=['Art'], status_code=status.HTTP_200_OK)
-async def font(text: str):
-    '''Generate ascii fonts. Currently only English language is supported'''
-    if langdetect.detect(text) in ['fa', 'ar', 'ur']:
-        return HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Currently, Persian language is not supported'
-        )
-    else:
-        with open('app/jsonfiles/font.json', 'r') as f:
-            fonts = json.load(f)
-
-        converted_text = str()
-        for count in range(0, len(fonts)):
-            for char in text:
-                if char.isalpha():
-                    char_index = ord(char.lower()) - 97
-                    converted_text += fonts[str(count)][char_index]
-                else:
-                    converted_text += char
-
-            converted_text += '\n'
-            final_values = converted_text.split('\n')[0:-1]
-
-        return execute(success=True, data=final_values)
-
-
-@router.get('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
-@router.post('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
-async def datetime(tr_num: Optional[str] = 'en'):
-    '''Display detailed information about the date of the solar calendar'''
-    current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
-    return execute(success=True, data=current_date)
-
-
-@router.get('/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
-@router.post('/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
-async def convert_date(day: int, month: int, year: int):
-    '''Convert Shamsi date to Gregorian'''
-    result_date = jdatetime.date(day=day, month=month, year=year).togregorian()
-    return execute(success=True, data=result_date)
-
-
-@router.get('/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
-@router.post('/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
-async def fake_data(item: str, count: Optional[int] = 100, lang: Optional[str] = 'en'):
-    '''Production fake data. items: (`text`, `name`, `email`)'''
-    if count > 100:
-        return HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='The amount is too big. Send a smaller number `count`'
-        )
-    else:
-        final_values = list()
-        if item == 'text':
-            return execute(success=True, data=faker.Faker([lang]).text(count))
-        elif item == 'name':
-            for i in range(count):
-                final_values.append(faker.Faker([lang]).name())
-
-        elif item == 'email':
-            for i in range(count):
-                final_values.append(faker.Faker([lang]).email())
-
-    return execute(success=True, data=final_values)
-
-
-@router.get('/lang', tags=['Identify language'], status_code=status.HTTP_200_OK)
-@router.post('/lang', tags=['Identify language'], status_code=status.HTTP_200_OK)
-async def language_detect(text: str):
-    '''Identifying the language of texts'''
-    try:
-        result_detected = langdetect.detect(text)
-        return execute(success=True, data=result_detected)
-    except langdetect.LangDetectException:
-        return HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='The value of the `text` parameter is not invalid'
-        )
-
-
-@router.get('/location', tags=['Location'], status_code=status.HTTP_200_OK)
-@router.post('/location', tags=['Location'], status_code=status.HTTP_200_OK)
-async def location(text: str, latitude: float, longitude: float):
-    '''Web service to get location and map'''
-    access_key = os.getenv(key='NESHAN_KEY')
-    url = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
-    request = requests.request(
-        method='GET', url=url, headers={
-            'Api-Key': access_key
-        }
-    )
-    if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
-
-    return execute(success=True, data=request.json())
-
 
 @router.get('/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
 @router.post('/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
 async def music_fa(query: str, page: Optional[int] = 1):
     '''Search and search web service on the [music-fa](https://music-fa.com) site'''
-    request = requests.request('GET', f'https://music-fa.com/search/{query}/page/{page}')
-    if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
-
-    soup = bs4.BeautifulSoup(request.text, 'html.parser')
-    articles = soup.find_all('article', class_='mf_pst')
-
-    search_result = list()
-    for article in articles:
-        title = article['data-artist'].strip()
-        image_snippet = article.find('img', src=True)
-        images = re.findall(
-            r'https://music-fa\.com/wp-content/uploads/.*?\.jpg', str(image_snippet)
-        )
-        music = article.find('span', class_='play')
-        link_for_download = music['data-song']
-        search_result.append(
-            dict(
-                title=title,
-                images=images,
-                link_for_download=link_for_download
-            )
-        )
-
-    return execute(success=True, data=search_result)
 
 
-@router.get('/news', tags=['News'], status_code=status.HTTP_200_OK)
-@router.post('/news', tags=['News'], status_code=status.HTTP_200_OK)
-async def news(page: Optional[int] = 1):
-    '''Web service to display news. onnected to the site www.tasnimnews.com'''
-    url = 'https://www.tasnimnews.com'
-    request = requests.request('GET', f'{url}/fa/top-stories?page={page}')
-    if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
-
-    soup = bs4.BeautifulSoup(request.text, 'html.parser')
-    articles = soup.find_all('article', class_='list-item')
-
-    search_result = list()
-    for article in articles:
-        title = article.find('h2', class_='title').text.strip()
-        description = article.find('h4').text.strip()
-        image = article.find('img', src=True)
-        full_url = article.find('a', href=True)
-        search_result.append(
-            dict(
-                title=title,
-                description=description,
-                url=url + full_url['href'],
-                image=image['src']
-            )
-        )
-
-    return execute(success=True, data=search_result)
 
 
 @router.get('/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
