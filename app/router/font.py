@@ -33,8 +33,5 @@ async def font(responce: Response, text: Optional[str] = 'HeroAPI') -> dict:
 
         return {
             'success': True,
-            'dev': 'Hero-Team',
-            'url': 'https://t.me/HeroAPI',
-            'github': 'https://github.com/metect/HeroAPI',
             'data': final_values
         }
