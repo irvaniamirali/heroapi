@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Response, status
+from fastapi.responses import FileResponse
 
 import requests
 
