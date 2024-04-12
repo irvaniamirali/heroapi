@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Response, status
 
-from typing import Optional
 import requests
 
 
