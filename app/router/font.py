@@ -1,16 +1,17 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Response, status
 
 from typing import Optional
 import langdetect, json
 
 
-router = APIRouter(prefix='/api')
+router = APIRouter(prefix='/api', tags=['Art'])
 
-@router.get('/font', tags=['Art'], status_code=status.HTTP_200_OK)
-@router.get('/font', tags=['Art'], status_code=status.HTTP_200_OK)
-async def font(text: Optional[str] = 'HeroAPI') -> dict:
+@router.get('/font', status_code=status.HTTP_200_OK)
+@router.post('/font', status_code=status.HTTP_200_OK)
+async def font(responce: Response, text: Optional[str] = 'HeroAPI') -> dict:
     '''Generate ascii fonts. Currently only English language is supported'''
     if langdetect.detect(text) in ['fa', 'ar', 'ur']:
+        responce.status_code = status.HTTP_400_BAD_REQUEST
         return {
             'success': False, 'error_message': 'Currently, Persian language is not supported'
         }
