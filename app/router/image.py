@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Response, status
 from fastapi.responses import FileResponse
 
+from typing import Annotated
 from PIL import Image
 
 
