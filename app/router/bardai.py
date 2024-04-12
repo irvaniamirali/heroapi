@@ -21,8 +21,5 @@ async def bard_ai(responce: Response, prompt: str) -> dict:
     final_responce = responce['candidates'][0]['content']['parts'][0]['text']
     return {
         'success': True,
-        'dev': 'Hero-Team',
-        'url': 'https://t.me/HeroAPI',
-        'github': 'https://github.com/metect/HeroAPI',
         'data': final_responce
     }
