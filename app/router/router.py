@@ -1,59 +1,111 @@
-from fastapi import APIRouter, Request, File, HTTPException, status
+from fastapi import APIRouter, Response, File, status
 from fastapi.responses import FileResponse
-from typing import Annotated
 
-import os
+from typing import Annotated, Optional
 import requests
-import jalali.Jalalian
-import urllib.parse
-import re
-import html
-import langdetect
-import json
-import random
-import faker
 import bs4
-import jdatetime
+import re
+import os
+import json
+import faker
 import base64
 import codecs
+import random
+import langdetect
+import urllib.parse
 from PIL import Image
+from jalali.Jalalian import jdate
+from jdatetime import date as jdatetime
+
 
 router = APIRouter(prefix='/api')
 
-def execute(success: bool = True, data: dict = None, err_message: str = None) -> dict:
-    return dict(
-        success=success,
-        dev='Hero-Team',
-        url='https://t.me/HeroAPI',
-        github='https://github.com/Hero-API/HeroAPI',
-        data=data,
-    )
-
-
 @router.get('/bard', tags=['AI'], status_code=status.HTTP_200_OK)
 @router.post('/bard', tags=['AI'], status_code=status.HTTP_200_OK)
-async def bard_ai(prompt: str):
+async def bard_ai(responce: Response, prompt: str) -> dict:
     '''Bard artificial intelligence web service'''
     url = 'https://api.safone.dev/'
     request = requests.request(method='GET', url=f'{url}bard?message={prompt}')
     if request.status_code != requests.codes.ok:
-        return await execute(success=False, err_message='A problem has occurred on our end')
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
 
     responce = request.json()
     final_responce = responce['candidates'][0]['content']['parts'][0]['text']
-    return execute(success=True, data=final_responce)
+    return {
+        'success': True,
+        'data': final_responce
+    }
 
+
+@router.get('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
+@router.post('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
+async def datetime(tr_num: Optional[str] = 'en') -> dict:
+    '''Display detailed information about the date of the solar calendar'''
+    current_date = jdate('H:i:s ,Y/n/j', tr_num=tr_num)
+    return {
+        'success': True,
+        'data': current_date
+    }
+
+
+@router.get('/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
+@router.post('/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
+async def convert_date(day: int, month: int, year: int) -> dict:
+    '''Convert Shamsi date to Gregorian'''
+    result_date = jdatetime(day=day, month=month, year=year).togregorian()
+    return {
+        'success': True,
+        'data': result_date
+    }
+
+
+@router.get('/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
+@router.post('/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
+async def fake_data(
+        responce: Response,
+        item: Optional[str] = 'text',
+        count: Optional[int] = '99',
+        lang: Optional[str] = 'en'
+) -> dict:
+    '''Production fake data. all items: (`text`, `name`, `email`)'''
+    if int(count) > 100:
+        responce.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            'success': False, 'error_message': 'The amount is too big. Send a smaller number `count`'
+        }
+    else:
+        final_values = list()
+        if item == 'text':
+            return {
+                'success': True,
+                'data': faker.Faker([lang]).text(count)
+            }
+        elif item == 'name':
+            for i in range(count):
+                final_values.append(faker.Faker([lang]).name())
+
+        elif item == 'email':
+            for i in range(count):
+                final_values.append(faker.Faker([lang]).email())
+
+    return {
+        'success': True,
+        'data': final_values
+    }
 
 
 @router.get('/font', tags=['Art'], status_code=status.HTTP_200_OK)
 @router.post('/font', tags=['Art'], status_code=status.HTTP_200_OK)
-async def font(text: str):
+async def font(responce: Response, text: Optional[str] = 'HeroAPI') -> dict:
     '''Generate ascii fonts. Currently only English language is supported'''
     if langdetect.detect(text) in ['fa', 'ar', 'ur']:
-        return HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Currently, Persian language is not supported'
-        )
+        responce.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            'success': False, 'error_message': 'Currently, Persian language is not supported'
+        }
     else:
         with open('app/jsonfiles/font.json', 'r') as f:
             fonts = json.load(f)
@@ -70,66 +122,42 @@ async def font(text: str):
             converted_text += '\n'
             final_values = converted_text.split('\n')[0:-1]
 
-        return execute(success=True, data=final_values)
+        return {
+            'success': True,
+            'data': final_values
+        }
 
 
-@router.get('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
-@router.post('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
-async def datetime(tr_num: str = 'en'):
+@router.get('/datetime', status_code=status.HTTP_200_OK)
+@router.post('/datetime', status_code=status.HTTP_200_OK)
+async def datetime(tr_num: Optional[str] = 'en') -> dict:
     '''Display detailed information about the date of the solar calendar'''
-    current_date = jalali.Jalalian.jdate('H:i:s ,Y/n/j', tr_num=tr_num)
-    return execute(success=True, data=current_date)
+    current_date = jdate('H:i:s ,Y/n/j', tr_num=tr_num)
+    return {
+        'success': True,
+        'data': current_date
+    }
 
 
-@router.get('/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
-@router.post('/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
-async def convert_date(day: int, month: int, year: int):
+@router.get('/convert-date', status_code=status.HTTP_200_OK)
+@router.post('/convert-date', status_code=status.HTTP_200_OK)
+async def convert_date(day: int, month: int, year: int) -> dict:
     '''Convert Shamsi date to Gregorian'''
-    result_date = jdatetime.date(day=day, month=month, year=year).togregorian()
-    return execute(success=True, data=result_date)
+    result_date = jdatetime(day=day, month=month, year=year).togregorian()
+    return {
+        'success': True,
+        'data': result_date
+    }
 
 
-@router.get('/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
-@router.post('/faker', tags=['Fake data'], status_code=status.HTTP_200_OK)
-async def fake_data(item: str, count: int = 100, lang: str = 'en'):
-    '''Production fake data. items: (`text`, `name`, `email`)'''
-    if count > 100:
-        return HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='The amount is too big. Send a smaller number `count`'
-        )
-    else:
-        final_values = list()
-        if item == 'text':
-            return execute(success=True, data=faker.Faker([lang]).text(count))
-        elif item == 'name':
-            for i in range(count):
-                final_values.append(faker.Faker([lang]).name())
-
-        elif item == 'email':
-            for i in range(count):
-                final_values.append(faker.Faker([lang]).email())
-
-    return execute(success=True, data=final_values)
-
-
-@router.get('/lang', tags=['Identify language'], status_code=status.HTTP_200_OK)
-@router.post('/lang', tags=['Identify language'], status_code=status.HTTP_200_OK)
-async def language_detect(text: str):
-    '''Identifying the language of texts'''
-    try:
-        result_detected = langdetect.detect(text)
-        return execute(success=True, data=result_detected)
-    except langdetect.LangDetectException:
-        return HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='The value of the `text` parameter is not invalid'
-        )
-
-
-@router.get('/location', tags=['Location'], status_code=status.HTTP_200_OK)
-@router.post('/location', tags=['Location'], status_code=status.HTTP_200_OK)
-async def location(text: str, latitude: float, longitude: float):
+@router.get('/location', status_code=status.HTTP_200_OK)
+@router.post('/location', status_code=status.HTTP_200_OK)
+async def location(
+        responce: Response,
+        text: str,
+        latitude: Optional[float] = 0,
+        longitude: Optional[float] = 0
+) -> dict:
     '''Web service to get location and map'''
     access_key = os.getenv(key='NESHAN_KEY')
     url = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
@@ -139,24 +167,108 @@ async def location(text: str, latitude: float, longitude: float):
         }
     )
     if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
+
+    return {
+        'success': True,
+        'data': request.json()
+    }
+
+@router.get('/lang', tags=['Language Detect'], status_code=status.HTTP_200_OK)
+@router.post('/lang', tags=['Language Detect'], status_code=status.HTTP_200_OK)
+async def language_detect(responce: Response, text: str) -> dict:
+    '''Identifying the language of texts'''
+    try:
+        result_detected = langdetect.detect(text)
+        return {
+            'success': True,
+            'data': result_detected
+        }
+    except langdetect.LangDetectException:
+        responce.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            'success': False,
+            'error_message': 'The value of the `text` parameter is not invalid'
+        }
+
+
+@router.get('/location', tags=['Location'], status_code=status.HTTP_200_OK)
+@router.post('/location', tags=['Location'], status_code=status.HTTP_200_OK)
+async def location(
+        responce: Response,
+        text: str,
+        latitude: Optional[float] = 0,
+        longitude: Optional[float] = 0
+) -> dict:
+    '''Web service to get location and map'''
+    access_key = os.getenv(key='NESHAN_KEY')
+    url = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
+    request = requests.request(
+        method='GET', url=url, headers={
+            'Api-Key': access_key
+        }
+    )
+    if request.status_code != requests.codes.ok:
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
+
+    return {
+        'success': True,
+        'data': request.json()
+    }
+
+
+@router.get('/news', tags=['News'], status_code=status.HTTP_200_OK)
+@router.post('/news', tags=['News'], status_code=status.HTTP_200_OK)
+async def news(responce: Response, page: Optional[int] = 1) -> dict:
+    '''Web service to display news. onnected to the site www.tasnimnews.com'''
+    url = 'https://www.tasnimnews.com'
+    request = requests.request('GET', f'{url}/fa/top-stories?page={page}')
+    if request.status_code != requests.codes.ok:
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
+
+    soup = bs4.BeautifulSoup(request.text, 'html.parser')
+    articles = soup.find_all('article', class_='list-item')
+
+    search_result = list()
+    for article in articles:
+        title = article.find('h2', class_='title').text.strip()
+        description = article.find('h4').text.strip()
+        image = article.find('img', src=True)
+        full_url = article.find('a', href=True)
+        search_result.append(
+            dict(
+                title=title,
+                description=description,
+                url=url + full_url['href'],
+                image=image['src']
+            )
         )
 
-    return execute(success=True, data=request.json())
+    return {
+        'success': True,
+        'data': search_result
+    }
 
 
-@router.get('/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
-@router.post('/music-fa', tags=['Music search'], status_code=status.HTTP_200_OK)
-async def music_fa(query: str, page: int = 1):
+@router.get('/music-fa', status_code=status.HTTP_200_OK)
+@router.post('/music-fa', status_code=status.HTTP_200_OK)
+async def music_fa(responce: Response, query: str, page: Optional[int] = 1) -> dict:
     '''Search and search web service on the [music-fa](https://music-fa.com) site'''
     request = requests.request('GET', f'https://music-fa.com/search/{query}/page/{page}')
     if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
 
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
     articles = soup.find_all('article', class_='mf_pst')
@@ -178,98 +290,20 @@ async def music_fa(query: str, page: int = 1):
             )
         )
 
-    return execute(success=True, data=search_result)
-
-
-@router.get('/news', tags=['News'], status_code=status.HTTP_200_OK)
-@router.post('/news', tags=['News'], status_code=status.HTTP_200_OK)
-async def news(page: int = 1):
-    '''Web service to display news. onnected to the site www.tasnimnews.com'''
-    url = 'https://www.tasnimnews.com'
-    request = requests.request('GET', f'{url}/fa/top-stories?page={page}')
-    if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
-
-    soup = bs4.BeautifulSoup(request.text, 'html.parser')
-    articles = soup.find_all('article', class_='list-item')
-
-    search_result = list()
-    for article in articles:
-        title = article.find('h2', class_='title').text.strip()
-        description = article.find('h4').text.strip()
-        image = article.find('img', src=True)
-        full_url = article.find('a', href=True)
-        search_result.append(
-            dict(
-                title=title,
-                description=description,
-                url=url + full_url['href'],
-                image=image['src']
-            )
-        )
-
-    return execute(success=True, data=search_result)
-
-
-@router.get('/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
-@router.post('/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
-async def rubino(auth: str, url: str, timeout: float = 10):
-    '''This api is used to get the information of the post(s) in Rubino Messenger'''
-    payload: dict = {
-        'api_version': '0',
-        'auth': auth,
-        'client': {
-            'app_name': 'Main',
-            'app_version': '3.0.1',
-            'package': 'app.rubino.main',
-            'lang_code': 'en',
-            'platform': 'PWA'
-        },
-        'data': {
-            'share_link': url.split('/')[-1],
-            'profile_id': None
-        },
-        'method': 'getPostByShareLink'
+    return {
+        'success': True,
+        'data': search_result
     }
-    url = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
-    request = requests.request(method='GET', url=url, timeout=timeout, json=payload)
-    if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
-
-    return execute(success=True, data=request.json())
-
-
-@router.get('/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
-@router.post('/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
-async def translate(text: str, to_lang: str = 'auto', from_lang: str = 'auto'):
-    '''Translation of texts based on the Google Translate engine'''
-    url = 'https://translate.google.com'
-    final_url = f'{url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
-    request = requests.request(
-        method='GET', url=final_url, headers={
-            'User-Agent':
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
-        }
-    )
-    if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
-
-    result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
-    return execute(success=True, data=html.unescape(result[0]))
 
 
 @router.get('/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
 @router.post('/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
-async def github_topic_search(query: str, per_page: int = 30, page: int = 1):
+async def github_topic_search(
+        responce: Response,
+        query: str,
+        per_page: Optional[int] = 30,
+        page: Optional[int] = 1
+) -> dict:
     '''Github topic search web service'''
     headers = {
         'Accept': 'application/vnd.github+json'
@@ -277,22 +311,26 @@ async def github_topic_search(query: str, per_page: int = 30, page: int = 1):
     url = 'https://api.github.com/search/topics?q=%s&per_page=%s&page=%s'
     request = requests.request(method='GET', url=url % (query, per_page, page), headers=headers)
     if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
 
-    return execute(success=True, data=request.json())
+    return {
+        'success': True,
+        'data': request.json()
+    }
 
 
 @router.get('/github-repo-search', tags=['Github'], status_code=status.HTTP_200_OK)
 @router.post('/github-repo-search', tags=['Github'], status_code=status.HTTP_200_OK)
 async def github_repo_search(
+        responce: Response,
         name: str,
-        sort: str = 'stars',
-        order: str = 'desc',
-        per_page: int = 30,
-        page: int = 1
+        sort: Optional[str] = 'stars',
+        order: Optional[str] = 'desc',
+        per_page: Optional[int] = 30,
+        page: Optional[int] = 1
 ):
     '''Github repository search web service.
     sortlist repository: "stars", "forks", "help-wanted-issues", "updated"
@@ -305,22 +343,26 @@ async def github_repo_search(
         method='GET', url=url % (name, sort, order, per_page, page), headers=headers
     )
     if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
 
-    return execute(success=True, data=request.json())
+    return {
+        'success': True,
+        'data': request.json()
+    }
 
 
 @router.get('/github-users-search', tags=['Github'], status_code=status.HTTP_200_OK)
 @router.post('/github-users-search', tags=['Github'], status_code=status.HTTP_200_OK)
 async def github_users_search(
+        responce: Response,
         query: str,
-        sort: str = 'followers',
-        order: str = 'desc',
-        per_page: int = 30,
-        page: int = 1,
+        sort: Optional[str] = 'followers',
+        order: Optional[str] = 'desc',
+        per_page: Optional[int] = 30,
+        page: Optional[int] = 1,
 ):
     '''Github users search web service.
     sortlist repository: "followers", "repositories", "joined"
@@ -333,25 +375,28 @@ async def github_users_search(
         method='GET', url=url % (query, sort, order, per_page, page), headers=headers
     )
     if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
 
-    return execute(success=True, data=request.json())
+    return {
+        'success': True,
+        'data': request.json()
+    }
 
 
 @router.get('/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
 @router.post('/pypi', tags=['PyPi'], status_code=status.HTTP_200_OK)
-async def pypi_package_search(query: str):
+async def pypi_package_search(responce: Response, query: str) -> dict:
     '''PyPi package search web service'''
     query = '+'.join(query.split())
     request = requests.request(method='GET', url=f'https://pypi.org/search/?q={query}')
     if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
 
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
     package_snippets = soup.find_all('a', class_='package-snippet')
@@ -372,19 +417,22 @@ async def pypi_package_search(query: str):
             )
         )
 
-    return execute(success=True, data=search_results)
+    return {
+        'success': True,
+        'data': search_results
+    }
 
 
 @router.get('/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
 @router.post('/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
-async def icon(query: str, page: int = 1):
+async def icon(responce: Response, query: str, page: Optional[int] = 1) -> dict:
     '''Get the icon from icon-icons.com'''
     request = requests.request(method='GET', url=f'https://icon-icons.com/search/icons/?filtro={query}')
     if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
 
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
     icons = soup.find_all('div', class_='icon-preview')
@@ -394,70 +442,10 @@ async def icon(query: str, page: int = 1):
         data_original = icon.find('img', class_='lazy', src=True)
         search_result.append(data_original['data-original'])
 
-    return execute(success=True, data=search_result)
-
-
-@router.get('/rand-anime', tags=['Anime'], status_code=status.HTTP_200_OK)
-@router.post('/rand-anime', tags=['Anime'], status_code=status.HTTP_200_OK)
-async def random_anime():
-    '''return random 4K anime picture'''
-    request = requests.request(method='GET', url='https://pic.re/image')
-    if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
-
-    with open('app/tmpfiles/anime.png', 'wb+') as _file:
-        _file.write(request.content)
-
-    return FileResponse('app/tmpfiles/anime.png')
-
-
-@router.get('/domain-price', tags=['Domain'], status_code=status.HTTP_200_OK)
-@router.post('/domain-price', tags=['Domain'], status_code=status.HTTP_200_OK)
-async def domain_price():
-    '''Get Domain price from [parsvds.com](https://parsvds.com) web site'''
-    request = requests.request(method='GET', url=f'https://parsvds.com/domain/')
-    if request.status_code != requests.codes.ok:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='A problem has occurred on our end'
-        )
-
-    soup = bs4.BeautifulSoup(request.text, 'html.parser')
-    table_rows = soup.find_all('tr')
-
-    search_result = list()
-    for row in table_rows[1:]:
-        domain = row.find_all('td')
-        price = row.find_all('td')
-        search_result.append(
-            dict(
-                domain=domain[0].text, price=price[1].text
-            )
-        )
-
-    return execute(success=True, data=search_result)
-
-
-@router.get('/bs64encode', tags=['Base64'], status_code=status.HTTP_200_OK)
-@router.post('/bs64encode', tags=['Base64'], status_code=status.HTTP_200_OK)
-async def b64(text : str) -> dict:
-    b_string = codecs.encode(text, 'utf-8')
-    output = base64.b64encode(b_string)
-    return execute(success=True, data=output)
-
-
-@router.get('/bs64decode', tags=['Base64'], status_code=status.HTTP_200_OK)
-@router.post('/bs64decode', tags=['Base64'], status_code=status.HTTP_200_OK)
-async def b64encode(text : str) -> dict:
-    b_string = codecs.encode(text, 'utf-8')
-    try:
-        output = base64.b64decode(b_string)
-        return execute(success=True, data=output)
-    except:
-        return execute(success=False, data='This Text Not Base64')
+    return {
+        'success': True,
+        'data': search_result
+    }
 
 
 @router.get('/png2ico', tags=['Image'], status_code=status.HTTP_200_OK)
@@ -472,3 +460,142 @@ async def convert_image_to_ico_format(image: Annotated[bytes, File()]):
     ICO_FILE_PATH = re.sub('png', 'ico', FILE_PATH)
     logo.save(ICO_FILE_PATH, format='ico')
     return FileResponse(ICO_FILE_PATH)
+
+
+@router.get('/bs64encode', tags=['Base64'], status_code=status.HTTP_200_OK)
+@router.post('/bs64encode', tags=['Base64'], status_code=status.HTTP_200_OK)
+async def base64encode(text : str) -> dict:
+    b_string = codecs.encode(text, 'utf-8')
+    output = base64.b64encode(b_string)
+    return {
+        'success': True,
+        'data': output
+    }
+
+
+@router.get('/bs64decode', tags=['Base64'], status_code=status.HTTP_200_OK)
+@router.post('/bs64decode', tags=['Base64'], status_code=status.HTTP_200_OK)
+async def b64encode(responce: Response, text : str) -> dict:
+    b_string = codecs.encode(text, 'utf-8')
+    try:
+        output = base64.b64decode(b_string)
+        return {
+            'success': True,
+            'data': output
+        }
+    except:
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'This text not base64'
+        }
+
+
+@router.get('/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
+@router.post('/rubino', tags=['Social media'], status_code=status.HTTP_200_OK)
+async def rubino(responce: Response, auth: str, url: str, timeout: Optional[float] = 10) -> dict:
+    '''This api is used to get the information of the post(s) in Rubino Messenger'''
+    payload: dict = {
+        'api_version': '0',
+        'auth': auth,
+        'client': {
+            'app_name': 'Main',
+            'app_version': '3.0.1',
+            'package': 'app.rubino.main',
+            'lang_code': 'en',
+            'platform': 'PWA'
+        },
+        'data': {
+            'share_link': url.split('/')[-1],
+            'profile_id': None
+        },
+        'method': 'getPostByShareLink'
+    }
+    url = f'https://rubino{random.randint(1, 20)}.iranlms.ir/'
+    request = requests.request(method='GET', url=url, timeout=timeout, json=payload)
+    if request.status_code != requests.codes.ok:
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
+
+    return {
+        'success': True,
+        'data': request.json()
+    }
+
+
+@router.get('/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
+@router.post('/translate', tags=['Translate'], status_code=status.HTTP_200_OK)
+async def translate(
+        responce: Response,
+        text: str,
+        to_lang: Optional[str] = 'auto',
+        from_lang: Optional[str] = 'auto'
+) -> dict:
+    '''Translation of texts based on the Google Translate engine'''
+    url = 'https://translate.google.com'
+    query_url = f'{url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}'
+    request = requests.request(
+        method='GET', url=query_url, headers={
+            'User-Agent':
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
+        }
+    )
+    if request.status_code != requests.codes.ok:
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
+
+    result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
+    return {
+        'success': True,
+        'data': result
+    }
+
+
+@router.get('/domain-price', tags=['Domain'], status_code=status.HTTP_200_OK)
+@router.post('/domain-price', tags=['Domain'], status_code=status.HTTP_200_OK)
+async def domain_price(responce: Response) -> dict:
+    '''Get Domain price from [parsvds.com](https://parsvds.com) web site'''
+    request = requests.request(method='GET', url=f'https://parsvds.com/domain/')
+    if request.status_code != requests.codes.ok:
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
+
+    soup = bs4.BeautifulSoup(request.text, 'html.parser')
+    table_rows = soup.find_all('tr')
+
+    search_result = list()
+    for row in table_rows[1:]:
+        domain = row.find_all('td')
+        price = row.find_all('td')
+        search_result.append(
+            dict(
+                domain=domain[0].text, price=price[1].text
+            )
+        )
+
+    return {
+        'success': True,
+        'data': search_result
+    }
+
+
+@router.get('/rand-anime', tags=['Anime'], status_code=status.HTTP_200_OK)
+@router.post('/rand-anime', tags=['Anime'], status_code=status.HTTP_200_OK)
+async def random_anime_image(responce: Response) -> "FileResponse":
+    '''Get the icon from icon-icons.com'''
+    request = requests.request(method='GET', url='https://pic.re/image')
+    if request.status_code != requests.codes.ok:
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            'success': False, 'error_message': 'A problem has occurred on our end'
+        }
+
+    with open('app/tmpfiles/anime.png', 'wb+') as _file:
+        _file.write(request.content)
+
+    return FileResponse('app/tmpfiles/anime.png')

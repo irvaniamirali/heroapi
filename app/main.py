@@ -5,6 +5,7 @@ from fastapi.openapi.docs import get_swagger_ui_html
 
 from app.router.router import router
 
+
 app = FastAPI(
     title='HeroAPI',
     description='Free and open source api',
@@ -40,7 +41,6 @@ async def custom_404_handler(request: Request, __):
             'request': request
         }
     )
-
 
 if __name__ == 'app.main':
     app.include_router(router)
