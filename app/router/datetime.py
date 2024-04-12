@@ -14,9 +14,6 @@ async def datetime(tr_num: Optional[str] = 'en') -> dict:
     current_date = jdate('H:i:s ,Y/n/j', tr_num=tr_num)
     return {
         'success': True,
-        'dev': 'Hero-Team',
-        'url': 'https://t.me/HeroAPI',
-        'github': 'https://github.com/metect/HeroAPI',
         'data': current_date
     }
 
@@ -28,8 +25,5 @@ async def convert_date(day: int, month: int, year: int) -> dict:
     result_date = date(day=day, month=month, year=year).togregorian()
     return {
         'success': True,
-        'dev': 'Hero-Team',
-        'url': 'https://t.me/HeroAPI',
-        'github': 'https://github.com/metect/HeroAPI',
         'data': current_date
     }
