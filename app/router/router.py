@@ -32,6 +32,28 @@ async def bard_ai(responce: Response, prompt: str) -> dict:
     }
 
 
+@router.get('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
+@router.post('/datetime', tags=['Date & time'], status_code=status.HTTP_200_OK)
+async def datetime(tr_num: Optional[str] = 'en') -> dict:
+    '''Display detailed information about the date of the solar calendar'''
+    current_date = jdate('H:i:s ,Y/n/j', tr_num=tr_num)
+    return {
+        'success': True,
+        'data': current_date
+    }
+
+
+@router.get('/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
+@router.post('/convert-date', tags=['Date & time'], status_code=status.HTTP_200_OK)
+async def convert_date(day: int, month: int, year: int) -> dict:
+    '''Convert Shamsi date to Gregorian'''
+    result_date = date(day=day, month=month, year=year).togregorian()
+    return {
+        'success': True,
+        'data': current_date
+    }
+
+
 @router.get('/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
 @router.post('/github-topic-search', tags=['Github'], status_code=status.HTTP_200_OK)
 async def github_topic_search(
