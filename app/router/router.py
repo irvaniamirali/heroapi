@@ -8,6 +8,7 @@ import re
 import faker
 import base64
 import codecs
+import langdetect
 from PIL import Image
 from jalali.Jalalian import jdate
 from jdatetime import date as jdatetime
