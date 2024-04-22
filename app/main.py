@@ -50,9 +50,11 @@ URLS = [
     'app.router.anime.router',
     'app.router._base64.router',
     'app.router.datetime.router',
+    'app.router.dictionary.router',
     'app.router.domain.router',
     'app.router.fake.router',
-    'app.router.github.router',
+    'app.router.food.router',
+    'app.router._github.router',
     'app.router.icon.router',
     'app.router.image.router',
     'app.router.language.router',
@@ -63,10 +65,10 @@ URLS = [
     'app.router.pypi.router',
     'app.router.rubino.router',
     'app.router.translate.router',
+    # 'app.router.v2ray.router',
 ]
 
 initialize_routers = routers(app, URLS)
 
 if __name__ == 'app.main':
     initialize_routers()
-
