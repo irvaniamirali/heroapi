@@ -42,8 +42,12 @@ async def custom_404_handler(request: Request, __):
     )
 
 URLS = [
-    'app.router.translate.router',
+    'app.router.bardai.router',
+    'app.router.art.router',
     'app.router.datetime.router',
+    'app.router.fake.router',
+    'app.router.location.router',
+    'app.router.translate.router',
 ]
 
 initialize_routers = routers(app, URLS)
