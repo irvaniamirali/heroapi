@@ -25,6 +25,7 @@ app = FastAPI(
 templates = Jinja2Templates(directory='app/templates')
 app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
 
+
 @app.get('/docs', include_in_schema=False)
 async def swagger_ui_html():
     return get_swagger_ui_html(
@@ -33,6 +34,7 @@ async def swagger_ui_html():
         swagger_favicon_url='app/static/favicon.ico',
     )
 
+
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
 async def custom_404_handler(request: Request, __):
     return templates.TemplateResponse(
@@ -40,6 +42,7 @@ async def custom_404_handler(request: Request, __):
             'request': request
         }
     )
+
 
 URLS = [
     'app.router.bardai.router',
