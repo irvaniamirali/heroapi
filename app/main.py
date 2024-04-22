@@ -3,8 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html
 
-from app.router.router import router
-
+from app.router.router import routers
 
 app = FastAPI(
     title='HeroAPI',
@@ -42,5 +41,13 @@ async def custom_404_handler(request: Request, __):
         }
     )
 
+URLS = [
+    'app.router.translate.router',
+    'app.router.datetime.router',
+]
+
+initialize_routers = routers(app, URLS)
+
 if __name__ == 'app.main':
-    app.include_router(router)
+    initialize_routers()
+
