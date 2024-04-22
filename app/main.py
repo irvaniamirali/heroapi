@@ -48,6 +48,7 @@ URLS = [
     'app.router.fake.router',
     'app.router.github.router',
     'app.router.icon.router',
+    'app.router.image.router',
     'app.router.language.router',
     'app.router.location.router',
     'app.router.news.router',
