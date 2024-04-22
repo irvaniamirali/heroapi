@@ -50,6 +50,7 @@ URLS = [
     'app.router.anime.router',
     'app.router._base64.router',
     'app.router.datetime.router',
+    'app.router.dictionary.router',
     'app.router.domain.router',
     'app.router.fake.router',
     'app.router.github.router',
