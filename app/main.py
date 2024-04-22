@@ -46,6 +46,7 @@ URLS = [
     'app.router.art.router',
     'app.router._base64.router',
     'app.router.datetime.router',
+    'app.router.domain.router',
     'app.router.fake.router',
     'app.router.github.router',
     'app.router.icon.router',
