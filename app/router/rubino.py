@@ -6,6 +6,7 @@ import random
 
 router = APIRouter(prefix='/api', tags=['Social media'])
 
+
 @router.get('/rubino', status_code=status.HTTP_200_OK)
 @router.post('/rubino', status_code=status.HTTP_200_OK)
 async def rubino(responce: Response, auth: str, url: str, timeout: Optional[float] = 10) -> dict:
