@@ -69,4 +69,3 @@ initialize_routers = routers(app, URLS)
 
 if __name__ == 'app.main':
     initialize_routers()
-
