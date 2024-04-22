@@ -13,7 +13,7 @@ router = APIRouter(prefix='/api', tags=['Image'])
 async def convert_image_to_ico_format(image: Annotated[bytes, File()]):
     '''Convert image in png format to ico'''
     FILE_PATH = 'app/tmpfiles/logo.png'
-    with open(FILE_PATH, 'wb+') as _file:
+    with open(FILE_PATH, 'wb') as _file:
         _file.write(image)
 
     logo = Image.open(FILE_PATH)
