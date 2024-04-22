@@ -5,8 +5,8 @@ import langdetect
 router = APIRouter(prefix='/api', tags=['Language'])
 
 
-@router.get('/lang', tags=['Language Detect'], status_code=status.HTTP_200_OK)
-@router.post('/lang', tags=['Language Detect'], status_code=status.HTTP_200_OK)
+@router.get('/lang', status_code=status.HTTP_200_OK)
+@router.post('/lang', status_code=status.HTTP_200_OK)
 async def language_detect(responce: Response, text: str) -> dict:
     '''Identifying the language of texts'''
     try:
