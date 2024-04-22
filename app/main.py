@@ -46,6 +46,7 @@ URLS = [
     'app.router.art.router',
     'app.router.datetime.router',
     'app.router.fake.router',
+    'app.router.language.router',
     'app.router.location.router',
     'app.router.translate.router',
 ]
