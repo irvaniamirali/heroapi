@@ -53,6 +53,7 @@ URLS = [
     'app.router.dictionary.router',
     'app.router.domain.router',
     'app.router.fake.router',
+    'app.router.food.router',
     'app.router.github.router',
     'app.router.icon.router',
     'app.router.image.router',
