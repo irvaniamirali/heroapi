@@ -54,7 +54,9 @@ URLS = [
     'app.router.location.router',
     'app.router.news.router',
     'app.router.music.router',
+    'app.router.music.router',
     'app.router.pypi.router',
+    'app.router.rubino.router',
     'app.router.translate.router',
 ]
 
