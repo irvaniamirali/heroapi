@@ -3,8 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html
 
-from app.router.router import router
-
+from app.router.router import routers
 
 app = FastAPI(
     title='HeroAPI',
@@ -26,6 +25,7 @@ app = FastAPI(
 templates = Jinja2Templates(directory='app/templates')
 app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
 
+
 @app.get('/docs', include_in_schema=False)
 async def swagger_ui_html():
     return get_swagger_ui_html(
@@ -33,6 +33,7 @@ async def swagger_ui_html():
         title='HeroAPI',
         swagger_favicon_url='app/static/favicon.ico',
     )
+
 
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
 async def custom_404_handler(request: Request, __):
@@ -42,5 +43,30 @@ async def custom_404_handler(request: Request, __):
         }
     )
 
+
+URLS = [
+    'app.router.bardai.router',
+    'app.router.art.router',
+    'app.router.anime.router',
+    'app.router._base64.router',
+    'app.router.datetime.router',
+    'app.router.domain.router',
+    'app.router.fake.router',
+    'app.router.github.router',
+    'app.router.icon.router',
+    'app.router.image.router',
+    'app.router.language.router',
+    'app.router.location.router',
+    'app.router.news.router',
+    'app.router.music.router',
+    'app.router.music.router',
+    'app.router.pypi.router',
+    'app.router.rubino.router',
+    'app.router.translate.router',
+]
+
+initialize_routers = routers(app, URLS)
+
 if __name__ == 'app.main':
-    app.include_router(router)
+    initialize_routers()
+
