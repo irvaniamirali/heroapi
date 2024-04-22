@@ -24,13 +24,17 @@ async def music_fa(responce: Response, query: str, page: Optional[int] = 1) -> d
 
     search_result = list()
     for article in articles:
-        title = article.get('data-artist').strip()
+        title = article['data-artist'].strip()
         image_snippet = article.find('img', src=True)
         images = re.findall(
             r'https://music-fa\.com/wp-content/uploads/.*?\.jpg', str(image_snippet)
         )
         music = article.find('span', class_='play')
-        link_for_download = music.get('data-song')
+        try:
+            link_for_download = music['data-song']
+        except TypeError:
+            link_for_download = None
+
         search_result.append(
             dict(
                 title=title,
