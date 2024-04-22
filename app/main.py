@@ -49,6 +49,7 @@ URLS = [
     'app.router.language.router',
     'app.router.location.router',
     'app.router.news.router',
+    'app.router.music.router',
     'app.router.translate.router',
 ]
 
