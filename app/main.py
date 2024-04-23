@@ -45,7 +45,7 @@ async def custom_404_handler(request: Request, __):
 
 
 URLS = [
-    'app.router.bardai.router',
+    'app.router.bard.router',
     'app.router.art.router',
     'app.router.anime.router',
     'app.router._base64.router',
