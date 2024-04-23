@@ -3,7 +3,6 @@ from fastapi.responses import FileResponse
 
 import pyttsx3
 
-
 router = APIRouter(prefix='/api', tags=['Text to voice'])
 
 
