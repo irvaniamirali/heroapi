@@ -19,7 +19,7 @@ async def base64encode(text: str) -> dict:
 
 @router.get('/bs64decode', status_code=status.HTTP_200_OK)
 @router.post('/bs64decode', status_code=status.HTTP_200_OK)
-async def b64encode(responce: Response, text: str) -> dict:
+async def b64decode(responce: Response, text: str) -> dict:
     b_string = codecs.encode(text, 'utf-8')
     try:
         output = base64.b64decode(b_string)
