@@ -45,7 +45,7 @@ async def custom_404_handler(request: Request, __):
 
 
 URLS = [
-    'app.router.bardai.router',
+    'app.router.bard.router',
     'app.router.art.router',
     'app.router.anime.router',
     'app.router._base64.router',
@@ -65,6 +65,7 @@ URLS = [
     'app.router.pypi.router',
     'app.router.rubino.router',
     'app.router.translate.router',
+    'app.router.other.router',
 ]
 
 initialize_routers = routers(app, URLS)

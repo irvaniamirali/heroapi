@@ -3,6 +3,7 @@ from fastapi import APIRouter, Response, status
 from typing import Optional
 import urllib.parse
 import requests
+import html
 import re
 
 router = APIRouter(prefix='/api', tags=['Translate'])
@@ -31,7 +32,8 @@ async def translate(
             'success': False, 'error_message': 'A problem has occurred on our end'
         }
 
-    result = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
+    translated_text = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
+    result = html.unescape(translated_text[0])
     return {
         'success': True,
         'data': result

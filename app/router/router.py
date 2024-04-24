@@ -3,6 +3,7 @@ from typing import Any
 
 
 class routers:
+
     def __init__(self, app: FastAPI, routes: list):
         self.app = app
         self.routes = routes
