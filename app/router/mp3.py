@@ -8,7 +8,7 @@ router = APIRouter(prefix='/api', tags=['Text to voice'])
 
 @router.get('/text2voice', status_code=status.HTTP_200_OK)
 @router.post('/text2voice', status_code=status.HTTP_200_OK)
-async def text_to_voice(responce: Response, text: str) -> dict:
+async def text_to_voice(responce: Response, text: str) -> "FileResponse":
     '''Convert text to voice (without artificial intelligence)'''
     FILE_PATH = 'app/tmpfiles/speech.mp3'
     engine = pyttsx3.init()
