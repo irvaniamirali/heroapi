@@ -57,7 +57,6 @@ URLS = [
     'app.router._github.router',
     'app.router.icon.router',
     'app.router.image.router',
-    'app.router.mp3.router',
     'app.router.language.router',
     'app.router.location.router',
     'app.router.news.router',
@@ -66,6 +65,7 @@ URLS = [
     'app.router.pypi.router',
     'app.router.rubino.router',
     'app.router.translate.router',
+    'app.router.other.router',
 ]
 
 initialize_routers = routers(app, URLS)
