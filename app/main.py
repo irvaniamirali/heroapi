@@ -57,6 +57,7 @@ URLS = [
     'app.router._github.router',
     'app.router.icon.router',
     'app.router.image.router',
+    'app.router.mp3.router',
     'app.router.language.router',
     'app.router.location.router',
     'app.router.news.router',
