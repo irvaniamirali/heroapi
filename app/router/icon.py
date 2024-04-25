@@ -7,8 +7,8 @@ import bs4
 router = APIRouter(prefix='/api', tags=['Icon Search'])
 
 
-@router.get('/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
-@router.post('/icon', tags=['Icon'], status_code=status.HTTP_200_OK)
+@router.get('/icon', status_code=status.HTTP_200_OK)
+@router.post('/icon', status_code=status.HTTP_200_OK)
 async def icon(responce: Response, query: str, page: Optional[int] = 1) -> dict:
     '''Get the icon from icon-icons.com'''
     request = requests.request(
