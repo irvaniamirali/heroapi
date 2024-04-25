@@ -52,6 +52,7 @@ async def news(responce: Response, page: Optional[int] = 1) -> dict:
 @router.get('/news/v2', status_code=status.HTTP_200_OK)
 @router.post('/news/v2', status_code=status.HTTP_200_OK)
 async def news_version_two(responce: Response, page: Optional[int] = 1) -> dict:
+    '''Web service, the latest technological news. `page` parameter has 6930 pages'''
     request = requests.request('GET', f'https://gadgetnews.net/page/{page}')
     if request.status_code != requests.codes.ok:
         responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -92,5 +93,6 @@ async def news_version_two(responce: Response, page: Optional[int] = 1) -> dict:
                 )
             )
     return {
+        'success': True,
         'data': final_values
     }
