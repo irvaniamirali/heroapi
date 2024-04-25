@@ -3,8 +3,10 @@ anyio==4.3.0
 beautifulsoup4==4.12.3
 bs4==0.0.2
 certifi==2024.2.2
+cffi==1.16.0
 charset-normalizer==3.3.2
 click==8.1.7
+cryptography==42.0.5
 Deprecated==1.2.14
 dnspython==2.6.1
 email_validator==2.1.1
@@ -21,10 +23,14 @@ limits==3.10.1
 MarkupSafe==2.1.5
 packaging==24.0
 pillow==10.3.0
+pycparser==2.22
 pydantic==2.6.4
 pydantic_core==2.16.3
+PyJWT==2.8.0
+PyNaCl==1.5.0
 python-dateutil==2.9.0.post0
 python-multipart==0.0.9
+pyttsx3==2.90
 pytz==2024.1
 requests==2.31.0
 six==1.16.0
