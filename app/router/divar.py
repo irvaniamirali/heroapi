@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, status
 
 from typing import Optional
 
@@ -10,16 +10,9 @@ router = APIRouter(prefix='/api', tags=['Shop'])
 
 @router.get('/divar', status_code=status.HTTP_200_OK)
 @router.post('/divar', status_code=status.HTTP_200_OK)
-async def divar(responce: Response, query: str, city: Optional[str] = 'tehran') -> dict:
+async def divar(query: str, city: Optional[str] = 'tehran') -> dict:
     '''Web search service in [Divar](https://divar.ir)'''
-    request = requests.request(method='GET', url=f'https://divar.ir/s/{city}?q={query}')
-    if request.status_code != requests.codes.ok:
-        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            'success': False, 'error_message': 'A problem has occurred on our end'
-        }
-
-    request = request.text
+    request = requests.post(url=f'https://divar.ir/s/{city}?q={query}').text
     start, finish = request.rfind('['), request.rfind(']')
 
     values = str()
