@@ -14,6 +14,7 @@ async def divar(responce: Response, query: str, city: Optional[str] = 'tehran') 
     '''Web search service in [Divar](https://divar.ir)'''
     request = requests.request(method='GET', url=f'https://divar.ir/s/{city}?q={query}')
     if request.status_code != requests.codes.ok:
+        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             'success': False,
             'error_message': 'A problem has occurred on our end'
