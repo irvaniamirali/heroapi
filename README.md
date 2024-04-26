@@ -5,7 +5,7 @@
 
 ## Documents
 - [Telegram channel](https://t.me/HeroAPI)
-- [Swagger Documents](https://heroapi.liara.run/docs) 
+- [Swagger Documents](https://api-heroapi.liara.run/docs) 
 
 
 ### License
