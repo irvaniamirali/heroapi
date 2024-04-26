@@ -5,6 +5,8 @@ from fastapi.openapi.docs import get_swagger_ui_html
 
 from app.router.router import routers
 
+import subprocess
+
 app = FastAPI(
     title='HeroAPI',
     description='Free and open source api',
@@ -44,6 +46,28 @@ async def custom_404_handler(request: Request, __):
     )
 
 
+@app.exception_handler(status.HTTP_500_INTERNAL_SERVER_ERROR)
+async def internal_handler(request: Request, __):
+    '''Error display when error Internal server occurs'''
+    return {
+        'success': False,
+        'error_message': 'A problem has occurred on our end'
+    }
+
+
+@app.on_event('startup')
+async def startup_event():
+    commands: list = [
+        ['apt', 'update'],
+        ['apt', 'install', '--yes', '--force-yes', 'espeak', 'libespeak-dev']
+    ]
+    for command in commands:
+        try:
+            subprocess.run(command)
+        except:
+            pass
+
+
 URLS = [
     'app.router.bard.router',
     'app.router.art.router',
@@ -51,6 +75,7 @@ URLS = [
     'app.router._base64.router',
     'app.router.datetime.router',
     'app.router.dictionary.router',
+    'app.router.divar.router',
     'app.router.domain.router',
     'app.router.fake.router',
     'app.router.food.router',
@@ -60,7 +85,6 @@ URLS = [
     'app.router.language.router',
     'app.router.location.router',
     'app.router.news.router',
-    'app.router.music.router',
     'app.router.music.router',
     'app.router.pypi.router',
     'app.router.rubino.router',
