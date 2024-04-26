@@ -15,11 +15,13 @@ async def location(
         latitude: Optional[float] = 0,
         longitude: Optional[float] = 0
 ) -> dict:
-    '''Web service to get location and map'''
+    '''Search service for street names, places and old names (Search API)'''
     access_key = os.getenv(key='NESHAN_KEY')
-    query_url = f'https://api.neshan.org/v1/search?term={text}&lat={latitude}&lng={longitude}'
+
+    url = 'https://api.neshan.org/v1/'
+    query_url = f'{url}search?term={text}&lat={latitude}&lng={longitude}'
     request = requests.request(
-        method='GET', url=query_url, headers={
+        method='POST', url=query_url, headers={
             'Api-Key': access_key
         }
     )
