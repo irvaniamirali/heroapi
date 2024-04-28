@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Response, File, status
 from fastapi.responses import FileResponse
 
-from typing import Annotated
+from typing import Annotated, Optional
 
 from bs4 import BeautifulSoup
 from PIL import Image
