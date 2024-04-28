@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Response, status
 
+from ast import literal_eval
 from typing import Optional
 
-from ast import literal_eval
 import requests
 
 router = APIRouter(prefix='/api', tags=['Store'])
