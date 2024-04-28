@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from typing import Any
 
 
 class routers:
@@ -8,7 +7,7 @@ class routers:
         self.app = app
         self.routes = routes
 
-    def __call__(self, *args: Any, **kwds: Any) -> Any:
+    def __call__(self, *args, **kwds):
         self._create_route_methods()
         return self
 
