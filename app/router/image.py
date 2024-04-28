@@ -3,10 +3,10 @@ from fastapi.responses import FileResponse
 
 from typing import Annotated, Optional
 
-from bs4 import BeautifulSoup
-from PIL import Image
-import requests
 import re
+import requests
+from PIL import Image
+from bs4 import BeautifulSoup
 
 router = APIRouter(prefix='/api')
 
