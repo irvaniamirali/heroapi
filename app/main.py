@@ -5,7 +5,17 @@ from fastapi.openapi.docs import get_swagger_ui_html
 
 from app.router.router import routers
 
+from contextlib import asynccontextmanager
 import subprocess
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.in_flight_requests_count = 0
+    yield
+
+
+templates = Jinja2Templates(directory='app/templates')
 
 app = FastAPI(
     title='HeroAPI',
@@ -21,10 +31,10 @@ app = FastAPI(
         'url': 'https://spdx.org/licenses/MIT.html'
     },
     docs_url=None,
-    redoc_url=None
+    redoc_url=None,
+    lifespan=lifespan
 )
 
-templates = Jinja2Templates(directory='app/templates')
 app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
 
 
@@ -47,7 +57,7 @@ async def custom_404_handler(request: Request, __):
 
 
 @app.exception_handler(status.HTTP_500_INTERNAL_SERVER_ERROR)
-async def internal_handler(request: Request, __):
+async def internal_handler(request: Request):
     '''Error display when error Internal server occurs'''
     return {
         'success': False,
@@ -69,30 +79,38 @@ async def startup_event():
 
 
 URLS = [
-    'app.router.bard.router',
+    'app.router.ai.router',
     'app.router.art.router',
     'app.router.anime.router',
     'app.router._base64.router',
     'app.router.datetime.router',
     'app.router.dictionary.router',
-    'app.router.divar.router',
     'app.router.domain.router',
     'app.router.fake.router',
     'app.router.food.router',
     'app.router._github.router',
-    'app.router.icon.router',
     'app.router.image.router',
     'app.router.language.router',
     'app.router.location.router',
     'app.router.news.router',
     'app.router.music.router',
     'app.router.pypi.router',
+    'app.router.store.router',
     'app.router.rubino.router',
     'app.router.translate.router',
     'app.router.other.router',
 ]
 
+
 initialize_routers = routers(app, URLS)
+
+@app.middleware('http')
+async def in_flight_requests_counter(request: Request, call_next):
+    app.state.in_flight_requests_count += 1
+    print(request.url, request.method)
+    print(app.state.in_flight_requests_count)
+    return await call_next(request)
+
 
 if __name__ == 'app.main':
     initialize_routers()
