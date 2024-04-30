@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, status
+from fastapi.requests import Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html
@@ -15,6 +16,8 @@ async def lifespan(app: FastAPI):
     yield
 
 
+docs_url, redocs_url = None, None
+
 templates = Jinja2Templates(directory='app/templates')
 
 app = FastAPI(
@@ -23,16 +26,16 @@ app = FastAPI(
     contact={
         'name': 'HeroTeam',
         'url': 'https://github.com/Hero-API',
-        'email': 'dev.amirali.irvany@gmail.com',
+        'email': 'irvanyamirali@gmail.com',
     },
     terms_of_service='https://t.me/HeroAPI',
     license_info={
         'name': 'Released under MIT LICENSE',
-        'url': 'https://spdx.org/licenses/MIT.html'
+        'identifier': 'https://spdx.org/licenses/MIT.html'
     },
-    docs_url=None,
-    redoc_url=None,
-    lifespan=lifespan
+    lifespan=lifespan,
+    docs_url=docs_url,
+    redoc_url=redocs_url,
 )
 
 app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
