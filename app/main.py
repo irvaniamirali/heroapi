@@ -6,19 +6,7 @@ from fastapi.openapi.docs import get_swagger_ui_html
 
 from app.router.router import routers
 
-from contextlib import asynccontextmanager
 import subprocess
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    app.state.in_flight_requests_count = 0
-    yield
-
-
-docs_url, redocs_url = None, None
-
-templates = Jinja2Templates(directory='app/templates')
 
 app = FastAPI(
     title='HeroAPI',
@@ -33,10 +21,11 @@ app = FastAPI(
         'name': 'Released under MIT LICENSE',
         'identifier': 'https://spdx.org/licenses/MIT.html'
     },
-    lifespan=lifespan,
-    docs_url=docs_url,
-    redoc_url=redocs_url,
+    docs_url=None,
+    redoc_url=None,
 )
+
+templates = Jinja2Templates(directory='app/templates')
 
 app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
 
@@ -105,15 +94,6 @@ URLS = [
 ]
 
 initialize_routers = routers(app, URLS)
-
-
-@app.middleware('http')
-async def in_flight_requests_counter(request: Request, call_next):
-    app.state.in_flight_requests_count += 1
-    print(request.url, request.method)
-    print(app.state.in_flight_requests_count)
-    return await call_next(request)
-
 
 if __name__ == 'app.main':
     initialize_routers()
