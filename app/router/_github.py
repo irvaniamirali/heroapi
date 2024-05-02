@@ -25,7 +25,8 @@ async def github_topic_search(
     if request.status_code != requests.codes.ok:
         responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            'success': False, 'error_message': 'A problem has occurred on our end'
+            'success': False,
+            'error_message': 'A problem has occurred on our end'
         }
 
     return {
@@ -49,13 +50,15 @@ async def github_repo_search(
     '''
     query_url = base_url + 'repositories?q=%s&s=%s&order=%s&per_page=%s&page=%s'
     request = requests.request(
-        method='GET', url=query_url % (name, sort, order, per_page, page), headers=headers
+        method='POST', url=query_url % (name, sort, order, per_page, page), headers=headers
     )
     if request.status_code != requests.codes.ok:
         responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            'success': False, 'error_message': 'A problem has occurred on our end'
+            'success': False,
+            'error_message': 'A problem has occurred on our end'
         }
+
 
     return {
         'success': True,
@@ -78,12 +81,13 @@ async def github_users_search(
     '''
     query_url = base_url + 'users?q=%s&sort=%s&order=%s&per_page=%s&page=%s'
     request = requests.request(
-        method='GET', url=query_url % (query, sort, order, per_page, page), headers=headers
+        method='POST', url=query_url % (query, sort, order, per_page, page), headers=headers
     )
     if request.status_code != requests.codes.ok:
         responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            'success': False, 'error_message': 'A problem has occurred on our end'
+            'success': False,
+            'error_message': 'A problem has occurred on our end'
         }
 
     return {

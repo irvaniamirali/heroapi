@@ -52,7 +52,7 @@ async def news(responce: Response, page: Optional[int] = 1) -> dict:
 @router.get('/news/v2', status_code=status.HTTP_200_OK)
 @router.post('/news/v2', status_code=status.HTTP_200_OK)
 async def news_version_two(responce: Response, page: Optional[int] = 1) -> dict:
-    '''Web service, the latest technological news. `page` parameter has 6930 pages'''
+    '''Web service, the latest technological news. `page` parameter has 6000 pages'''
     request = requests.request('GET', f'https://gadgetnews.net/page/{page}')
     if request.status_code != requests.codes.ok:
         responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -81,10 +81,14 @@ async def news_version_two(responce: Response, page: Optional[int] = 1) -> dict:
             post_image_data = post_thumbnail_data.find('img', decoding='async', src=True).get('srcset')
             post_images = re.findall(r'(https:\/\/.*?\.jpg)', post_image_data)
 
+            entry_article = article.find('div', class_='entry')
+            paragraph = entry_article.find('p').text
+
             final_values.append(
                 dict(
                     post_url=post_url,
                     post_title=post_title,
+                    paragraph=paragraph,
                     author=dict(
                         author_link=post_author_link, name=post_author_name
                     ),

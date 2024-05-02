@@ -30,7 +30,7 @@ async def font(responce: Response, text: Optional[str] = 'HeroAPI') -> dict:
                     converted_text += char
 
             converted_text += '\n'
-            final_values = converted_text.split('\n')[0:-1]
+            final_values: list = converted_text.split('\n')[0:-1]
 
         return {
             'success': True,

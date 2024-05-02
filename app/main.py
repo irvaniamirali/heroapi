@@ -1,9 +1,12 @@
-from fastapi import FastAPI, Request, status
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI, status
+from fastapi.requests import Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from fastapi.openapi.docs import get_swagger_ui_html
 
 from app.router.router import routers
+
+import subprocess
 
 app = FastAPI(
     title='HeroAPI',
@@ -11,18 +14,19 @@ app = FastAPI(
     contact={
         'name': 'HeroTeam',
         'url': 'https://github.com/Hero-API',
-        'email': 'dev.amirali.irvany@gmail.com',
+        'email': 'irvanyamirali@gmail.com',
     },
     terms_of_service='https://t.me/HeroAPI',
     license_info={
         'name': 'Released under MIT LICENSE',
-        'url': 'https://spdx.org/licenses/MIT.html'
+        'identifier': 'https://spdx.org/licenses/MIT.html'
     },
     docs_url=None,
-    redoc_url=None
+    redoc_url=None,
 )
 
 templates = Jinja2Templates(directory='app/templates')
+
 app.mount('/app/static', StaticFiles(directory='app/static'), name='static')
 
 
@@ -44,8 +48,30 @@ async def custom_404_handler(request: Request, __):
     )
 
 
+@app.exception_handler(status.HTTP_500_INTERNAL_SERVER_ERROR)
+async def internal_handler(request: Request):
+    '''Error display when error Internal server occurs'''
+    return {
+        'success': False,
+        'error_message': 'A problem has occurred on our end'
+    }
+
+
+@app.on_event('startup')
+async def startup_event():
+    commands: list = [
+        ['apt', 'update'],
+        ['apt', 'install', '--yes', '--force-yes', 'espeak', 'libespeak-dev']
+    ]
+    for command in commands:
+        try:
+            subprocess.run(command)
+        except:
+            pass
+
+
 URLS = [
-    'app.router.bard.router',
+    'app.router.ai.router',
     'app.router.art.router',
     'app.router.anime.router',
     'app.router._base64.router',
@@ -55,14 +81,13 @@ URLS = [
     'app.router.fake.router',
     'app.router.food.router',
     'app.router._github.router',
-    'app.router.icon.router',
     'app.router.image.router',
     'app.router.language.router',
     'app.router.location.router',
     'app.router.news.router',
     'app.router.music.router',
-    'app.router.music.router',
     'app.router.pypi.router',
+    'app.router.store.router',
     'app.router.rubino.router',
     'app.router.translate.router',
     'app.router.other.router',

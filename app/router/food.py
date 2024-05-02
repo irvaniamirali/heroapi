@@ -3,7 +3,7 @@ from fastapi import APIRouter, Response, status
 import requests
 import bs4
 
-router = APIRouter(prefix='/api', tags=['Dictionary'])
+router = APIRouter(prefix='/api', tags=['Food'])
 
 
 @router.get('/food/v1', status_code=status.HTTP_200_OK)
