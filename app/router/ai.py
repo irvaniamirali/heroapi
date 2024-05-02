@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Response, status
 
+from g4f.client import Client
 import requests
+
+client = Client()
 
 router = APIRouter(prefix='/api', tags=['AI'])
 
@@ -21,4 +24,21 @@ async def bard_ai(responce: Response, prompt: str) -> dict:
     return {
         'success': True,
         'data': responce
+    }
+
+
+@router.get('/gpt', status_code=status.HTTP_200_OK)
+@router.post('/gpt', status_code=status.HTTP_200_OK)
+async def chatgpt_ai(responce: Response, prompt: str) -> dict:
+    '''ChatGPT artificial intelligence web service'''
+    message_data = {
+        'role': 'user', 'content': prompt
+    }
+    response = client.chat.completions.create(
+        model='gpt-3.5-turbo',
+        messages=[message_data],
+    )
+    return {
+        'success': True,
+        'data': response.choices[0].message.content
     }
