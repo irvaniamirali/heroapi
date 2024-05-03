@@ -8,6 +8,8 @@ import re
 
 import pyttsx3
 
+import langdetect
+
 from typing import Optional, Annotated
 
 engine = pyttsx3.init()
@@ -64,3 +66,21 @@ async def text_to_voice(text: str) -> "FileResponse":
     engine.save_to_file(text=text, filename=FILE_PATH)
     engine.runAndWait()
     return FileResponse(FILE_PATH)
+
+
+@router.get('/lang', tags=['Language'], status_code=status.HTTP_200_OK)
+@router.post('/lang', tags=['Language'], status_code=status.HTTP_200_OK)
+async def language_detect(responce: Response, text: str) -> dict:
+    '''Identifying the language of texts'''
+    try:
+        result_detected = langdetect.detect(text)
+        return {
+            'success': True,
+            'data': result_detected
+        }
+    except langdetect.LangDetectException:
+        responce.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            'success': False,
+            'error_message': 'The value of the `text` parameter is not invalid'
+        }
