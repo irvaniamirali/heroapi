@@ -80,7 +80,6 @@ URLS = [
     'app.router.fake.router',
     'app.router.food.router',
     'app.router._github.router',
-    'app.router.language.router',
     'app.router.location.router',
     'app.router.news.router',
     'app.router.music.router',
