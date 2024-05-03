@@ -12,7 +12,7 @@ from typing import Optional, Annotated
 
 engine = pyttsx3.init()
 
-router = APIRouter(prefix='/api', tags=['Text to voice'])
+router = APIRouter(prefix='/api')
 
 
 @router.get('/icon', tags=['Icon Search'], status_code=status.HTTP_200_OK)
@@ -56,9 +56,9 @@ async def convert_image_to_ico_format(image: Annotated[bytes, File()]):
     return FileResponse(ICO_FILE_PATH)
 
 
-@router.get('/text2voice', status_code=status.HTTP_200_OK)
-@router.post('/text2voice', status_code=status.HTTP_200_OK)
-async def text_to_voice(responce: Response, text: str) -> "FileResponse":
+@router.get('/text2voice', tags=['Text to voice'], status_code=status.HTTP_200_OK)
+@router.post('/text2voice', tags=['Text to voice'], status_code=status.HTTP_200_OK)
+async def text_to_voice(text: str) -> "FileResponse":
     '''Convert text to voice (without artificial intelligence)'''
     FILE_PATH = '/tmp/.heroapi/speech.mp3'
     engine.save_to_file(text=text, filename=FILE_PATH)
