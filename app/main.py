@@ -73,7 +73,6 @@ async def startup_event():
 URLS = [
     'app.router.ai.router',
     'app.router.art.router',
-    'app.router.anime.router',
     'app.router._base64.router',
     'app.router.datetime.router',
     'app.router.dictionary.router',
