@@ -3,7 +3,7 @@ from fastapi import APIRouter, Response, status
 from typing import Optional
 import requests
 
-router = APIRouter(prefix='/api', tags=['Github'])
+router = APIRouter(prefix='/api/github', tags=['Github'])
 
 base_url = 'https://api.github.com/search/'
 headers = {
@@ -11,8 +11,8 @@ headers = {
 }
 
 
-@router.get('/github-topic-search', status_code=status.HTTP_200_OK)
-@router.post('/github-topic-search', status_code=status.HTTP_200_OK)
+@router.get('/topic', status_code=status.HTTP_200_OK)
+@router.post('/topic', status_code=status.HTTP_200_OK)
 async def github_topic_search(
         responce: Response,
         query: str,
@@ -35,8 +35,8 @@ async def github_topic_search(
     }
 
 
-@router.get('/github-repo-search', status_code=status.HTTP_200_OK)
-@router.post('/github-repo-search', status_code=status.HTTP_200_OK)
+@router.get('/repo', status_code=status.HTTP_200_OK)
+@router.post('/repo', status_code=status.HTTP_200_OK)
 async def github_repo_search(
         responce: Response,
         name: str,
@@ -66,8 +66,8 @@ async def github_repo_search(
     }
 
 
-@router.get('/github-users-search', status_code=status.HTTP_200_OK)
-@router.post('/github-users-search', status_code=status.HTTP_200_OK)
+@router.get('/users', status_code=status.HTTP_200_OK)
+@router.post('/users', status_code=status.HTTP_200_OK)
 async def github_users_search(
         responce: Response,
         query: str,
