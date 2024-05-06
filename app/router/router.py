@@ -1,9 +1,8 @@
-from fastapi import FastAPI
 
 
-class routers:
+class Routers:
 
-    def __init__(self, app: FastAPI, routes: list):
+    def __init__(self, app, routes: list):
         self.app = app
         self.routes = routes
 
