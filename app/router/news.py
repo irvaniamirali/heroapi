@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Response, status
 
 from typing import Optional
+
 from bs4 import BeautifulSoup
 import requests
 import re
@@ -67,8 +68,8 @@ async def news_version_two(responce: Response, page: Optional[int] = 1) -> dict:
         articles = soup.find_all('article', class_=f'item-list recent-post{recent_post} recent-post-blog')
         for article in articles:
             post_box = article.find('h2', class_='post-box-title')
-            post_url = post_box.find('a', rel='bookmark', href=True).get('href')
-            post_title = post_box.find('a', rel='bookmark', href=True).text
+            bookmark_post = post_box.find('a', rel='bookmark', href=True)
+            post_url, post_title = bookmark_post.get('href'), bookmark_post.text
 
             post_meta = article.find('p', class_='post-meta')
             post_author_data = post_meta.find('span', class_='post-meta-author')
