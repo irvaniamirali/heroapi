@@ -60,7 +60,7 @@ async def startup_event():
             pass
 
 
-URLS = [
+URLS: list = [
     'app.router.api.ai.router',
     'app.router.api.art.router',
     'app.router.api._base64.router',
