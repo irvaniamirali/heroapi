@@ -1,5 +1,4 @@
-from fastapi import FastAPI, status
-from fastapi.requests import Request
+from fastapi import FastAPI, Request, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.openapi.docs import get_swagger_ui_html
