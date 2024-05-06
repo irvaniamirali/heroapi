@@ -68,8 +68,8 @@ async def text_to_voice(text: str) -> "FileResponse":
     return FileResponse(FILE_PATH)
 
 
-@router.get('/lang', tags=['Language'], status_code=status.HTTP_200_OK)
-@router.post('/lang', tags=['Language'], status_code=status.HTTP_200_OK)
+@router.get('/lang', tags=['Language Detect'], status_code=status.HTTP_200_OK)
+@router.post('/lang', tags=['Language Detect'], status_code=status.HTTP_200_OK)
 async def language_detect(responce: Response, text: str) -> dict:
     '''Identifying the language of texts'''
     try:
