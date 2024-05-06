@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.openapi.docs import get_swagger_ui_html
 
-from app.router.router import routers
+from app.router.router import Routers
 
 import subprocess
 
@@ -80,7 +80,7 @@ URLS: list = [
     'app.router.api.other.router',
 ]
 
-initialize_routers = routers(app, URLS)
+initialize_routers = Routers(app, URLS)
 
 if __name__ == 'app.main':
     initialize_routers()
