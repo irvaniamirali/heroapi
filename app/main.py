@@ -48,15 +48,6 @@ async def custom_404_handler(request: Request, __):
     )
 
 
-@app.exception_handler(status.HTTP_500_INTERNAL_SERVER_ERROR)
-async def internal_handler(request: Request):
-    '''Error display when error Internal server occurs'''
-    return {
-        'success': False,
-        'error_message': 'A problem has occurred on our end'
-    }
-
-
 @app.on_event('startup')
 async def startup_event():
     commands: list = [
