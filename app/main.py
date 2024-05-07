@@ -12,7 +12,7 @@ app = FastAPI(
     description='Free and open source api',
     contact={
         'name': 'HeroTeam',
-        'url': 'https://github.com/Hero-API',
+        'url': 'https://github.com/irvanyamirali/HeroAPI',
         'email': 'irvanyamirali@gmail.com',
     },
     terms_of_service='https://t.me/HeroAPI',
