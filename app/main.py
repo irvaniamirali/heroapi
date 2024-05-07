@@ -5,8 +5,6 @@ from fastapi.openapi.docs import get_swagger_ui_html
 
 from app.router.router import Routers
 
-import subprocess
-
 app = FastAPI(
     title='HeroAPI',
     description='Free and open source api',
