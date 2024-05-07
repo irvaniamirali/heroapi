@@ -5,14 +5,12 @@ from fastapi.openapi.docs import get_swagger_ui_html
 
 from app.router.router import Routers
 
-import subprocess
-
 app = FastAPI(
     title='HeroAPI',
     description='Free and open source api',
     contact={
         'name': 'HeroTeam',
-        'url': 'https://github.com/Hero-API',
+        'url': 'https://github.com/irvanyamirali/HeroAPI',
         'email': 'irvanyamirali@gmail.com',
     },
     terms_of_service='https://t.me/HeroAPI',
@@ -45,19 +43,6 @@ async def custom_404_handler(request: Request, __):
             'request': request
         }
     )
-
-
-@app.on_event('startup')
-async def startup_event():
-    commands: list = [
-        ['apt', 'update'],
-        ['apt', 'install', '--yes', '--force-yes', 'espeak', 'libespeak-dev']
-    ]
-    for command in commands:
-        try:
-            subprocess.run(command)
-        except:
-            pass
 
 
 URLS: list = [

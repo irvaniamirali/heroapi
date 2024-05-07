@@ -6,13 +6,9 @@ from PIL import Image
 import requests
 import re
 
-import pyttsx3
-
 import langdetect
 
 from typing import Optional, Annotated
-
-engine = pyttsx3.init()
 
 router = APIRouter(prefix='/api')
 
@@ -56,16 +52,6 @@ async def convert_image_to_ico_format(image: Annotated[bytes, File()]):
     ICO_FILE_PATH = re.sub('png', 'ico', FILE_PATH)
     logo.save(ICO_FILE_PATH, format='ico')
     return FileResponse(ICO_FILE_PATH)
-
-
-@router.get('/text2voice', tags=['Text to voice'], status_code=status.HTTP_200_OK)
-@router.post('/text2voice', tags=['Text to voice'], status_code=status.HTTP_200_OK)
-async def text_to_voice(text: str) -> "FileResponse":
-    '''Convert text to voice (without artificial intelligence)'''
-    FILE_PATH = '/tmp/.heroapi/speech.mp3'
-    engine.save_to_file(text=text, filename=FILE_PATH)
-    engine.runAndWait()
-    return FileResponse(FILE_PATH)
 
 
 @router.get('/lang', tags=['Language Detect'], status_code=status.HTTP_200_OK)
