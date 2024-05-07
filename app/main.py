@@ -47,19 +47,6 @@ async def custom_404_handler(request: Request, __):
     )
 
 
-@app.on_event('startup')
-async def startup_event():
-    commands: list = [
-        ['apt', 'update'],
-        ['apt', 'install', '--yes', '--force-yes', 'espeak', 'libespeak-dev']
-    ]
-    for command in commands:
-        try:
-            subprocess.run(command)
-        except:
-            pass
-
-
 URLS: list = [
     'app.router.api.ai.router',
     'app.router.api.art.router',
