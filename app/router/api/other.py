@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Response, File, status
-from fastapi.responses import FileResponse
+
+from typing import Optional, Annotated
 
 from bs4 import BeautifulSoup
 from PIL import Image
@@ -7,8 +8,6 @@ import requests
 import re
 
 import langdetect
-
-from typing import Optional, Annotated
 
 router = APIRouter(prefix='/api')
 
