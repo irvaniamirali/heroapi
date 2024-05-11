@@ -1,17 +1,18 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Response, status
 
 from typing import Optional
-from jalali.Jalalian import jdate
-from jdatetime import date as jdatetime
+import jdatetime
 
 router = APIRouter(prefix='/api', tags=['Date & time'])
 
 
 @router.get('/datetime', status_code=status.HTTP_200_OK)
 @router.post('/datetime', status_code=status.HTTP_200_OK)
-async def datetime(tr_num: Optional[str] = 'en') -> dict:
+async def datetime(responce: Responce) -> dict:
     '''Display detailed information about the date of the solar calendar'''
-    current_date = jdate('H:i:s ,Y/n/j', tr_num=tr_num)
+    jdatetime.set_locale(jdatetime.FA_LOCALE)
+    now_datatime = jdatetime.datetime.now()
+    current_date = now_datatime.strftime('%a, %d %b %Y %H:%M:%S')
     return {
         'success': True,
         'data': current_date
