@@ -1,11 +1,9 @@
-from fastapi import APIRouter, Response, File, status
+from fastapi import APIRouter, Response, status
 
-from typing import Optional, Annotated
+from typing import Optional
 
 from bs4 import BeautifulSoup
-from PIL import Image
 import requests
-import re
 
 import langdetect
 
