@@ -3,7 +3,15 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.openapi.docs import get_swagger_ui_html
 
+from contextlib import asynccontextmanager
+
 from app.router.router import Routers
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.in_flight_requests_count = 0
+    yield
+
 
 app = FastAPI(
     title='HeroAPI',
@@ -20,6 +28,7 @@ app = FastAPI(
     },
     docs_url=None,
     redoc_url=None,
+    lifespan=lifespan
 )
 
 templates = Jinja2Templates(directory='app/templates')
@@ -43,6 +52,11 @@ async def custom_404_handler(request: Request, __):
             'request': request
         }
     )
+
+@app.middleware('http')
+async def in_flight_requests_counter(request, call_next):
+    app.state.in_flight_requests_count += 1
+    return await call_next(request)
 
 
 URLS: list = [
