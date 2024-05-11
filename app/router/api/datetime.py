@@ -8,7 +8,7 @@ router = APIRouter(prefix='/api', tags=['Date & time'])
 
 @router.get('/datetime', status_code=status.HTTP_200_OK)
 @router.post('/datetime', status_code=status.HTTP_200_OK)
-async def datetime(responce: Responce) -> dict:
+async def datetime(responce: Response) -> dict:
     '''Display detailed information about the date of the solar calendar'''
     jdatetime.set_locale(jdatetime.FA_LOCALE)
     now_datatime = jdatetime.datetime.now()
