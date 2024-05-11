@@ -46,14 +46,11 @@ async def custom_404_handler(request: Request, __):
 
 
 URLS: list = [
-    'app.router.api.ai.router',
     'app.router.api.art.router',
     'app.router.api._base64.router',
     'app.router.api.datetime.router',
     'app.router.api.dictionary.router',
-    'app.router.api.domain.router',
     'app.router.api.fake.router',
-    'app.router.api.food.router',
     'app.router.api._github.router',
     'app.router.api.location.router',
     'app.router.api.news.router',
