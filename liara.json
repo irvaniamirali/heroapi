@@ -1,5 +1,5 @@
 {
-  "APp": "heroapi",
+  "app": "heroapi",
   "platform": "docker",
   "port": "80"
 }
