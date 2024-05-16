@@ -2,16 +2,16 @@ from fastapi import APIRouter, Response, status
 
 from typing import Optional
 import jdatetime
+import datetime
 
 router = APIRouter(prefix='/api', tags=['Date & time'])
 
 
 @router.get('/datetime', status_code=status.HTTP_200_OK)
 @router.post('/datetime', status_code=status.HTTP_200_OK)
-async def datetime(responce: Response) -> dict:
-    '''Display detailed information about the date of the solar calendar'''
-    jdatetime.set_locale(jdatetime.FA_LOCALE)
-    now_datatime = jdatetime.datetime.now()
+async def date_time(responce: Response) -> dict:
+    '''Date and time display web service'''
+    now_datatime = datetime.datetime.now()
     current_date = now_datatime.strftime('%a, %d %b %Y %H:%M:%S')
     return {
         'success': True,
