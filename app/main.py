@@ -13,6 +13,8 @@ async def lifespan(app: FastAPI):
     yield
 
 
+docs_url, redoc_url = None, None
+
 app = FastAPI(
     title='HeroAPI',
     description='Free and open source api',
@@ -26,9 +28,9 @@ app = FastAPI(
         'name': 'Released under MIT LICENSE',
         'identifier': 'https://spdx.org/licenses/MIT.html'
     },
-    docs_url=None,
-    redoc_url=None,
-    lifespan=lifespan
+    lifespan=lifespan,
+    docs_url=docs_url,
+    redoc_url=redoc_url,
 )
 
 templates = Jinja2Templates(directory='app/templates')
