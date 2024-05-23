@@ -61,6 +61,7 @@ async def in_flight_requests_counter(request, call_next):
 
 URLS: list = [
     'app.router.api.art.router',
+    'app.router.api.qrcode.router',
     'app.router.api._base64.router',
     'app.router.api.datetime.router',
     'app.router.api.dictionary.router',
@@ -71,7 +72,6 @@ URLS: list = [
     'app.router.api.music.router',
     'app.router.api.pypi.router',
     'app.router.api.store.router',
-    'app.router.api.qrcode.router'
     'app.router.api.rubino.router',
     'app.router.api.translate.router',
     'app.router.api.other.router',
