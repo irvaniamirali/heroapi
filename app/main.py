@@ -71,6 +71,7 @@ URLS: list = [
     'app.router.api.music.router',
     'app.router.api.pypi.router',
     'app.router.api.store.router',
+    'app.router.api.qrcode.router'
     'app.router.api.rubino.router',
     'app.router.api.translate.router',
     'app.router.api.other.router',
