@@ -23,7 +23,7 @@ async def date_time(responce: Response) -> dict:
 @router.post('/convert-date', status_code=status.HTTP_200_OK)
 async def convert_date(day: int, month: int, year: int) -> dict:
     '''Convert Shamsi date to Gregorian'''
-    result_date = jdatetime(day=day, month=month, year=year).togregorian()
+    result_date = jdatetime.date(day=day, month=month, year=year).togregorian()
     return {
         'success': True,
         'data': result_date
