@@ -4,6 +4,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.openapi.docs import get_swagger_ui_html
 
 from app.router.router import Routers
+from app.deploy.deploy import start_commands
+
+import asyncio
 
 app = FastAPI(
     title='HeroAPI',
@@ -43,6 +46,13 @@ async def custom_404_handler(request: Request, __):
             'request': request
         }
     )
+
+
+@app.on_event("startup")
+async def startup_event():
+    loop = asyncio.get_event_loop()
+    loop.create_task(start_commands())
+
 
 URLS: list = [
     'app.router.api.art.router',
