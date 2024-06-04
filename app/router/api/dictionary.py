@@ -16,6 +16,13 @@ async def dictionary(query: str) -> dict:
     )
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
     paragraphs = soup.find('div', class_='definitions p-t-1')
+
+    if not paragraphs:
+        return {
+            'success': False,
+            'error': 'Your word was not found in the dictionary'
+        }
+
     return {
         'success': True,
         'data': paragraphs.text
