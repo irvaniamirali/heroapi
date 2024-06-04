@@ -17,7 +17,7 @@ async def font(responce: Response, text: Optional[str] = 'HeroAPI') -> dict:
             'success': False, 'error_message': 'Currently, Persian language is not supported'
         }
     else:
-        with open('app/jsonfiles/font.json', 'r') as f:
+        with open('app/jsons/fonts.json', 'r') as f:
             fonts = json.load(f)
 
         converted_text = str()

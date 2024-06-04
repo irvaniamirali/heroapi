@@ -1,18 +1,18 @@
 from fastapi import APIRouter, Response, status
 
 from typing import Optional
+
+from jalali.Jalalian import jdate
 import jdatetime
-import datetime
 
 router = APIRouter(prefix='/api', tags=['Date & time'])
 
 
 @router.get('/datetime', status_code=status.HTTP_200_OK)
 @router.post('/datetime', status_code=status.HTTP_200_OK)
-async def date_time(responce: Response) -> dict:
+async def date_time(responce: Response, number_lang: str = 'fa') -> dict:
     '''Date and time display web service'''
-    now_datatime = datetime.datetime.now()
-    current_date = now_datatime.strftime('%a, %d %b %Y %H:%M:%S')
+    current_date = jdate('H:i:s ,Y/n/j', tr_num=number_lang)
     return {
         'success': True,
         'data': current_date
