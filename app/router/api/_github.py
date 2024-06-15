@@ -25,7 +25,7 @@ async def github_topic_search(
     Github topic search web service
     '''
     query_url = 'topics?q=%s&per_page=%s&page=%s'
-    request = requests.request(method='GET', url=query_url % (query, per_page, page), headers=headers)
+    request = requests.request(method='GET', url=base_url + query_url % (query, per_page, page), headers=headers)
     if request.status_code != requests.codes.ok:
         responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
