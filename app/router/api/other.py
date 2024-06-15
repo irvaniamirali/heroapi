@@ -25,11 +25,10 @@ async def icon(responce: Response, query: str, page: Optional[int] = 1) -> dict:
 
     soup = BeautifulSoup(request.text, 'html.parser')
     icons = soup.find_all('div', class_='icon-preview')
-
     search_result = list()
     for icon in icons:
-        data_original = icon.find('img', class_='lazy', src=True)
-        search_result.append(data_original.get('data-original'))
+        data_original = icon.find('img', loading='lazy', src=True)
+        search_result.append(data_original.get('src'))
 
     return {
         'success': True,
