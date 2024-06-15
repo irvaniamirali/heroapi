@@ -12,7 +12,7 @@ router = APIRouter(prefix='/api', tags=['Dictionary'])
 async def dictionary(query: str) -> dict:
     '''Search words in deh khoda dictionary'''
     request = requests.request(
-        method='POST', url=f'https://dehkhoda.ut.ac.ir/fa/dictionary/{query}'
+        method='GET', url=f'https://dehkhoda.ut.ac.ir/fa/dictionary/{query}'
     )
     soup = bs4.BeautifulSoup(request.text, 'html.parser')
     paragraphs = soup.find('div', class_='definitions p-t-1')
