@@ -32,7 +32,7 @@ async def swagger_ui_html():
     return get_swagger_ui_html(
         openapi_url='/openapi.json',
         title='HeroAPI',
-        swagger_favicon_url='app/static/favicon.ico',
+        swagger_favicon_url='app/static/favicon.png',
     )
 
 
