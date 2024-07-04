@@ -16,7 +16,7 @@ headers = {
 @router.get("/topic", status_code=status.HTTP_200_OK)
 @router.post("/topic", status_code=status.HTTP_200_OK)
 async def github_topic_search(
-        responce: Response,
+        response: Response,
         query: str,
         per_page: Optional[int] = 30,
         page: Optional[int] = 1
@@ -27,7 +27,7 @@ async def github_topic_search(
     query_url = "topics?q=%s&per_page=%s&page=%s"
     request = requests.request(method="GET", url=base_url + query_url % (query, per_page, page), headers=headers)
     if request.status_code != requests.codes.ok:
-        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
             "error_message": "A problem has occurred on our end"
@@ -42,7 +42,7 @@ async def github_topic_search(
 @router.get("/repo", status_code=status.HTTP_200_OK)
 @router.post("/repo", status_code=status.HTTP_200_OK)
 async def github_repo_search(
-        responce: Response,
+        response: Response,
         name: str,
         sort: Optional[str] = "stars",
         order: Optional[str] = "desc",
@@ -58,7 +58,7 @@ async def github_repo_search(
         method="GET", url=query_url % (name, sort, order, per_page, page), headers=headers
     )
     if request.status_code != requests.codes.ok:
-        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
             "error_message": "A problem has occurred on our end"
@@ -73,7 +73,7 @@ async def github_repo_search(
 @router.get("/users", status_code=status.HTTP_200_OK)
 @router.post("/users", status_code=status.HTTP_200_OK)
 async def github_users_search(
-        responce: Response,
+        response: Response,
         query: str,
         sort: Optional[str] = "followers",
         order: Optional[str] = "desc",
@@ -89,7 +89,7 @@ async def github_users_search(
         method="GET", url=query_url % (query, sort, order, per_page, page), headers=headers
     )
     if request.status_code != requests.codes.ok:
-        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
             "error_message": "A problem has occurred on our end"
