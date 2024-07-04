@@ -9,12 +9,12 @@ router = APIRouter(prefix="/api", tags=["Art"])
 
 @router.get("/font", status_code=status.HTTP_200_OK)
 @router.post("/font", status_code=status.HTTP_200_OK)
-async def font(responce: Response, text: Optional[str] = "HeroAPI") -> dict:
+async def font(response: Response, text: Optional[str] = "HeroAPI") -> dict:
     """
     Generate ascii fonts. Currently only English language is supported
     """
     if langdetect.detect(text) in ["fa", "ar", "ur"]:
-        responce.status_code = status.HTTP_400_BAD_REQUEST
+        response.status_code = status.HTTP_400_BAD_REQUEST
         return {
             "success": False, "error_message": "Currently, Persian language is not supported"
         }
