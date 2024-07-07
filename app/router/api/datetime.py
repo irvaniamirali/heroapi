@@ -10,7 +10,7 @@ router = APIRouter(prefix="/api", tags=["Date & time"])
 
 @router.get("/datetime", status_code=status.HTTP_200_OK)
 @router.post("/datetime", status_code=status.HTTP_200_OK)
-async def date_time(responce: Response, number_lang: str = "fa") -> dict:
+async def date_time(number_lang: str = "fa") -> dict:
     """
     Date and time display web service
     """

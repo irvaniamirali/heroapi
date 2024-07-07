@@ -19,7 +19,7 @@ async def base64encode(text: str) -> dict:
 
 @router.get("/bs64decode", status_code=status.HTTP_200_OK)
 @router.post("/bs64decode", status_code=status.HTTP_200_OK)
-async def b64decode(responce: Response, text: str) -> dict:
+async def b64decode(response: Response, text: str) -> dict:
     b_string = codecs.encode(text, "utf-8")
     try:
         output = base64.b64decode(b_string)
@@ -28,7 +28,7 @@ async def b64decode(responce: Response, text: str) -> dict:
             "data": output
         }
     except:
-        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False, "error_message": "This text not base64"
         }

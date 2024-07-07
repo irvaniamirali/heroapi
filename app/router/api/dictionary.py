@@ -33,7 +33,7 @@ async def dictionary(query: str) -> dict:
 
 @router.get("/dict/v2", status_code=status.HTTP_200_OK)
 @router.post("/dict/v2", status_code=status.HTTP_200_OK)
-async def dictionary(responce: Response, query: str) -> dict:
+async def dictionary(response: Response, query: str) -> dict:
     """
     Search words in Amid's Persian culture
     """
@@ -43,7 +43,7 @@ async def dictionary(responce: Response, query: str) -> dict:
     soup = bs4.BeautifulSoup(request.text, "html.parser")
     paragraph_tag = soup.find("div", class_="_51HBSo", role="definition")
     if paragraph_tag is None:
-        responce.status_code = status.HTTP_400_BAD_REQUEST
+        response.status_code = status.HTTP_400_BAD_REQUEST
         return {
             "success": False,
             "error_message": "Your word was not found in the dictionary"
