@@ -10,8 +10,8 @@ app = FastAPI(
     description="Free and open source api",
     contact={
         "name": "HeroTeam",
-        "url": "https://github.com/irvanyamirali/HeroAPI",
-        "email": "irvanyamirali@gmail.com",
+        "url": "https://github.com/irvaniamirali/HeroAPI",
+        "email": "irvaniamirali@proton.me",
     },
     terms_of_service="https://t.me/HeroAPI",
     license_info={
@@ -55,8 +55,8 @@ URLS: list = [
     "app.router.api.datetime.router",
     "app.router.api.dictionary.router",
     "app.router.api.fake.router",
-    "app.router.api.trx.router",
     "app.router.api._github.router",
+    "app.router.api.google.router",
     "app.router.api.location.router",
     "app.router.api.news.router",
     "app.router.api.music.router",
@@ -64,6 +64,8 @@ URLS: list = [
     "app.router.api.store.router",
     "app.router.api.rubino.router",
     "app.router.api.translate.router",
+    "app.router.api.trx.router",
+    "app.router.api.wikipedia.router",
     "app.router.api.other.router",
 ]
 
