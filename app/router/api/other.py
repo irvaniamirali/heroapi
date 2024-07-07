@@ -5,6 +5,8 @@ from typing import Optional
 from bs4 import BeautifulSoup
 import requests
 
+import html_to_json
+
 import langdetect
 
 router = APIRouter(prefix="/api")
@@ -123,4 +125,17 @@ async def domain_price(response: Response) -> dict:
     return {
         "success": True,
         "data": search_result
+    }
+
+
+@router.get("/html2json", tags=["Convert HTML to JSON"], status_code=status.HTTP_200_OK)
+@router.post("/html2json", tags=["Convert HTML to JSON"], status_code=status.HTTP_200_OK)
+async def icon(html: str) -> dict:
+    """
+    Convert HTML document to json
+    """
+    output_json = html_to_json.convert(html)
+    return {
+        "success": True,
+        "data": output_json
     }
