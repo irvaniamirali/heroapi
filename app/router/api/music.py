@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 import httpx
 import re
 
+client = httpx.AsyncClient()
+
 router = APIRouter(prefix="/api", tags=["Music Search"])
 
 
@@ -16,7 +18,7 @@ async def music_fa(response: Response, query: str, page: Optional[int] = 1) -> d
     """
     Search and search web service on the [music-fa](https://music-fa.com) site
     """
-    req = httpx.request("GET", f"https://music-fa.com/search/{query}/page/{page}")
+    req = await client.request("GET", f"https://music-fa.com/search/{query}/page/{page}")
     if req.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
