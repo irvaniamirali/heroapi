@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Response, status
 
-import requests
-import bs4
+from bs4 import BeautifulSoup
+
+import httpx
 import re
 
 router = APIRouter(prefix="/api", tags=["Dictionary"])
@@ -13,10 +14,10 @@ async def dictionary(query: str) -> dict:
     """
     Search words in deh [khoda](https://dehkhoda.ut.ac.ir) dictionary
     """
-    request = requests.request(
+    req = httpx.request(
         method="GET", url=f"https://dehkhoda.ut.ac.ir/fa/dictionary/{query}"
     )
-    soup = bs4.BeautifulSoup(request.text, "html.parser")
+    soup = BeautifulSoup(req.text, "html.parser")
     paragraphs = soup.find("div", class_="definitions p-t-1")
 
     if not paragraphs:
@@ -37,10 +38,10 @@ async def dictionary(response: Response, query: str) -> dict:
     """
     Search words in Amid's Persian culture
     """
-    request = requests.request(
+    req = httpx.request(
         method="GET", url=f"https://vajehyab.com/amid/{query}"
     )
-    soup = bs4.BeautifulSoup(request.text, "html.parser")
+    soup = BeautifulSoup(req.text, "html.parser")
     paragraph_tag = soup.find("div", class_="_51HBSo", role="definition")
     if paragraph_tag is None:
         response.status_code = status.HTTP_400_BAD_REQUEST
