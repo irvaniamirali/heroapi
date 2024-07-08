@@ -12,7 +12,8 @@ async def fake_text(response: Response, _len: Optional[int] = 99, lang: Optional
     if int(_len) > 1000:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {
-            "success": False, "error_message": "The amount is too big. Send a smaller number `_len`"
+            "success": False,
+            "error_message": "The amount is too big. Send a smaller number `_len`"
         }
 
     faker = Faker([lang])
@@ -28,7 +29,8 @@ async def fake_email(response: Response, count: Optional[int] = 99) -> dict:
     if int(count) > 100:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {
-            "success": False, "error_message": "The amount is too big. Send a smaller number `count`"
+            "success": False,
+            "error_message": "The amount is too big. Send a smaller number `count`"
         }
 
     final_values = list()
@@ -47,7 +49,8 @@ async def fake_name(response: Response, count: Optional[int] = 99, lang: Optiona
     if int(count) > 100:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {
-            "success": False, "error_message": "The amount is too big. Send a smaller number `count`"
+            "success": False,
+            "error_message": "The amount is too big. Send a smaller number `count`"
         }
 
     faker = Faker([lang])
