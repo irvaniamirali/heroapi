@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 import httpx
 import re
 
+client = httpx.AsyncClient()
+
 router = APIRouter(prefix="/api", tags=["Dictionary"])
 
 
