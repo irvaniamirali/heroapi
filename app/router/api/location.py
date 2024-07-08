@@ -5,6 +5,8 @@ from typing import Optional
 import httpx
 import os
 
+client = httpx.AsyncClient()
+
 router = APIRouter(prefix="/api", tags=["Location"])
 
 
@@ -23,7 +25,7 @@ async def location(
 
     url = "https://api.neshan.org/v1/"
     query_url = f"{url}search?term={text}&lat={latitude}&lng={longitude}"
-    req = httpx.request(
+    req = await client.request(
         method="POST", url=query_url, headers={
             "Api-Key": access_key
         }
