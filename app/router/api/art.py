@@ -16,7 +16,8 @@ async def font(response: Response, text: Optional[str] = "HeroAPI") -> dict:
     if langdetect.detect(text) in ["fa", "ar", "ur"]:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {
-            "success": False, "error_message": "Currently, Persian language is not supported"
+            "success": False,
+            "error_message": "Currently, Persian language is not supported"
         }
     else:
         with open("app/jsons/fonts.json", "r") as f:

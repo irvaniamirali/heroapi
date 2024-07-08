@@ -47,6 +47,14 @@ async def custom_404_handler(request: Request, __):
         }
     )
 
+
+@app.get("/helloworld", status_code=status.HTTP_200_OK)
+async def hello_world() -> dict:
+    return {
+        "message": "Hello World!"
+    }
+
+
 URLS: list = [
     "app.router.api.art.router",
     "app.router.api._captcha.router",

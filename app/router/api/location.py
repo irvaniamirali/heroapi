@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Response, status
 
 from typing import Optional
-import requests
+
+import httpx
 import os
+
+client = httpx.AsyncClient()
 
 router = APIRouter(prefix="/api", tags=["Location"])
 
@@ -22,18 +25,19 @@ async def location(
 
     url = "https://api.neshan.org/v1/"
     query_url = f"{url}search?term={text}&lat={latitude}&lng={longitude}"
-    request = requests.request(
+    req = await client.request(
         method="POST", url=query_url, headers={
             "Api-Key": access_key
         }
     )
-    if request.status_code != requests.codes.ok:
+    if req.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            "success": False, "error_message": "A problem has occurred on our end"
+            "success": False,
+            "error_message": "A problem has occurred on our end"
         }
 
     return {
         "success": True,
-        "data": request.json()
+        "data": req.json()
     }
