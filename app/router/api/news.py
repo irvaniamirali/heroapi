@@ -3,9 +3,11 @@ from fastapi import APIRouter, Response, status
 from typing import Optional
 
 from bs4 import BeautifulSoup
-import requests
+
+import httpx
 import re
 
+client = httpx.AsyncClient()
 
 router = APIRouter(prefix="/api", tags=["News"])
 
@@ -21,14 +23,15 @@ async def news(response: Response, page: Optional[int] = 1) -> dict:
     Web service to display news. onnected to the site www.tasnimnews.com
     """
     url = "https://www.tasnimnews.com"
-    request = requests.request("GET", f"{url}/fa/top-stories?page={page}")
-    if request.status_code != requests.codes.ok:
+    req = await client.request("GET", f"{url}/fa/top-stories?page={page}")
+    if req.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            "success": False, "error_message": "A problem has occurred on our end"
+            "success": False,
+            "error_message": "A problem has occurred on our end"
         }
 
-    soup = beautifulsoup_instance(request.text, "html.parser")
+    soup = beautifulsoup_instance(req.text, "html.parser")
     articles = soup.find_all("article", class_="list-item")
 
     search_result = list()
@@ -58,14 +61,15 @@ async def news_version_two(response: Response, page: Optional[int] = 1) -> dict:
     """
     Web service, the latest technological news. `page` parameter has 6000 pages
     """
-    request = requests.request("GET", f"https://gadgetnews.net/page/{page}")
-    if request.status_code != requests.codes.ok:
+    req = await client.request("GET", f"https://gadgetnews.net/page/{page}")
+    if req.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            "success": False, "error_message": "A problem has occurred on our end"
+            "success": False,
+            "error_message": "A problem has occurred on our end"
         }
 
-    soup = beautifulsoup_instance(request.text, "html.parser")
+    soup = beautifulsoup_instance(req.text, "html.parser")
 
     final_values = list()
     for recent_post in range(0, 13):
@@ -101,6 +105,7 @@ async def news_version_two(response: Response, page: Optional[int] = 1) -> dict:
                     images=post_images
                 )
             )
+
     return {
         "success": True,
         "data": final_values
