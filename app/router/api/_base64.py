@@ -30,5 +30,6 @@ async def b64decode(response: Response, text: str) -> dict:
     except:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            "success": False, "error_message": "This text not base64"
+            "success": False,
+            "error_message": "This text not base64"
         }
