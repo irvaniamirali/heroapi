@@ -16,7 +16,7 @@ async def dictionary(query: str) -> dict:
     """
     Search words in deh [khoda](https://dehkhoda.ut.ac.ir) dictionary
     """
-    req = httpx.request(
+    req = await client.request(
         method="GET", url=f"https://dehkhoda.ut.ac.ir/fa/dictionary/{query}"
     )
     soup = BeautifulSoup(req.text, "html.parser")
@@ -40,7 +40,7 @@ async def dictionary(response: Response, query: str) -> dict:
     """
     Search words in Amid's Persian culture
     """
-    req = httpx.request(
+    req = await client.request(
         method="GET", url=f"https://vajehyab.com/amid/{query}"
     )
     soup = BeautifulSoup(req.text, "html.parser")
