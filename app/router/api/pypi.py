@@ -1,26 +1,30 @@
 from fastapi import APIRouter, Response, status
 
-import requests
-import bs4
+from bs4 import BeautifulSoup
+
+import httpx
+
+client = httpx.AsyncClient()
 
 router = APIRouter(prefix="/api", tags=["PyPi"])
 
 
 @router.get("/pypi", status_code=status.HTTP_200_OK)
 @router.post("/pypi", status_code=status.HTTP_200_OK)
-async def pypi_package_search(responce: Response, query: str) -> dict:
+async def pypi_package_search(response: Response, query: str) -> dict:
     """
     PyPi package search web service
     """
     query = "+".join(query.split())
-    request = requests.request(method="GET", url=f"https://pypi.org/search/?q={query}")
-    if request.status_code != requests.codes.ok:
-        responce.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    req = await client.request(method="GET", url=f"https://pypi.org/search/?q={query}")
+    if req.status_code != httpx.codes.OK:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            "success": False, "error_message": "A problem has occurred on our end"
+            "success": False,
+            "error_message": "A problem has occurred on our end"
         }
 
-    soup = bs4.BeautifulSoup(request.text, "html.parser")
+    soup = BeautifulSoup(req.text, "html.parser")
     package_snippets = soup.find_all("a", class_="package-snippet")
 
     search_results = list()
