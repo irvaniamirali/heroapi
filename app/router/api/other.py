@@ -3,12 +3,14 @@ from fastapi import APIRouter, Response, status
 from typing import Optional
 
 from bs4 import BeautifulSoup
-import requests
+
+import httpx
 
 import html_to_json
 
 import langdetect
 
+client = httpx.AsyncClient()
 router = APIRouter(prefix="/api")
 
 
@@ -19,16 +21,17 @@ async def icon(response: Response, query: str, page: Optional[int] = 1) -> dict:
     Web Service to search icon from [icon-icons](https://icon-icons.com)
     Get the icon from icon-icons.com
     """
-    request = requests.request(
+    req = await client.request(
         method="GET", url=f"https://icon-icons.com/search/icons/?filtro={query}&page={page}"
     )
-    if request.status_code != requests.codes.ok:
+    if req.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            "success": False, "error_message": "A problem has occurred on our end"
+            "success": False,
+            "error_message": "A problem has occurred on our end"
         }
 
-    soup = BeautifulSoup(request.text, "html.parser")
+    soup = BeautifulSoup(req.text, "html.parser")
     icons = soup.find_all("div", class_="icon-preview")
     search_result = list()
     for icon in icons:
