@@ -4,22 +4,21 @@ from typing import Optional
 
 from bs4 import BeautifulSoup
 
-import httpx
-
 import html_to_json
-
 import langdetect
 
+import httpx
+
 client = httpx.AsyncClient()
+
 router = APIRouter(prefix="/api")
 
 
 @router.get("/icon", tags=["Icon Search"], status_code=status.HTTP_200_OK)
 @router.post("/icon", tags=["Icon Search"], status_code=status.HTTP_200_OK)
-async def icon(response: Response, query: str, page: Optional[int] = 1) -> dict:
+async def icon_search(response: Response, query: str, page: Optional[int] = 1) -> dict:
     """
     Web Service to search icon from [icon-icons](https://icon-icons.com)
-    Get the icon from icon-icons.com
     """
     req = await client.request(
         method="GET", url=f"https://icon-icons.com/search/icons/?filtro={query}&page={page}"
@@ -64,20 +63,21 @@ async def language_detect(response: Response, text: str) -> dict:
         }
 
 
-@router.get("/food/v1", status_code=status.HTTP_200_OK)
-@router.post("/food/v1", status_code=status.HTTP_200_OK)
+@router.get("/food/v1", tags=["Food search"], status_code=status.HTTP_200_OK)
+@router.post("/food/v1", tags=["Food search"], status_code=status.HTTP_200_OK)
 async def food_search(response: Response, query: str) -> dict:
     base_url = "https://mamifood.org"
-    request = requests.request(
+    req = await client.request(
         method="GET", url=base_url + f"/cooking-training/search/{query}"
     )
-    if request.status_code != requests.codes.ok:
+    if req.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            "success": False, "error_message": "A problem has occurred on our end"
+            "success": False,
+            "error_message": "A problem has occurred on our end"
         }
 
-    soup = BeautifulSoup(request.text, "html.parser")
+    soup = BeautifulSoup(req.text, "html.parser")
     articles = soup.find_all("article", id="Table", class_="box m-box col3")
 
     final_values = list()
@@ -99,20 +99,21 @@ async def food_search(response: Response, query: str) -> dict:
     }
 
 
-@router.get("/domain-price", status_code=status.HTTP_200_OK)
-@router.post("/domain-price", status_code=status.HTTP_200_OK)
+@router.get("/domain-price", tags=["Domain search"], status_code=status.HTTP_200_OK)
+@router.post("/domain-price", tags=["Domain search"], status_code=status.HTTP_200_OK)
 async def domain_price(response: Response) -> dict:
     """
     Get Domain price from [parsvds.com](https://parsvds.com) web site
     """
-    request = requests.request(method="GET", url=f"https://parsvds.com/domain/")
-    if request.status_code != requests.codes.ok:
+    req = await client.request(method="GET", url=f"https://parsvds.com/domain/")
+    if req.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            "success": False, "error_message": "A problem has occurred on our end"
+            "success": False,
+            "error_message": "A problem has occurred on our end"
         }
 
-    soup = BeautifulSoup(request.text, "html.parser")
+    soup = BeautifulSoup(req.text, "html.parser")
     table_rows = soup.find_all("tr")
 
     search_result = list()
@@ -133,7 +134,7 @@ async def domain_price(response: Response) -> dict:
 
 @router.get("/html2json", tags=["Convert HTML to JSON"], status_code=status.HTTP_200_OK)
 @router.post("/html2json", tags=["Convert HTML to JSON"], status_code=status.HTTP_200_OK)
-async def icon(html: str) -> dict:
+async def convert_html_to_json(html: str) -> dict:
     """
     Convert HTML document to json
     """
