@@ -57,8 +57,6 @@ async def hello_world() -> dict:
 
 URLS: list = [
     "app.router.api.art.router",
-    "app.router.api._captcha.router",
-    "app.router.api.qrcode.router",
     "app.router.api._base64.router",
     "app.router.api.datetime.router",
     "app.router.api.dictionary.router",
