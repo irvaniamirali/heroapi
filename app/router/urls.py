@@ -6,7 +6,6 @@ URLS: list = [
     "app.router.api.dictionary.router",
     "app.router.api.fake.router",
     "app.router.api._github.router",
-    "app.router.api.google.router",
     "app.router.api.location.router",
     "app.router.api.news.router",
     "app.router.api.music.router",
