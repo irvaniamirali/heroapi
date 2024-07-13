@@ -23,8 +23,8 @@ async def base64encode(text: str) -> dict:
     }
 
 
-@router.get("/bs64decode", status_code=status.HTTP_200_OK)
-@router.post("/bs64decode", status_code=status.HTTP_200_OK)
+@router.get("/bs64decode", tags=["Base64"], status_code=status.HTTP_200_OK)
+@router.post("/bs64decode", tags=["Base64"], status_code=status.HTTP_200_OK)
 async def b64decode(response: Response, text: str) -> dict:
     """
     Decode from Base64 format
