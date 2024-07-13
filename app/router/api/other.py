@@ -119,7 +119,7 @@ async def food_search(response: Response, query: str) -> dict:
             "error_message": "A problem has occurred on our end"
         }
 
-    soup = BeautifulSoup(req.text, "html.parser")
+    soup = BeautifulSoup(request.text, "html.parser")
     articles = soup.find_all("article", id="Table", class_="box m-box col3")
 
     final_values = list()
@@ -157,7 +157,7 @@ async def domain_price(response: Response) -> dict:
             "error_message": "A problem has occurred on our end"
         }
 
-    soup = BeautifulSoup(req.text, "html.parser")
+    soup = BeautifulSoup(request.text, "html.parser")
     table_rows = soup.find_all("tr")
 
     search_result = list()
