@@ -9,7 +9,7 @@ import re
 
 client = httpx.AsyncClient()
 
-router = APIRouter(prefix="/api", tags=["Music Search"])
+router = APIRouter(tags=["Music Search"])
 
 
 @router.get("/music-fa", status_code=status.HTTP_200_OK)
@@ -18,15 +18,16 @@ async def music_fa(response: Response, query: str, page: Optional[int] = 1) -> d
     """
     Search and search web service on the [music-fa](https://music-fa.com) site
     """
-    req = await client.request("GET", f"https://music-fa.com/search/{query}/page/{page}")
-    if req.status_code != httpx.codes.OK:
+    request = await client.request("GET", f"https://music-fa.com/search/{query}/page/{page}")
+    if request.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
+            "data": None,
             "error_message": "A problem has occurred on our end"
         }
 
-    soup = BeautifulSoup(req.text, "html.parser")
+    soup = BeautifulSoup(request.text, "html.parser")
     articles = soup.find_all("article", class_="mf_pst")
 
     search_result = list()
@@ -52,5 +53,6 @@ async def music_fa(response: Response, query: str, page: Optional[int] = 1) -> d
 
     return {
         "success": True,
-        "data": search_result
+        "data": search_result,
+        "error_message": None
     }
