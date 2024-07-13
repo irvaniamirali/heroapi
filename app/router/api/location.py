@@ -7,7 +7,21 @@ import os
 
 client = httpx.AsyncClient()
 
-router = APIRouter(prefix="/api", tags=["Location"])
+router = APIRouter(tags=["Location"])
+
+access_key = os.getenv(key="NESHAN_KEY")
+
+headers: dict = {
+    "Api-Key": access_key
+}
+
+
+async def create_request(path: str, headers: dict):
+    """
+    Make asynchronous request to Neshan API
+    """
+    response = await client.request(method="GET", url=path, headers=headers)
+    return response
 
 
 @router.get("/location", status_code=status.HTTP_200_OK)
@@ -21,23 +35,18 @@ async def location(
     """
     Search service for street names, places and old names (Search API)
     """
-    access_key = os.getenv(key="NESHAN_KEY")
-
-    url = "https://api.neshan.org/v1/"
-    query_url = f"{url}search?term={text}&lat={latitude}&lng={longitude}"
-    req = await client.request(
-        method="POST", url=query_url, headers={
-            "Api-Key": access_key
-        }
-    )
-    if req.status_code != httpx.codes.OK:
+    path = "https://api.neshan.org/v1/search?term=%s&lat=%s&lng=%s" % (text, latitude, longitude)
+    request = await create_request(path=path, headers=headers)
+    if request.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
+            "data": None,
             "error_message": "A problem has occurred on our end"
         }
 
     return {
         "success": True,
-        "data": req.json()
+        "data": request.json(),
+        "error_message": None
     }
