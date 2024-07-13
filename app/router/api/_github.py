@@ -6,13 +6,20 @@ import httpx
 
 client = httpx.AsyncClient()
 
-router = APIRouter(prefix="/api/github", tags=["GitHub"])
+router = APIRouter(prefix="/github", tags=["GitHub"])
 
 base_url = "https://api.github.com/search/"
 
-headers = {
-    "Accept": "application/vnd.github+json"
-}
+
+async def github_search(path):
+    """
+    Make asynchronous to GitHub API
+    """
+    headers: dict = {
+        "Accept": "application/vnd.github+json"
+    }
+    response = await client.request(method="GET", url=path, headers=headers)
+    return response
 
 
 @router.get("/topic", status_code=status.HTTP_200_OK)
@@ -26,18 +33,20 @@ async def github_topic_search(
     """
     GitHub topic search web service
     """
-    query_url = "topics?q=%s&per_page=%s&page=%s"
-    req = await client.request(method="GET", url=base_url + query_url % (query, per_page, page), headers=headers)
-    if req.status_code != httpx.codes.OK:
+    path = base_url + "topics?q=%s&per_page=%s&page=%s" % (query, per_page, page)
+    request = await github_search(path=path)
+    if request.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
+            "data": None,
             "error_message": "A problem has occurred on our end"
         }
 
     return {
         "success": True,
-        "data": req.json()
+        "data": request.json(),
+        "error_message": None
     }
 
 
@@ -55,20 +64,19 @@ async def github_repo_search(
     GitHub repository search web service.
     sortlist repository: "stars", "forks", "help-wanted-issues", "updated"
     """
-    query_url = base_url + "repositories?q=%s&s=%s&order=%s&per_page=%s&page=%s"
-    req = await client.request(
-        method="GET", url=query_url % (name, sort, order, per_page, page), headers=headers
-    )
-    if req.status_code != httpx.codes.OK:
+    path = base_url + "repositories?q=%s&s=%s&order=%s&per_page=%s&page=%s"
+    request = await github_search(path=path % (name, sort, order, per_page, page))
+    if request.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
-            "error_message": "A problem has occurred on our end"
+            "data": None,
+            "error_message": "A problem has occurred on our end",
         }
 
     return {
         "success": True,
-        "data": req.json()
+        "data": request.json()
     }
 
 
@@ -86,18 +94,17 @@ async def github_users_search(
     GitHub users search web service.
     sortlist repository: "followers", "repositories", "joined"
     """
-    query_url = base_url + "users?q=%s&sort=%s&order=%s&per_page=%s&page=%s"
-    req = await client.request(
-        method="GET", url=query_url % (query, sort, order, per_page, page), headers=headers
-    )
-    if req.status_code != httpx.codes.OK:
+    path = base_url + "users?q=%s&sort=%s&order=%s&per_page=%s&page=%s"
+    request = await github_search(path=path % (query, sort, order, per_page, page))
+    if request.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
+            "data": None,
             "error_message": "A problem has occurred on our end"
         }
 
     return {
         "success": True,
-        "data": req.json()
+        "data": request.json()
     }
