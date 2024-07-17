@@ -53,6 +53,7 @@ async def custom_404_handler(request: Request, __):
 @app.get("/helloworld", status_code=status.HTTP_200_OK)
 async def hello_world() -> dict:
     return {
+        "success": True,
         "data": "Hello World!"
     }
 
