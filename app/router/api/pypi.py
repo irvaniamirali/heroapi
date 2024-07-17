@@ -6,7 +6,7 @@ import httpx
 
 client = httpx.AsyncClient()
 
-router = APIRouter(prefix="/api", tags=["PyPi"])
+router = APIRouter(tags=["PyPi"])
 
 
 @router.get("/pypi", status_code=status.HTTP_200_OK)
@@ -16,15 +16,16 @@ async def pypi_package_search(response: Response, query: str) -> dict:
     PyPi package search web service
     """
     query = "+".join(query.split())
-    req = await client.request(method="GET", url=f"https://pypi.org/search/?q={query}")
-    if req.status_code != httpx.codes.OK:
+    request = await client.request(method="GET", url=f"https://pypi.org/search/?q={query}")
+    if request.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
+            "data": None,
             "error_message": "A problem has occurred on our end"
         }
 
-    soup = BeautifulSoup(req.text, "html.parser")
+    soup = BeautifulSoup(request.text, "html.parser")
     package_snippets = soup.find_all("a", class_="package-snippet")
 
     search_results = list()
@@ -45,5 +46,6 @@ async def pypi_package_search(response: Response, query: str) -> dict:
 
     return {
         "success": True,
-        "data": search_results
+        "data": search_results,
+        "error_message": None
     }

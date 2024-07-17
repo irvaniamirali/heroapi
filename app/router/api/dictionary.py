@@ -7,56 +7,45 @@ import re
 
 client = httpx.AsyncClient()
 
-router = APIRouter(prefix="/api", tags=["Dictionary"])
+router = APIRouter(tags=["Dictionary"])
+
+
+async def create_request(path):
+    """
+    Make asynchronous request
+    """
+    response = await client.request(method="GET", url=path)
+    return response
 
 
 @router.get("/dict/v1", status_code=status.HTTP_200_OK)
 @router.post("/dict/v1", status_code=status.HTTP_200_OK)
-async def dictionary(query: str) -> dict:
+async def dictionary_search_v1(response: Response, query: str) -> dict:
     """
     Search words in deh [khoda](https://dehkhoda.ut.ac.ir) dictionary
     """
-    req = await client.request(
-        method="GET", url=f"https://dehkhoda.ut.ac.ir/fa/dictionary/{query}"
-    )
-    soup = BeautifulSoup(req.text, "html.parser")
+    path = f"https://dehkhoda.ut.ac.ir/fa/dictionary/{query}"
+    request = await create_request(path=path)
+    if request.status_code != httpx.codes.OK:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            "success": False,
+            "data": None,
+            "error_message": "A problem has occurred on our end"
+        }
+
+    soup = BeautifulSoup(request.text, "html.parser")
     paragraphs = soup.find("div", class_="definitions p-t-1")
 
     if not paragraphs:
         return {
             "success": False,
+            "data": None,
             "error": "Your word was not found in the dictionary"
         }
 
     return {
         "success": True,
-        "data": paragraphs.text
-    }
-
-
-@router.get("/dict/v2", status_code=status.HTTP_200_OK)
-@router.post("/dict/v2", status_code=status.HTTP_200_OK)
-async def dictionary(response: Response, query: str) -> dict:
-    """
-    Search words in Amid's Persian culture
-    """
-    req = await client.request(
-        method="GET", url=f"https://vajehyab.com/amid/{query}"
-    )
-    soup = BeautifulSoup(req.text, "html.parser")
-    paragraph_tag = soup.find("div", class_="_51HBSo", role="definition")
-    if paragraph_tag is None:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return {
-            "success": False,
-            "error_message": "Your word was not found in the dictionary"
-        }
-
-    paragraphs = re.findall(
-        r"^<div\ class=\".*\"\ role=\"definition\">(.*?)</div>$", str(paragraph_tag)
-    )
-    clean_paragraphs = paragraphs[0].split("<br/>")
-    return {
-        "success": True,
-        "data": clean_paragraphs
+        "data": paragraphs.text,
+        "error_message": None
     }

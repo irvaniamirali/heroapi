@@ -23,5 +23,6 @@ async def wikipedia_search(query: str, results: Optional[int] = 10, lang: Option
             "summary": page.summary,
             "text": page.text,
             "language": page.language,
-        }
+        },
+        "error_message": None
     }

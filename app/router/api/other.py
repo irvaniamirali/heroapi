@@ -6,12 +6,12 @@ from bs4 import BeautifulSoup
 
 import html_to_json
 import langdetect
-
+import json
 import httpx
 
 client = httpx.AsyncClient()
 
-router = APIRouter(prefix="/api")
+router = APIRouter()
 
 
 @router.get("/icon", tags=["Icon Search"], status_code=status.HTTP_200_OK)
@@ -20,18 +20,20 @@ async def icon_search(response: Response, query: str, page: Optional[int] = 1) -
     """
     Web Service to search icon from [icon-icons](https://icon-icons.com)
     """
-    req = await client.request(
+    request = await client.request(
         method="GET", url=f"https://icon-icons.com/search/icons/?filtro={query}&page={page}"
     )
-    if req.status_code != httpx.codes.OK:
+    if request.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
+            "data": None,
             "error_message": "A problem has occurred on our end"
         }
 
-    soup = BeautifulSoup(req.text, "html.parser")
+    soup = BeautifulSoup(request.text, "html.parser")
     icons = soup.find_all("div", class_="icon-preview")
+
     search_result = list()
     for icon in icons:
         data_original = icon.find("img", loading="lazy", src=True)
@@ -39,8 +41,45 @@ async def icon_search(response: Response, query: str, page: Optional[int] = 1) -
 
     return {
         "success": True,
-        "data": search_result
+        "data": search_result,
+        "error_message": None
     }
+
+
+@router.get("/font", tags=["Font Generator"], status_code=status.HTTP_200_OK)
+@router.post("/font", tags=["Font Generator"], status_code=status.HTTP_200_OK)
+async def font(response: Response, text: Optional[str] = "HeroAPI") -> dict:
+    """
+    Generate ascii fonts. Currently only English language is supported
+    """
+    if langdetect.detect(text) in ["fa", "ar", "ur"]:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {
+            "success": False,
+            "data": None,
+            "error_message": "Currently, Persian language is not supported"
+        }
+    else:
+        with open("app/jsons/fonts.json", "r") as f:
+            fonts = json.load(f)
+
+        converted_text = str()
+        for count in range(0, len(fonts)):
+            for char in text:
+                if char.isalpha():
+                    char_index = ord(char.lower()) - 97
+                    converted_text += fonts[str(count)][char_index]
+                else:
+                    converted_text += char
+
+            converted_text += "\n"
+            final_values: list = converted_text.split("\n")[0:-1]
+
+        return {
+            "success": True,
+            "data": final_values,
+            "error_message": None
+        }
 
 
 @router.get("/lang", tags=["Language Detect"], status_code=status.HTTP_200_OK)
@@ -53,12 +92,14 @@ async def language_detect(response: Response, text: str) -> dict:
         result_detected = langdetect.detect(text)
         return {
             "success": True,
-            "data": result_detected
+            "data": result_detected,
+            "error_message": None
         }
     except langdetect.LangDetectException:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {
             "success": False,
+            "data": None,
             "error_message": "The value of the `text` parameter is not invalid"
         }
 
@@ -67,17 +108,18 @@ async def language_detect(response: Response, text: str) -> dict:
 @router.post("/food/v1", tags=["Food search"], status_code=status.HTTP_200_OK)
 async def food_search(response: Response, query: str) -> dict:
     base_url = "https://mamifood.org"
-    req = await client.request(
+    request = await client.request(
         method="GET", url=base_url + f"/cooking-training/search/{query}"
     )
-    if req.status_code != httpx.codes.OK:
+    if request.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
+            "data": None,
             "error_message": "A problem has occurred on our end"
         }
 
-    soup = BeautifulSoup(req.text, "html.parser")
+    soup = BeautifulSoup(request.text, "html.parser")
     articles = soup.find_all("article", id="Table", class_="box m-box col3")
 
     final_values = list()
@@ -95,7 +137,8 @@ async def food_search(response: Response, query: str) -> dict:
 
     return {
         "success": True,
-        "data": final_values
+        "data": final_values,
+        "error_message": None
     }
 
 
@@ -105,15 +148,16 @@ async def domain_price(response: Response) -> dict:
     """
     Get Domain price from [parsvds.com](https://parsvds.com) web site
     """
-    req = await client.request(method="GET", url=f"https://parsvds.com/domain/")
-    if req.status_code != httpx.codes.OK:
+    request = await client.request(method="GET", url=f"https://parsvds.com/domain/")
+    if request.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
+            "data": None,
             "error_message": "A problem has occurred on our end"
         }
 
-    soup = BeautifulSoup(req.text, "html.parser")
+    soup = BeautifulSoup(request.text, "html.parser")
     table_rows = soup.find_all("tr")
 
     search_result = list()
@@ -128,7 +172,8 @@ async def domain_price(response: Response) -> dict:
 
     return {
         "success": True,
-        "data": search_result
+        "data": search_result,
+        "error_message": None
     }
 
 
@@ -141,5 +186,6 @@ async def convert_html_to_json(html: str) -> dict:
     output_json = html_to_json.convert(html)
     return {
         "success": True,
-        "data": output_json
+        "data": output_json,
+        "error_message": None
     }

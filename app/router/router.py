@@ -17,7 +17,7 @@ class Routers:
             route_method_name = f'{route_name.title().replace("_", "")}Route'
 
             def route_method():
-                return self.app.include_router(route_module)
+                return self.app.include_router(router=route_module, prefix="/api")
 
             setattr(self, route_method_name, route_method)
             getattr(self, route_method_name)()
