@@ -4,7 +4,7 @@ from typing import Optional
 
 import wikipediaapi
 
-router = APIRouter(prefix="/api/wikipedia", tags=["Wikipedia Search"])
+router = APIRouter(prefix="/wikipedia", tags=["Wikipedia Search"])
 
 
 @router.get("/search", status_code=status.HTTP_200_OK)
