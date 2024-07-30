@@ -26,7 +26,7 @@ app = FastAPI(
 
 templates = Jinja2Templates(directory="app/templates")
 
-app.mount("/app/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/docs", include_in_schema=False)
@@ -37,7 +37,7 @@ async def swagger_ui_html():
     return get_swagger_ui_html(
         openapi_url="/openapi.json",
         title="HeroAPI",
-        swagger_favicon_url="app/static/favicon.png",
+        swagger_favicon_url="static/favicon.png",
     )
 
 
