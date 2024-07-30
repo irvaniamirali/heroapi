@@ -7,9 +7,10 @@ from bs4 import BeautifulSoup
 import html_to_json
 import langdetect
 import json
-import httpx
 
-client = httpx.AsyncClient()
+from httpx import AsyncClient, codes
+
+client = AsyncClient()
 
 router = APIRouter()
 
@@ -23,7 +24,7 @@ async def icon_search(response: Response, query: str, page: Optional[int] = 1) -
     request = await client.request(
         method="GET", url=f"https://icon-icons.com/search/icons/?filtro={query}&page={page}"
     )
-    if request.status_code != httpx.codes.OK:
+    if request.status_code != codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
@@ -60,7 +61,7 @@ async def font(response: Response, text: Optional[str] = "HeroAPI") -> dict:
             "error_message": "Currently, Persian language is not supported"
         }
     else:
-        with open("app/jsons/fonts.json", "r") as f:
+        with open("data/font.json", "r") as f:
             fonts = json.load(f)
 
         converted_text = str()
@@ -111,7 +112,7 @@ async def food_search(response: Response, query: str) -> dict:
     request = await client.request(
         method="GET", url=base_url + f"/cooking-training/search/{query}"
     )
-    if request.status_code != httpx.codes.OK:
+    if request.status_code != codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
@@ -149,7 +150,7 @@ async def domain_price(response: Response) -> dict:
     Get Domain price from [parsvds.com](https://parsvds.com) web site
     """
     request = await client.request(method="GET", url=f"https://parsvds.com/domain/")
-    if request.status_code != httpx.codes.OK:
+    if request.status_code != codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,
