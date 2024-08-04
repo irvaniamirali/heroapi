@@ -15,4 +15,5 @@ URLS: list = [
     "app.router.api.trx.router",
     "app.router.api.wikipedia.router",
     "app.router.api.other.router",
+    "app.router.api.rubika.router",
 ]
