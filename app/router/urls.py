@@ -16,5 +16,6 @@ URLS: list = [
     "app.router.api.translate.router",
     "app.router.api.trx.router",
     "app.router.api.wikipedia.router",
+    "app.router.api.v2ray.router",
     "app.router.api.other.router",
 ]
