@@ -13,7 +13,7 @@ base_url = "https://api.github.com/search/"
 
 async def github_search(path):
     """
-    Make asynchronous to GitHub API
+    Execute asynchronous request to GitHub API
     """
     headers: dict = {
         "Accept": "application/vnd.github+json"
