@@ -10,6 +10,10 @@ client = httpx.AsyncClient()
 router = APIRouter(tags=["V2ray config"])
 
 
+GITHUB_REPO = "https://github.com/barry-far/V2ray-Configs"
+URL = "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt"
+
+
 async def http_request(url: str, method: str = "GET", max_retry: int = 3):
     """
     Execute asynchronous request to GitHub
@@ -18,10 +22,6 @@ async def http_request(url: str, method: str = "GET", max_retry: int = 3):
         response = await client.request(method=method, url=url)
         if response.status_code == httpx.codes.OK:
             return response.text
-
-
-# https://github.com/barry-far/V2ray-Configs
-URL = "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt"
 
 
 @router.get("/v2ray", status_code=status.HTTP_200_OK)
@@ -51,6 +51,7 @@ async def v2ray(num_results: Optional[int] = 10):
                 "configs": unique_configs,
                 "count": len(unique_configs),
             },
+            "github_repo": GITHUB_REPO,
             "error_message": None
         }
 
@@ -60,5 +61,6 @@ async def v2ray(num_results: Optional[int] = 10):
             "configs": configs,
             "count": len(configs),
         },
+        "github_repo": GITHUB_REPO,
         "error_message": None
     }
