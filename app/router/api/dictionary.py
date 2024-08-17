@@ -3,14 +3,13 @@ from fastapi import APIRouter, Response, status
 from bs4 import BeautifulSoup
 
 import httpx
-import re
 
 client = httpx.AsyncClient()
 
 router = APIRouter(tags=["Dictionary"])
 
 
-async def create_request(path):
+async def async_request(path):
     """
     Make asynchronous request
     """
@@ -25,7 +24,7 @@ async def dictionary_search_v1(response: Response, query: str) -> dict:
     Search words in deh [khoda](https://dehkhoda.ut.ac.ir) dictionary
     """
     path = f"https://dehkhoda.ut.ac.ir/fa/dictionary/{query}"
-    request = await create_request(path=path)
+    request = await async_request(path=path)
     if request.status_code != httpx.codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {

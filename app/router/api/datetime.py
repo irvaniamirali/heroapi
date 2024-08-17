@@ -1,9 +1,6 @@
-from fastapi import APIRouter, Response, status
-
-from typing import Optional
+from fastapi import APIRouter, status
 
 from jalali.Jalalian import jdate
-
 import jdatetime
 
 tags = ["Date & time"]
