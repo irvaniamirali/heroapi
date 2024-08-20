@@ -190,3 +190,17 @@ async def convert_html_to_json(html: str) -> dict:
         "data": output_json,
         "error_message": None
     }
+
+
+@router.get("/bmi", tags=["Calculate bmi"], status_code=status.HTTP_200_OK)
+@router.post("/bmi", tags=["Calculate bmi"], status_code=status.HTTP_200_OK)
+async def bmi(height: float, weight: float) -> dict:
+    """
+    Calculate bmi
+    """
+    bmi = (weight) / (height ** 2)
+    return {
+        "success": True,
+        "data": bmi,
+        "error_message": None
+    }
