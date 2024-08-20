@@ -13,6 +13,7 @@ URLS: list = [
     "app.router.api.pypi.router",
     "app.router.api.store.router",
     "app.router.api.rubika.router",
+    "app.router.api.telegram.router",
     "app.router.api.translate.router",
     "app.router.api.trx.router",
     "app.router.api.wikipedia.router",
