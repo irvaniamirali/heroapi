@@ -21,6 +21,10 @@ async def news(query, max_results, region, limit):
     )
 
 
+async def chat(query, model, timeout):
+    return await AsyncDDGS(proxy=None).achat(query, model=model, timeout=timeout)
+
+
 async def images(query, max_results, region, limit, size, color, type_image, layout, license_image):
     return await AsyncDDGS(proxy=None).aimages(
         query,
@@ -66,6 +70,24 @@ async def duckduckgo_news(
     DuckDuckGo news API
     """
     query_results = await asyncio.gather(news(query, max_results, region, limit))
+    return {
+        "success": True,
+        "data": query_results,
+        "error_message": None
+    }
+
+
+@router.get("/chat", tags=["AI"], status_code=status.HTTP_200_OK)
+@router.post("/chat", tags=["AI"], status_code=status.HTTP_200_OK)
+async def duckduckgo_chat(
+        query: str,
+        model: Optional[str] = "gpt-4o-mini",
+        timeout: Optional[int] = 30
+) -> dict:
+    """
+    DuckDuckGo news API
+    """
+    query_results = await asyncio.gather(chat(query, model, timeout))
     return {
         "success": True,
         "data": query_results,
