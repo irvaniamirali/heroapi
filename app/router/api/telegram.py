@@ -30,6 +30,7 @@ async def telegram_info(response: Response, query: str) -> dict:
             break
 
     if url_count != 1:
+        response.status_code = status.HTTP_400_BAD_REQUEST
         return {
             "success": False,
             "data": None,
@@ -41,7 +42,9 @@ async def telegram_info(response: Response, query: str) -> dict:
         new_text = replaces[replace]
         url = query.replace(old_text, new_text)
         if url != query:
+
             if len(url) < 25:
+                response.status_code = status.HTTP_400_BAD_REQUEST
                 return {
                     "success": False,
                     "data": None,
