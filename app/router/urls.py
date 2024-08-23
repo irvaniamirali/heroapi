@@ -1,9 +1,11 @@
 # Defining the path of routers
 
 URLS: list = [
+    "app.router.api.ai.router",
     "app.router.api._base64.router",
     "app.router.api.datetime.router",
     "app.router.api.dictionary.router",
+    "app.router.api.duckduckgo.router",
     "app.router.api.fake.router",
     "app.router.api.github.router",
     "app.router.api.google.router",
