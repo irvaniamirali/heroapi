@@ -9,7 +9,7 @@ from duckduckgo_search import AsyncDDGS
 router = APIRouter(prefix="/duckduckgo", tags=["DuckDuckGo"])
 
 
-async def text(word, max_results, region, limit):
+async def text_query(word, max_results, region, limit):
     return await AsyncDDGS(proxy=None).atext(
         word, max_results=max_results, region=region, timelimit=limit
     )
@@ -39,6 +39,20 @@ async def images(query, max_results, region, limit, size, color, type_image, lay
     )
 
 
+async def translate(text, from_lang, to_lang):
+    return await AsyncDDGS(proxy=None).atranslate(text, from_=from_lang, to=to_lang)
+
+
+async def maps(
+        query, place, street, city, county, state, country,
+        postalcode, latitude, longitude, radius, max_results
+):
+    return await AsyncDDGS(proxy=None).amaps(
+        query, place, street, city, county, state, country,
+        postalcode, latitude, longitude, radius, max_results
+    )
+
+
 @router.get("/text", status_code=status.HTTP_200_OK)
 @router.post("/text", status_code=status.HTTP_200_OK)
 async def duckduckgo_text(
@@ -50,7 +64,7 @@ async def duckduckgo_text(
     """
     DuckDuckGo text search API
     """
-    query_results = await asyncio.gather(text(query, max_results, region, limit))
+    query_results = await asyncio.gather(text_query(query, max_results, region, limit))
     return {
         "success": True,
         "data": query_results,
@@ -85,7 +99,7 @@ async def duckduckgo_chat(
         timeout: Optional[int] = 30
 ) -> dict:
     """
-    DuckDuckGo news API
+    DuckDuckGo chat API
     """
     query_results = await asyncio.gather(chat(query, model, timeout))
     return {
@@ -113,6 +127,56 @@ async def duckduckgo_images(
     """
     query_results = await asyncio.gather(
         images(query, max_results, region, limit, size, color, type_image, layout, license_image)
+    )
+    return {
+        "success": True,
+        "data": query_results,
+        "error_message": None
+    }
+
+
+@router.get("/translate", status_code=status.HTTP_200_OK)
+@router.post("/translate", status_code=status.HTTP_200_OK)
+async def duckduckgo_translate(
+        text: str,
+        from_lang: Optional[str] = None,
+        to_lang: Optional[str] = "en"
+) -> dict:
+    """
+    DuckDuckGo translate API
+    """
+    query_results = await asyncio.gather(translate(text, from_lang, to_lang))
+    return {
+        "success": True,
+        "data": query_results,
+        "error_message": None
+    }
+
+
+@router.get("/maps", status_code=status.HTTP_200_OK)
+@router.post("/maps", status_code=status.HTTP_200_OK)
+async def duckduckgo_maps(
+        query: str,
+        place: Optional[str] = None,
+        street: Optional[str] = None,
+        city: Optional[str] = None,
+        county: Optional[str] = None,
+        state: Optional[str] = None,
+        country: Optional[str] = None,
+        postalcode: Optional[str] = None,
+        latitude: Optional[str] = None,
+        longitude: Optional[str] = None,
+        radius: Optional[int] = 0,
+        max_results: Optional[int] = 100
+) -> dict:
+    """
+    DuckDuckGo maps API
+    """
+    query_results = await asyncio.gather(
+        maps(
+            query, place, street, city, county, state, country,
+            postalcode, latitude, longitude, radius, max_results
+        )
     )
     return {
         "success": True,
