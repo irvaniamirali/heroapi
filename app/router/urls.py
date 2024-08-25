@@ -2,6 +2,7 @@
 
 URLS: list = [
     "app.router.api.ai.router",
+    "app.router.api.lexica.router",
     "app.router.api._base64.router",
     "app.router.api.datetime.router",
     "app.router.api.dictionary.router",
