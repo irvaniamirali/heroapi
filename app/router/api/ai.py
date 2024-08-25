@@ -1,12 +1,9 @@
-from fastapi import APIRouter, Response, status
-
+from fastapi import status
 from httpx import AsyncClient, codes
 
 import user_agent
 
 client = AsyncClient()
-
-router = APIRouter(tags=["AI"])
 
 HOST = "https://api.binjie.fun/api/generateStream"
 
@@ -21,22 +18,23 @@ HEADERS = {
 
 }
 
+PAYLOAD = {
+    "prompt": None,
+    "userId": "#/chat/1724442116057",
+    "network": True,
+    "system": "",
+    "withoutContext": False,
+    "stream": False
+}
 
-@router.get("/gpt", status_code=status.HTTP_200_OK)
-@router.post("/gpt", status_code=status.HTTP_200_OK)
-async def chat_gpt(response: Response, query: str) -> dict:
+
+async def gpt(response, query):
     """
     ChatGPT 3.5 API
     """
-    data = {
-        "prompt": query,
-        "userId": "#/chat/1724442116057",
-        "network": True,
-        "system": "",
-        "withoutContext": False,
-        "stream": False
-    }
-    query_response = await client.post(HOST, json=data, headers=HEADERS)
+    PAYLOAD["prompt"] = query
+    HEADERS["User-Agent"] = user_agent.generate_user_agent()
+    query_response = await client.post(HOST, json=PAYLOAD, headers=HEADERS)
     if query_response.status_code != codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
