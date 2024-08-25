@@ -10,7 +10,6 @@ URLS: list = [
     "app.router.api.fake.router",
     "app.router.api.github.router",
     "app.router.api.google.router",
-    "app.router.api.location.router",
     "app.router.api.news.router",
     "app.router.api.music.router",
     "app.router.api.pypi.router",
