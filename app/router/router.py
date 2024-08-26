@@ -218,6 +218,54 @@ async def duckduckgo_images(
     }
 
 
+@router.get("/duckduckgo/maps", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+@router.post("/duckduckgo/maps", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+async def duckduckgo_maps(
+        query: str,
+        place: Optional[str] = None,
+        street: Optional[str] = None,
+        city: Optional[str] = None,
+        county: Optional[str] = None,
+        state: Optional[str] = None,
+        country: Optional[str] = None,
+        postalcode: Optional[str] = None,
+        latitude: Optional[str] = None,
+        longitude: Optional[str] = None,
+        radius: Optional[int] = 0,
+        max_results: Optional[int] = 100
+) -> dict:
+    """
+    DuckDuckGo maps search. Query params: https://duckduckgo.com/params.
+    Args:
+        query: keywords for query
+        place: if set, the other parameters are not used.
+        street: house number/street.
+        city: city of search.
+        county: county of search.
+        state: state of search.
+        country: country of search.
+        postalcode: postalcode of search.
+        latitude: geographic coordinate (north-south position).
+        longitude: geographic coordinate (east-west position); if latitude and
+            longitude are set, the other parameters are not used.
+        radius: expand the search square by the distance in kilometers.
+        max_results: max number of results. If None, returns results only from the first response.
+
+    Returns:
+        List of dictionaries with maps search results, or None if there was an error.
+    """
+    query_results = await asyncio.gather(
+        duckduckgo.maps(
+            query, place, street, city, county, state, country, postalcode, latitude, longitude, radius, max_results
+        )
+    )
+    return {
+        "success": True,
+        "data": query_results,
+        "error_message": None
+    }
+
+
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
 @router.post("/translate", tags=Translate, status_code=status.HTTP_200_OK)
 async def translate(
