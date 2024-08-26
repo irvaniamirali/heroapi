@@ -3,9 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html
 
-from app.router.router import Routers
-
-from app.router.urls import URLS
+from app.router import router
 
 app = FastAPI(
     title="HeroAPI",
@@ -57,7 +55,6 @@ async def hello_world() -> dict:
         "data": "Hello World!"
     }
 
-initialize_routers = Routers(app, URLS)
 
 if __name__ == "app.main":
-    initialize_routers()
+    app.include_router(router)
