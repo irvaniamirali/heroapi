@@ -1,26 +1,66 @@
-from fastapi import status
+from persiantools.jdatetime import JalaliDate, JalaliDateTime
+from datetime import date, datetime
 
-from persiantools.jdatetime import JalaliDateTime
+
+async def iso_date(year, month, day, prefix):
+    date_result = JalaliDate(year, month, day).isoformat()
+    if prefix:
+        date_result = JalaliDate(year, month, day).strftime(f"%Y{prefix}%m{prefix}%d")
+    return date_result
 
 
-async def datetime(number_lang: str = "en") -> dict:
-    current_date = jdate("H:i:s ,Y/n/j", tr_num=number_lang)
+async def solar_date():
+    """
+    Current Jalali date
+    """
+    current_date = JalaliDateTime.now()
     return {
-        "success": True,
-        "data": current_date,
-        "error_message": None
+        "current": str(current_date.now()),
+        "time": {
+            "full": current_date.time(),
+            "hour": current_date.hour,
+            "minute": current_date.minute,
+            "second": current_date.second,
+            "microsecond": current_date.microsecond
+        },
+        "date": {
+            "full": str(current_date.date()),
+            "day": current_date.day,
+            "month": current_date.month,
+            "year": current_date.year,
+        }
     }
 
 
-@router.get("/convert-date", status_code=status.HTTP_200_OK)
-@router.post("/convert-date", status_code=status.HTTP_200_OK)
-async def convert_date(day: int, month: int, year: int) -> dict:
+async def ad_date():
     """
-    Convert Shamsi date to Gregorian
+    Current AD date
     """
-    date = jdatetime.date(day=day, month=month, year=year).togregorian()
-    return {
-        "success": True,
-        "data": date,
-        "error_message": None
+    current_date = datetime.now()
+    date_result = {
+        "current": current_date,
+        "time": {
+            "full": current_date.time(),
+            "hour": current_date.hour,
+            "minute": current_date.minute,
+            "second": current_date.second,
+            "microsecond": current_date.microsecond
+        },
+        "date": {
+            "full": current_date.date(),
+            "day": current_date.day,
+            "month": current_date.month,
+            "year": current_date.year,
+        }
     }
+    return date_result
+
+
+async def convert_ad_to_jalali(year, month, day):
+    date_result = JalaliDate(date(year, month, day))
+    return date_result
+
+
+async def convert_jalali_to_ad(year, month, day):
+    date_result = JalaliDate.to_jalali(year, month, day)
+    return date_result
