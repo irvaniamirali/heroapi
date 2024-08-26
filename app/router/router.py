@@ -133,7 +133,7 @@ async def duckduckgo_news(
         region: Optional[str] = None,
         safe_search: Optional[str] = "moderate",
         timelimit: Optional[str] = None
-):
+) -> dict:
     """
     DuckDuckGo news search. Query params: https://duckduckgo.com/params.
     Args:
@@ -163,7 +163,7 @@ async def duckduckgo_chat(
         query: str,
         model: Optional[str] = "gpt-4o-mini",
         timeout: Optional[int] = 30,
-):
+) -> dict:
     """
     DuckDuckGo AI chat. Query params: https://duckduckgo.com/params.
     models: "gpt-4o-mini", "claude-3-haiku", "llama-3.1-70b", "mixtral-8x7b".
@@ -211,6 +211,80 @@ async def duckduckgo_images(
             query, max_results, region, timelimit, size, color, type_image, layout, license_image
         )
     )
+    return {
+        "success": True,
+        "data": query_result,
+        "error_message": None
+    }
+
+
+@router.get("/duckduckgo/videos", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+@router.post("/duckduckgo/videos", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+async def duckduckgo_videos(
+        query: str,
+        region: Optional[str] = "wt-wt",
+        safe_search: Optional[str] = "moderate",
+        timelimit: Optional[str] = None,
+        resolution: Optional[str] = None,
+        duration: Optional[str] = None,
+        license_videos: Optional[str] = None,
+        max_results: Optional[str] = None,
+) -> dict:
+    """
+    DuckDuckGo videos search. Query params: https://duckduckgo.com/params.
+    Args:
+        query: keywords for query.
+        region: wt-wt, us-en, uk-en, ru-ru, etc.
+        safe_search: on, moderate, off.
+        timelimit: d, w, m.
+        resolution: high, standart.
+        duration: short, medium, long.
+        license_videos: creativeCommon, youtube.
+        max_results: max number of results. If None, returns results only from the first response.
+
+    Returns:
+        List of dictionaries with videos search results.
+    """
+    query_result = await asyncio.gather(
+        duckduckgo.videos(
+            query, region, safe_search, timelimit, resolution, duration, license_videos, max_results
+        )
+    )
+    return {
+        "success": True,
+        "data": query_result,
+        "error_message": None
+    }
+
+
+@router.get("/api/duckduckgo/answers", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+@router.post("/api/duckduckgo/answers", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+async def duckduckgo_answers(query: str) -> dict:
+    """
+    DuckDuckGo instant answers. Query params: https://duckduckgo.com/params.
+    """
+    query_result = await asyncio.gather(duckduckgo.answers(query))
+    return {
+        "success": True,
+        "data": query_result,
+        "error_message": None
+    }
+
+
+@router.get("/duckduckgo/suggestions", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+@router.post("/duckduckgo/suggestions", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+async def duckduckgo_suggestions(query: str, region: Optional[str] = "wt-wt") -> dict:
+    """
+    DuckDuckGo suggestions. Query params: https://duckduckgo.com/params.
+
+    Args:
+        query: keywords for query.
+        region: wt-wt, us-en, uk-en, ru-ru, etc. Defaults to "wt-wt".
+
+    Returns:
+        List of dictionaries with suggestions results.
+    """
+    query_result = await duckduckgo.suggestions(query, region)
     return {
         "success": True,
         "data": query_result,
