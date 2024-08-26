@@ -15,7 +15,6 @@ HEADERS = {
     "Content-Type": "application/json",
     "Referer": "https://chat18.aichatos8.com/",
     "Origin": "https://chat18.aichatos8.com"
-
 }
 
 PAYLOAD = {
@@ -28,7 +27,7 @@ PAYLOAD = {
 }
 
 
-async def gpt(response, query):
+async def gpt(response, results, query):
     """
     ChatGPT 3.5 API
     """
@@ -37,14 +36,10 @@ async def gpt(response, query):
     query_response = await client.post(HOST, json=PAYLOAD, headers=HEADERS)
     if query_response.status_code != codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "A problem has occurred on our end"
-        }
+        results["success"] = False
+        results["data"] = None
+        results["error_message"] = "A problem has occurred on our end"
+        return results
 
-    return {
-        "success": True,
-        "data": query_response.text,
-        "error_message": None
-    }
+    results["data"] = query_response.text
+    return results
