@@ -41,6 +41,34 @@ async def duckduckgo_text(
     }
 
 
+@router.get("/duckduckgo/news", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+@router.post("/duckduckgo/news", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+async def duckduckgo_news(
+        query: str,
+        max_results: Optional[int] = 10,
+        region: Optional[str] = None,
+        limit: Optional[int] = None
+):
+    """
+    DuckDuckGo news search. Query params: https://duckduckgo.com/params.
+    """
+    return await asyncio.gather(duckduckgo.news(query, max_results, region, limit))
+
+
+@router.get("/duckduckgo/chat", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+@router.post("/duckduckgo/chat", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
+async def duckduckgo_chat(
+        query: str,
+        model: Optional[str] = "gpt-4o-mini",
+        timeout: Optional[int] = 30,
+):
+    """
+    DuckDuckGo AI chat. Query params: https://duckduckgo.com/params.
+    models: "gpt-4o-mini", "claude-3-haiku", "llama-3.1-70b", "mixtral-8x7b".
+    """
+    return await asyncio.gather(duckduckgo.chat(query, model, timeout))
+
+
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
 async def translate(
