@@ -1,49 +1,33 @@
-from fastapi import APIRouter, Response, status
-
-from typing import Optional
+from fastapi import status
 
 import urllib.parse
-import html
 import re
+import html
+import user_agent
 
-import httpx
+from httpx import AsyncClient, codes
 
-client = httpx.AsyncClient()
+client = AsyncClient()
 
-router = APIRouter(tags=["Translate"])
+URL = "https://translate.google.com"
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0"
+}
 
 
-@router.get("/translate", status_code=status.HTTP_200_OK)
-@router.post("/translate", status_code=status.HTTP_200_OK)
-async def translate(
-        response: Response,
-        text: str,
-        to_lang: Optional[str] = "auto",
-        from_lang: Optional[str] = "auto"
-) -> dict:
-    """
-    Translation of texts based on the Google Translate engine
-    """
-    url = "https://translate.google.com"
-    query_url = f"{url}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}"
-    request = await client.request(
-        method="GET", url=query_url, headers={
-            "User-Agent":
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0"
-        }
-    )
-    if request.status_code != httpx.codes.OK:
+async def translate(response, payload, text, to_lang, from_lang):
+    HEADERS["User-Agent"] = user_agent.generate_user_agent()
+    query_url = f"{URL}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}"
+    request = await client.request(method="GET", url=query_url, headers=HEADERS)
+    if request.status_code != codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "A problem has occurred on our end"
-        }
+        payload["success"] = False
+        payload["data"] = None
+        payload["error_message"] = "A problem has occurred on our end"
+        return payload
 
     translated_text = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
     result = html.unescape(translated_text[0])
-    return {
-        "success": True,
-        "data": result,
-        "error_message": None
-    }
+    payload["data"] = result
+    return payload
