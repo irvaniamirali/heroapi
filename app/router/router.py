@@ -19,12 +19,13 @@ async def gpt(response: Response, query: str) -> dict:
     """
     ChatGPT 3.5 API.
     """
-    query_result = await ai.gpt(response, query)
-    return {
+    payload = {
         "success": True,
-        "data": query_result,
+        "data": None,
         "error_message": None
     }
+    query_result = await ai.gpt(response, payload, query)
+    return query_result
 
 
 @router.get("/duckduckgo/text", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
@@ -39,6 +40,7 @@ async def duckduckgo_text(
     """
     DuckDuckGo text search. Query params: https://duckduckgo.com/params.
     Args:
+        query: keywords for query.
         region: wt-wt, us-en, uk-en, ru-ru, etc. Defaults to "wt-wt".
         safe_search: on, moderate, off. Defaults to "moderate".
         timelimit: d, w, m, y. Defaults to None.
@@ -180,19 +182,19 @@ async def duckduckgo_chat(
 @router.post("/duckduckgo/images", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
 async def duckduckgo_images(
         query: str,
-        max_results: Optional[int] = 100,
         region: Optional[str] = "wt-wt",
         timelimit: Optional[str] = None,
         size: Optional[str] = None,
         color: Optional[str] = None,
         type_image: Optional[str] = None,
         layout: Optional[str] = None,
-        license_image: Optional[str] = None
-):
+        license_image: Optional[str] = None,
+        max_results: Optional[int] = 100
+) -> dict:
     """
     DuckDuckGo images search. Query params: https://duckduckgo.com/params.
     Args:
-        max_results: max number of results. If None, returns results only from the first response.
+        query: keywords for query.
         layout: Square, Tall, Wide. Defaults to None.
         region: wt-wt, us-en, uk-en, ru-ru, etc.
         timelimit: Day, Week, Month, Year. Defaults to None.
@@ -203,12 +205,13 @@ async def duckduckgo_images(
             Share (Free to Share and Use), ShareCommercially (Free to Share and Use Commercially),
             Modify (Free to Modify, Share, and Use), ModifyCommercially (Free to Modify, Share, and
             Use Commercially). Defaults to None.
+        max_results: max number of results. If None, returns results only from the first response.
     Returns:
         List of dictionaries with images search results.
     """
     query_result = await asyncio.gather(
         duckduckgo.images(
-            query, max_results, region, timelimit, size, color, type_image, layout, license_image
+            query, region, timelimit, size, color, type_image, layout, license_image, max_results
         )
     )
     return {
@@ -351,9 +354,10 @@ async def translate(
     """
     Translation of texts based on the Google Translate engine.
     """
-    text_result = await translator.translate(response, text, to_lang, from_lang)
-    return {
+    payload = {
         "success": True,
-        "data": text_result,
+        "data": None,
         "error_message": None
     }
+    text_result = await translator.translate(response, payload, text, to_lang, from_lang)
+    return text_result
