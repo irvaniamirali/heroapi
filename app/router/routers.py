@@ -7,6 +7,7 @@ from typing import Optional
 from app.router.tags import *
 
 from app.router.api import ai
+from app.router.api import base64_api
 from app.router.api import duckduckgo
 from app.router.api import translator
 
@@ -19,13 +20,33 @@ async def gpt(response: Response, query: str) -> dict:
     """
     ChatGPT 3.5 API.
     """
-    payload = {
-        "success": True,
-        "data": None,
-        "error_message": None
-    }
+    payload = dict(success=True, data=None, error_message=None)
     query_result = await ai.gpt(response, payload, query)
     return query_result
+
+
+@router.get("/bs64encode", tags=Base64, status_code=status.HTTP_200_OK)
+@router.post("/bs64encode", tags=Base64, status_code=status.HTTP_200_OK)
+async def base64encode(string: str) -> dict:
+    """
+    Encode to Base64 format
+    """
+    string_result = await base64_api.base64encode(string)
+    return {
+        "success": True,
+        "data": string_result,
+        "error_message": None
+    }
+
+
+@router.get("/bs64decode", tags=Base64, status_code=status.HTTP_200_OK)
+@router.post("/bs64decode", tags=Base64, status_code=status.HTTP_200_OK)
+async def base64_decode(response: Response, string) -> dict:
+    """
+    Decode from Base64 format
+    """
+    payload = dict(success=True, data=None, error_message=None)
+    return await base64_api.b64decode(response, payload, string)
 
 
 @router.get("/duckduckgo/text", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
@@ -354,10 +375,6 @@ async def translate(
     """
     Translation of texts based on the Google Translate engine.
     """
-    payload = {
-        "success": True,
-        "data": None,
-        "error_message": None
-    }
+    payload = dict(success=True, data=None, error_message=None)
     text_result = await translator.translate(response, payload, text, to_lang, from_lang)
     return text_result
