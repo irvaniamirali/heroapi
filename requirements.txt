@@ -9,7 +9,6 @@ click==8.1.7
 dnspython==2.6.1
 duckduckgo_search==6.2.11b1
 email_validator==2.1.1
-Faker==25.1.0
 fastapi==0.111.0
 fastapi-cli==0.0.3
 greenlet==3.0.3
@@ -29,7 +28,7 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 orjson==3.10.3
-persiantools~=4.2.0
+persiantools==4.2.0
 pydantic==2.7.1
 pydantic_core==2.18.2
 Pygments==2.18.0
