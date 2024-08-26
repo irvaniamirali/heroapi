@@ -8,6 +8,7 @@ from app.router.tags import *
 
 from app.router.api import ai
 from app.router.api import base64_api
+from app.router.api import datetime_api
 from app.router.api import duckduckgo
 from app.router.api import translator
 
@@ -49,12 +50,74 @@ async def base64_decode(response: Response, string) -> dict:
     return await base64_api.b64decode(response, payload, string)
 
 
-@router.get("/datetime", tags=DateTime, status_code=status.HTTP_200_OK)
-@router.post("/datetime", tags=DateTime, status_code=status.HTTP_200_OK)
-async def datetime() -> dict:
+@router.get("/datetime/solar", tags=DateTime, status_code=status.HTTP_200_OK)
+@router.post("/datetime/solar", tags=DateTime, status_code=status.HTTP_200_OK)
+async def solar_datetime() -> dict:
     """
+    Current Jalali date
+    """
+    date_result = await datetime_api.solar_date()
+    return {
+        "success": True,
+        "data": date_result,
+        "error_message": None
+    }
 
+
+@router.get("/datetime/ad", tags=DateTime, status_code=status.HTTP_200_OK)
+@router.post("/datetime/ad", tags=DateTime, status_code=status.HTTP_200_OK)
+async def ad_datetime() -> dict:
     """
+    Current AD date
+    """
+    date_result = await datetime_api.ad_date()
+    return {
+        "success": True,
+        "data": date_result,
+        "error_message": None
+    }
+
+
+@router.get("/datetime/iso", tags=DateTime, status_code=status.HTTP_200_OK)
+@router.post("/datetime/iso", tags=DateTime, status_code=status.HTTP_200_OK)
+async def iso_date(year: int, month: int, day: int, prefix: Optional[str] = "/") -> dict:
+    """
+    Return the Jalali date as a string in ISO 8601 format.
+    """
+    date_result = await datetime_api.iso_date(year, month, day, prefix)
+    return {
+        "success": True,
+        "data": date_result,
+        "error_message": None
+    }
+
+
+@router.get("/datetime/convert-ad", tags=DateTime, status_code=status.HTTP_200_OK)
+@router.post("/datetime/convert-ad", tags=DateTime, status_code=status.HTTP_200_OK)
+async def convert_ad_to_jalali(year: int, month: int, day: int) -> dict:
+    """
+    Convert AD date to Jalali date.
+    """
+    date_result = await datetime_api.convert_ad_to_jalali(year, month, day)
+    return {
+        "success": True,
+        "data": date_result,
+        "error_message": None
+    }
+
+
+@router.get("/datetime/convert-jalali", tags=DateTime, status_code=status.HTTP_200_OK)
+@router.post("/datetime/convert-jalali", tags=DateTime, status_code=status.HTTP_200_OK)
+async def convert_jalali_to_ad(year: int, month: int, day: int) -> dict:
+    """
+    Convert Jalali date to AD date.
+    """
+    date_result = await datetime_api.convert_jalali_to_ad(year, month, day)
+    return {
+        "success": True,
+        "data": date_result,
+        "error_message": None
+    }
 
 
 @router.get("/duckduckgo/text", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
