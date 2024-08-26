@@ -14,15 +14,16 @@ async def base64encode(text):
     return base64.b64encode(string)
 
 
-async def b64decode(response, string, payload):
+async def b64decode(response, payload, string):
     """
     Decode from Base64 format
     """
-    string = codecs.encode(string, "utf-8")
+    output = codecs.encode(string, "utf-8")
     try:
-        output = base64.b64decode(string)
-        payload["data"] = output
+        payload["data"] = base64.b64decode(output)
     except Error:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         payload["success"] = False
         payload["error_message"] = "This text is not base64"
+
+    return payload
