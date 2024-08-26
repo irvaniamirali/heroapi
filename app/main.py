@@ -11,7 +11,7 @@ app = FastAPI(
     contact={
         "name": "HeroTeam",
         "url": "https://github.com/irvaniamirali/HeroAPI",
-        "email": "irvaniamirali@proton.me",
+        "email": "social.irvaniamirali@gmail.com",
     },
     terms_of_service="https://t.me/HeroAPI",
     license_info={
