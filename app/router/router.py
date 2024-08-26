@@ -107,6 +107,24 @@ async def duckduckgo_lite_text(
     }
 
 
+@router.get("/duckduckgo/translate", tags=DuckDuckGo + Translate, status_code=status.HTTP_200_OK)
+@router.post("/duckduckgo/translate", tags=DuckDuckGo + Translate, status_code=status.HTTP_200_OK)
+async def duckduckgo_translate(
+        text: str,
+        from_lang: Optional[str] = None,
+        to_lang: Optional[str] = "en"
+) -> dict:
+    """
+    DuckDuckGo translate API
+    """
+    query_results = await asyncio.gather(duckduckgo.translate(text, from_lang, to_lang))
+    return {
+        "success": True,
+        "data": query_results,
+        "error_message": None
+    }
+
+
 @router.get("/duckduckgo/news", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
 @router.post("/duckduckgo/news", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
 async def duckduckgo_news(
