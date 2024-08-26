@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, status
 
-import asyncio
+from asyncio import gather
 
 from typing import Optional
 
@@ -49,6 +49,14 @@ async def base64_decode(response: Response, string) -> dict:
     return await base64_api.b64decode(response, payload, string)
 
 
+@router.get("/datetime", tags=DateTime, status_code=status.HTTP_200_OK)
+@router.post("/datetime", tags=DateTime, status_code=status.HTTP_200_OK)
+async def datetime() -> dict:
+    """
+
+    """
+
+
 @router.get("/duckduckgo/text", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
 @router.post("/duckduckgo/text", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
 async def duckduckgo_text(
@@ -70,7 +78,7 @@ async def duckduckgo_text(
     Returns:
         List of dictionaries with search results, or None if there was an error.
     """
-    query_results = await asyncio.gather(
+    query_results = await gather(
         duckduckgo.text_query(
             query, region, safe_search, timelimit, "api", max_results
         )
@@ -94,7 +102,7 @@ async def duckduckgo_html_text(
     """
     DuckDuckGo text search. backend to HTML. Query params: https://duckduckgo.com/params.
     """
-    query_results = await asyncio.gather(
+    query_results = await gather(
         duckduckgo.text_query(
             query, region, safe_search, timelimit, "html", max_results
         )
@@ -118,7 +126,7 @@ async def duckduckgo_lite_text(
     """
     DuckDuckGo text search. backend to LITE. Query params: https://duckduckgo.com/params.
     """
-    query_results = await asyncio.gather(
+    query_results = await gather(
         duckduckgo.text_query(
             query, region, safe_search, timelimit, "lite", max_results
         )
@@ -140,7 +148,7 @@ async def duckduckgo_translate(
     """
     DuckDuckGo translate API
     """
-    query_results = await asyncio.gather(duckduckgo.translate(text, from_lang, to_lang))
+    query_results = await gather(duckduckgo.translate(text, from_lang, to_lang))
     return {
         "success": True,
         "data": query_results,
@@ -168,7 +176,7 @@ async def duckduckgo_news(
     Returns:
         List of dictionaries with news search results.
     """
-    query_result = await asyncio.gather(
+    query_result = await gather(
         duckduckgo.news(
             query, max_results, region, safe_search, timelimit
         )
@@ -191,7 +199,7 @@ async def duckduckgo_chat(
     DuckDuckGo AI chat. Query params: https://duckduckgo.com/params.
     models: "gpt-4o-mini", "claude-3-haiku", "llama-3.1-70b", "mixtral-8x7b".
     """
-    query_result = await asyncio.gather(duckduckgo.chat(query, model, timeout))
+    query_result = await gather(duckduckgo.chat(query, model, timeout))
     return {
         "success": True,
         "data": query_result,
@@ -230,7 +238,7 @@ async def duckduckgo_images(
     Returns:
         List of dictionaries with images search results.
     """
-    query_result = await asyncio.gather(
+    query_result = await gather(
         duckduckgo.images(
             query, region, timelimit, size, color, type_image, layout, license_image, max_results
         )
@@ -269,7 +277,7 @@ async def duckduckgo_videos(
     Returns:
         List of dictionaries with videos search results.
     """
-    query_result = await asyncio.gather(
+    query_result = await gather(
         duckduckgo.videos(
             query, region, safe_search, timelimit, resolution, duration, license_videos, max_results
         )
@@ -287,7 +295,7 @@ async def duckduckgo_answers(query: str) -> dict:
     """
     DuckDuckGo instant answers. Query params: https://duckduckgo.com/params.
     """
-    query_result = await asyncio.gather(duckduckgo.answers(query))
+    query_result = await gather(duckduckgo.answers(query))
     return {
         "success": True,
         "data": query_result,
@@ -308,7 +316,7 @@ async def duckduckgo_suggestions(query: str, region: Optional[str] = "wt-wt") ->
     Returns:
         List of dictionaries with suggestions results.
     """
-    query_result = await duckduckgo.suggestions(query, region)
+    query_result = await gather(duckduckgo.suggestions(query, region))
     return {
         "success": True,
         "data": query_result,
@@ -352,7 +360,7 @@ async def duckduckgo_maps(
     Returns:
         List of dictionaries with maps search results, or None if there was an error.
     """
-    query_results = await asyncio.gather(
+    query_results = await gather(
         duckduckgo.maps(
             query, place, street, city, county, state, country, postalcode, latitude, longitude, radius, max_results
         )

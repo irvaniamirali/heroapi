@@ -1,19 +1,9 @@
-from fastapi import APIRouter, status
+from fastapi import status
 
-from jalali.Jalalian import jdate
-import jdatetime
-
-tags = ["Date & time"]
-
-router = APIRouter(tags=tags)
+from persiantools.jdatetime import JalaliDateTime
 
 
-@router.get("/datetime", status_code=status.HTTP_200_OK)
-@router.post("/datetime", status_code=status.HTTP_200_OK)
-async def date_time(number_lang: str = "en") -> dict:
-    """
-    Date and time display web service
-    """
+async def datetime(number_lang: str = "en") -> dict:
     current_date = jdate("H:i:s ,Y/n/j", tr_num=number_lang)
     return {
         "success": True,
