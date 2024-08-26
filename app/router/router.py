@@ -39,3 +39,17 @@ async def duckduckgo_text(
         "data": query_results,
         "error_message": None
     }
+
+
+@router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
+@router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
+async def translate(
+        response: Response,
+        text: str,
+        to_lang: Optional[str] = "auto",
+        from_lang: Optional[str] = "auto"
+) -> dict:
+    """
+    Translation of texts based on the Google Translate engine.
+    """
+    return await translator.translate(response, text, to_lang, from_lang)
