@@ -14,7 +14,7 @@ from app.router.api import lexica_api
 from app.router.api import music_fa
 from app.router.api import news_fa
 from app.router.api import translator
-from app.router.api import other
+from app.router.api import others_api
 
 router = APIRouter(prefix="/api")
 
@@ -436,7 +436,7 @@ async def icons_search(query: str, page: Optional[int] = 1) -> dict:
     """
     Web Service to search icon from [icon-icons](https://icon-icons.com)
     """
-    return await other.icon_search(query, page)
+    return await others_api.icon_search(query, page)
 
 
 @router.get("/lang", tags=Language, status_code=status.HTTP_200_OK)
@@ -445,7 +445,7 @@ async def language_detect(response: Response, text: str) -> dict:
     """
     Identifying the language of texts
     """
-    return await other.language_detect(response, text)
+    return await others_api.language_detect(response, text)
 
 
 @router.get("/html2json", tags=HTML2JSON, status_code=status.HTTP_200_OK)
@@ -454,7 +454,7 @@ async def convert_html_to_json(html: str) -> dict:
     """
     Convert HTML document to json
     """
-    return await other.convert_html_to_json(html)
+    return await others_api.convert_html_to_json(html)
 
 
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
