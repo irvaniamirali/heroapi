@@ -1,41 +1,24 @@
-from fastapi import APIRouter, Response, status
-
-from typing import Optional
+from httpx import AsyncClient
 
 from bs4 import BeautifulSoup
 
-import httpx
 import re
 
-client = httpx.AsyncClient()
+client = AsyncClient()
 
-router = APIRouter(tags=["News"])
+BASE_URL = "https://www.tasnimnews.com"
 
 
 def beautifulsoup_instance(html_data: str, features: str = "html.parser"):
     return BeautifulSoup(markup=html_data, features=features)
 
 
-@router.get("/news/v1", status_code=status.HTTP_200_OK)
-@router.post("/news/v1", status_code=status.HTTP_200_OK)
-async def news(response: Response, page: Optional[int] = 1) -> dict:
-    """
-    Web service to display news. onnected to the site www.tasnimnews.com
-    """
-    url = "https://www.tasnimnews.com"
-    request = await client.request("GET", f"{url}/fa/top-stories?page={page}")
-    if request.status_code != httpx.codes.OK:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "A problem has occurred on our end"
-        }
-
+async def news_v1(page):
+    request = await client.request("GET", f"{BASE_URL}/fa/top-stories?page={page}")
     soup = beautifulsoup_instance(request.text, "html.parser")
     articles = soup.find_all("article", class_="list-item")
 
-    search_result = list()
+    search_result = []
     for article in articles:
         title = article.find("h2", class_="title").text.strip()
         description = article.find("h4").text.strip()
@@ -45,7 +28,7 @@ async def news(response: Response, page: Optional[int] = 1) -> dict:
             dict(
                 title=title,
                 description=description,
-                url=url + full_url["href"],
+                url=BASE_URL + full_url["href"],
                 image=image["src"]
             )
         )
@@ -57,24 +40,11 @@ async def news(response: Response, page: Optional[int] = 1) -> dict:
     }
 
 
-@router.get("/news/v2", status_code=status.HTTP_200_OK)
-@router.post("/news/v2", status_code=status.HTTP_200_OK)
-async def news_version_two(response: Response, page: Optional[int] = 1) -> dict:
-    """
-    Web service, the latest technological news. `page` parameter has 6000 pages
-    """
+async def news_v2(page):
     request = await client.request("GET", f"https://gadgetnews.net/page/{page}")
-    if request.status_code != httpx.codes.OK:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "A problem has occurred on our end"
-        }
-
     soup = beautifulsoup_instance(request.text, "html.parser")
 
-    final_values = list()
+    final_values = []
     for recent_post in range(0, 13):
         articles = soup.find_all("article", class_=f"item-list recent-post{recent_post} recent-post-blog")
         for article in articles:

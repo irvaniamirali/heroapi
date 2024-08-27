@@ -1,22 +1,18 @@
-from fastapi import APIRouter, Response, status
+from fastapi import status
+
+from httpx import AsyncClient, codes
 
 from bs4 import BeautifulSoup
 
-import httpx
-
-client = httpx.AsyncClient()
-
-router = APIRouter(tags=["Crypto"])
+client = AsyncClient()
 
 
-@router.get("/tron", status_code=status.HTTP_200_OK)
-@router.post("/tron", status_code=status.HTTP_200_OK)
-async def tron(response: Response) -> dict:
+async def tron(response):
     """
     In this api, by using request and crypto site, we get the current price of Tron currency...
     """
-    request = await client.request(method="POST", url="https://arzdigital.com/coins/tron/")
-    if request.status_code != httpx.codes.OK:
+    request = await client.request("POST", url="https://arzdigital.com/coins/tron/")
+    if request.status_code != codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "success": False,

@@ -1,3 +1,4 @@
+aiofiles~=24.1.0
 annotated-types==0.6.0
 anyio==4.3.0
 beautifulsoup4==4.12.3
@@ -9,7 +10,6 @@ click==8.1.7
 dnspython==2.6.1
 duckduckgo_search==6.2.11b1
 email_validator==2.1.1
-Faker==25.1.0
 fastapi==0.111.0
 fastapi-cli==0.0.3
 greenlet==3.0.3
@@ -22,15 +22,14 @@ httptools==0.6.1
 httpx==0.27.0
 hyperframe==6.0.1
 idna==3.7
-jalali==1.2
 jalali_core==1.0.0
-jdatetime==5.0.0
 Jinja2==3.1.4
 langdetect==1.0.9
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 orjson==3.10.3
+persiantools==4.2.0
 pydantic==2.7.1
 pydantic_core==2.18.2
 Pygments==2.18.0
