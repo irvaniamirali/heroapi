@@ -11,30 +11,15 @@ from httpx import AsyncClient, codes
 
 client = AsyncClient()
 
-router = APIRouter()
+BASE_URL = "https://icon-icons.com"
 
 
-@router.get("/icon", tags=["Icon Search"], status_code=status.HTTP_200_OK)
-@router.post("/icon", tags=["Icon Search"], status_code=status.HTTP_200_OK)
-async def icon_search(response: Response, query: str, page: Optional[int] = 1) -> dict:
-    """
-    Web Service to search icon from [icon-icons](https://icon-icons.com)
-    """
-    request = await client.request(
-        method="GET", url=f"https://icon-icons.com/search/icons/?filtro={query}&page={page}"
-    )
-    if request.status_code != codes.OK:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "A problem has occurred on our end"
-        }
-
+async def icon_search(query, page):
+    request = await client.request("GET", url=f"{BASE_URL}/search/icons/?filtro={query}&page={page}")
     soup = BeautifulSoup(request.text, "html.parser")
     icons = soup.find_all("div", class_="icon-preview")
 
-    search_result = list()
+    search_result = []
     for icon in icons:
         data_original = icon.find("img", loading="lazy", src=True)
         search_result.append(data_original.get("src"))
@@ -46,9 +31,7 @@ async def icon_search(response: Response, query: str, page: Optional[int] = 1) -
     }
 
 
-@router.get("/lang", tags=["Language Detect"], status_code=status.HTTP_200_OK)
-@router.post("/lang", tags=["Language Detect"], status_code=status.HTTP_200_OK)
-async def language_detect(response: Response, text: str) -> dict:
+async def language_detect(response, text):
     """
     Identifying the language of texts
     """
@@ -68,9 +51,7 @@ async def language_detect(response: Response, text: str) -> dict:
         }
 
 
-@router.get("/html2json", tags=["Convert HTML to JSON"], status_code=status.HTTP_200_OK)
-@router.post("/html2json", tags=["Convert HTML to JSON"], status_code=status.HTTP_200_OK)
-async def convert_html_to_json(html: str) -> dict:
+async def convert_html_to_json(html):
     """
     Convert HTML document to json
     """
