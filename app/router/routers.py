@@ -14,6 +14,7 @@ from app.router.api import lexica_api
 from app.router.api import music_fa
 from app.router.api import news_fa
 from app.router.api import translator
+from app.router.api import other
 
 router = APIRouter(prefix="/api")
 
@@ -427,6 +428,15 @@ async def news_v2(page: Optional[int] = 1) -> dict:
     Web service, the latest technological news. `page` parameter has 6000 pages
     """
     return await news_fa.news_v2(page)
+
+
+@router.get("/icon", tags=Icons, status_code=status.HTTP_200_OK)
+@router.post("/icon", tags=Icons, status_code=status.HTTP_200_OK)
+async def icons_search(query: str, page: Optional[int] = 1) -> dict:
+    """
+    Web Service to search icon from [icon-icons](https://icon-icons.com)
+    """
+    return await other.icon_search(query, page)
 
 
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
