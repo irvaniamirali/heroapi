@@ -1,82 +1,41 @@
-from fastapi import APIRouter, Response, status
+from json import loads
+from random import choice
 
-from typing import Optional
-from faker import Faker
-
-router = APIRouter(tags=["Fake data"])
+import aiofiles
 
 
-@router.get("/ftext", status_code=status.HTTP_200_OK)
-@router.post("/ftext", status_code=status.HTTP_200_OK)
-async def fake_text(response: Response, _len: Optional[int] = 99, lang: Optional[str] = "en") -> dict:
+async def name(count, language):
+    filename = "data/name_fa.json"
+    if language.startswith("en"):
+        filename = "data/name_en.json"
+
+    names = []
+    async with aiofiles.open(filename, "r") as file:
+        contents = await file.read()
+        contents = loads(contents)
+        for _ in range(count):
+            names.append(choice(contents["items"]))
+    return names
+
+
+async def email(count):
+    emails = []
+    async with aiofiles.open("data/email_en.json", "r") as file:
+        contents = await file.read()
+        contents = loads(contents)
+        for _ in range(count):
+            emails.append(choice(contents["items"]))
+    return emails
+
+
+async def text(language):
     """
-    Generate fake text
+    Return text from json file
     """
-    if int(_len) > 1000:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "The amount is too big. Send a smaller number `_len`"
-        }
+    filename = "data/text_fa.json"
+    if language.startswith("en"):
+        filename = "data/text_en.json"
 
-    faker = Faker([lang])
-    return {
-        "success": True,
-        "data": faker.text(_len),
-        "error_message": None
-    }
-
-
-@router.get("/femail", status_code=status.HTTP_200_OK)
-@router.post("/femail", status_code=status.HTTP_200_OK)
-async def fake_email(response: Response, count: Optional[int] = 99) -> dict:
-    """
-    Generate fake email
-    """
-    if int(count) > 100:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "The amount is too big. Send a smaller number `count`"
-        }
-
-    faker = Faker()
-
-    final_values = list()
-    for _ in range(count):
-        final_values.append(faker.email())
-
-    return {
-        "success": True,
-        "data": final_values,
-        "error_message": None
-    }
-
-
-@router.get("/fname", status_code=status.HTTP_200_OK)
-@router.post("/fname", status_code=status.HTTP_200_OK)
-async def fake_name(response: Response, count: Optional[int] = 99, lang: Optional[str] = "en") -> dict:
-    """
-    Generate fake name
-    """
-    if int(count) > 100:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "The amount is too big. Send a smaller number `count`"
-        }
-
-    faker = Faker([lang])
-
-    final_values = list()
-    for _ in range(count):
-        final_values.append(faker.name())
-
-    return {
-        "success": True,
-        "data": final_values,
-        "error_message": None
-    }
+    async with aiofiles.open(filename, "r") as file:
+        contents = await file.read()
+        return loads(contents)
