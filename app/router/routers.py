@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Response, status
 
-from asyncio import gather
-
 from typing import Optional
 
 from app.router.tags import *
@@ -138,16 +136,7 @@ async def duckduckgo_text(
     Returns:
         List of dictionaries with search results, or None if there was an error.
     """
-    query_results = await gather(
-        duckduckgo.text_query(
-            query, region, safe_search, timelimit, "api", max_results
-        )
-    )
-    return {
-        "success": True,
-        "data": query_results,
-        "error_message": None
-    }
+    return await duckduckgo.text_query(query, region, safe_search, timelimit, "api", max_results)
 
 
 @router.get("/duckduckgo/text/html", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
@@ -162,16 +151,7 @@ async def duckduckgo_html_text(
     """
     DuckDuckGo text search. backend to HTML. Query params: https://duckduckgo.com/params.
     """
-    query_results = await gather(
-        duckduckgo.text_query(
-            query, region, safe_search, timelimit, "html", max_results
-        )
-    )
-    return {
-        "success": True,
-        "data": query_results,
-        "error_message": None
-    }
+    return await duckduckgo.text_query(query, region, safe_search, timelimit, "html", max_results)
 
 
 @router.get("/duckduckgo/text/lite", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
@@ -186,16 +166,7 @@ async def duckduckgo_lite_text(
     """
     DuckDuckGo text search. backend to LITE. Query params: https://duckduckgo.com/params.
     """
-    query_results = await gather(
-        duckduckgo.text_query(
-            query, region, safe_search, timelimit, "lite", max_results
-        )
-    )
-    return {
-        "success": True,
-        "data": query_results,
-        "error_message": None
-    }
+    return await duckduckgo.text_query(query, region, safe_search, timelimit, "lite", max_results)
 
 
 @router.get("/duckduckgo/translate", tags=DuckDuckGo + Translate, status_code=status.HTTP_200_OK)
@@ -208,12 +179,7 @@ async def duckduckgo_translate(
     """
     DuckDuckGo translate API
     """
-    query_results = await gather(duckduckgo.translate(text, from_lang, to_lang))
-    return {
-        "success": True,
-        "data": query_results,
-        "error_message": None
-    }
+    return await duckduckgo.translate(text, from_lang, to_lang)
 
 
 @router.get("/duckduckgo/news", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
@@ -236,16 +202,7 @@ async def duckduckgo_news(
     Returns:
         List of dictionaries with news search results.
     """
-    query_result = await gather(
-        duckduckgo.news(
-            query, max_results, region, safe_search, timelimit
-        )
-    )
-    return {
-        "success": True,
-        "data": query_result,
-        "error_message": None
-    }
+    return await duckduckgo.news(query, max_results, region, safe_search, timelimit)
 
 
 @router.get("/duckduckgo/chat", tags=DuckDuckGo + AI, status_code=status.HTTP_200_OK)
@@ -259,12 +216,7 @@ async def duckduckgo_chat(
     DuckDuckGo AI chat. Query params: https://duckduckgo.com/params.
     models: "gpt-4o-mini", "claude-3-haiku", "llama-3.1-70b", "mixtral-8x7b".
     """
-    query_result = await gather(duckduckgo.chat(query, model, timeout))
-    return {
-        "success": True,
-        "data": query_result,
-        "error_message": None
-    }
+    return await duckduckgo.chat(query, model, timeout)
 
 
 @router.get("/duckduckgo/images", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
@@ -298,16 +250,7 @@ async def duckduckgo_images(
     Returns:
         List of dictionaries with images search results.
     """
-    query_result = await gather(
-        duckduckgo.images(
-            query, region, timelimit, size, color, type_image, layout, license_image, max_results
-        )
-    )
-    return {
-        "success": True,
-        "data": query_result,
-        "error_message": None
-    }
+    return await duckduckgo.images(query, region, timelimit, size, color, type_image, layout, license_image, max_results)
 
 
 @router.get("/duckduckgo/videos", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
@@ -337,16 +280,7 @@ async def duckduckgo_videos(
     Returns:
         List of dictionaries with videos search results.
     """
-    query_result = await gather(
-        duckduckgo.videos(
-            query, region, safe_search, timelimit, resolution, duration, license_videos, max_results
-        )
-    )
-    return {
-        "success": True,
-        "data": query_result,
-        "error_message": None
-    }
+    return await duckduckgo.videos(query, region, safe_search, timelimit, resolution, duration, license_videos, max_results)
 
 
 @router.get("/api/duckduckgo/answers", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
@@ -355,12 +289,7 @@ async def duckduckgo_answers(query: str) -> dict:
     """
     DuckDuckGo instant answers. Query params: https://duckduckgo.com/params.
     """
-    query_result = await gather(duckduckgo.answers(query))
-    return {
-        "success": True,
-        "data": query_result,
-        "error_message": None
-    }
+    return await duckduckgo.answers(query)
 
 
 @router.get("/duckduckgo/suggestions", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
@@ -376,12 +305,7 @@ async def duckduckgo_suggestions(query: str, region: Optional[str] = "wt-wt") ->
     Returns:
         List of dictionaries with suggestions results.
     """
-    query_result = await gather(duckduckgo.suggestions(query, region))
-    return {
-        "success": True,
-        "data": query_result,
-        "error_message": None
-    }
+    return await duckduckgo.suggestions(query, region)
 
 
 @router.get("/duckduckgo/maps", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
@@ -420,16 +344,9 @@ async def duckduckgo_maps(
     Returns:
         List of dictionaries with maps search results, or None if there was an error.
     """
-    query_results = await gather(
-        duckduckgo.maps(
-            query, place, street, city, county, state, country, postalcode, latitude, longitude, radius, max_results
-        )
+    return await duckduckgo.maps(
+        query, place, street, city, county, state, country, postalcode, latitude, longitude, radius, max_results
     )
-    return {
-        "success": True,
-        "data": query_results,
-        "error_message": None
-    }
 
 
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
@@ -443,6 +360,4 @@ async def translate(
     """
     Translation of texts based on the Google Translate engine.
     """
-    payload = dict(success=True, data=None, error_message=None)
-    text_result = await translator.translate(response, payload, text, to_lang, from_lang)
-    return text_result
+    return await translator.translate(response, payload, text, to_lang, from_lang)
