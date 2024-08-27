@@ -6,6 +6,7 @@ Free and open source api
 - [Telegram channel](https://t.me/HeroAPI)
 - [Swagger Documents](https://heroapi.ir/docs)
 
+### Contributing
 Contributions to the project are welcome! If you find any bugs or have suggestions for improvements, please open an issue or submit a pull request on GitHub.
 
 ### License
