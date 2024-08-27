@@ -396,8 +396,8 @@ async def github_users_search(
     return await github.users_search(query, sort, order, per_page, page)
 
 
-@router.get("/lexica", tags=AI_Image, status_code=status.HTTP_200_OK)
-@router.post("/lexica", tags=AI_Image, status_code=status.HTTP_200_OK)
+@router.get("/lexica", tags=AI_Image + AI, status_code=status.HTTP_200_OK)
+@router.post("/lexica", tags=AI_Image + AI, status_code=status.HTTP_200_OK)
 async def lexica(response: Response, query: str) -> dict:
     """
     AI Image Generator. [lexica](lexica.art)
@@ -470,7 +470,7 @@ async def pypi_projects_search(name: str) -> dict:
 
 @router.get("/divar", tags=Divar, status_code=status.HTTP_200_OK)
 @router.post("/divar", tags=Divar, status_code=status.HTTP_200_OK)
-async def divar_product_search(query: str, city: Optional[str] = "Tehran") -> dict:
+async def divar_product_search(query: str, city: Optional[str] = "tehran") -> dict:
     """
     Web search service in [Divar](https://divar.ir).
     """
