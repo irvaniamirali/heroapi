@@ -1,10 +1,10 @@
 from fastapi import status
 
 import urllib.parse
-import re
 import html
 import user_agent
 
+from re import findall
 from httpx import AsyncClient, codes
 
 client = AsyncClient()
@@ -28,7 +28,7 @@ async def translate(response, text, to_lang, from_lang):
             "error_message": "A problem has occurred on our end"
         }
 
-    translated_text = re.findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
+    translated_text = findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
     return {
         "success": True,
         "data": html.unescape(translated_text[0]),
