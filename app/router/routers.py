@@ -14,6 +14,7 @@ from app.router.api import lexica_api
 from app.router.api import music_fa
 from app.router.api import news_fa
 from app.router.api import pypi_projects
+from app.router.api import shop
 from app.router.api import translator
 from app.router.api import others_api
 
@@ -465,6 +466,15 @@ async def pypi_projects_search(name: str) -> dict:
     PyPi package search web service
     """
     return await pypi_projects.package_search(name)
+
+
+@router.get("/divar", tags=Divar, status_code=status.HTTP_200_OK)
+@router.post("/divar", tags=Divar, status_code=status.HTTP_200_OK)
+async def divar_product_search(query: str, city: Optional[str] = "Tehran") -> dict:
+    """
+    Web search service in [Divar](https://divar.ir).
+    """
+    return await shop.divar(query, city)
 
 
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
