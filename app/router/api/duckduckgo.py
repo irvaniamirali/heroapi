@@ -1,37 +1,61 @@
 from duckduckgo_search import AsyncDDGS
 
+output = {
+    "success": True,
+    "data": None,
+    "error_message": None
+}
+
 
 async def text_query(query, region, safe_search, timelimit, backend, max_results):
-    return await AsyncDDGS().atext(query, region, safe_search, timelimit, backend, max_results)
+    result = await AsyncDDGS().atext(query, region, safe_search, timelimit, backend, max_results)
+    output["data"] = result
+    return output
 
 
 async def news(query, max_results, region, safe_search, timelimit):
-    return await AsyncDDGS().anews(query, max_results, safe_search, region, timelimit)
+    query_result = await AsyncDDGS().anews(query, max_results, safe_search, region, timelimit)
+    output["data"] = query_result
+    return output
 
 
 async def chat(query, model, timeout):
-    return await AsyncDDGS().achat(query, model, timeout)
+    query_result = await AsyncDDGS().achat(query, model, timeout)
+    output["data"] = query_result
+    return output
 
 
 async def images(*args):
-    return await AsyncDDGS().aimages(*args)
+    query_result = await AsyncDDGS().aimages(*args)
+    output["data"] = query_result
+    return output
 
 
 async def videos(*args):
-    return await AsyncDDGS().avideos(*args)
+    query_result = await AsyncDDGS().avideos(*args)
+    output["data"] = query_result
+    return output
 
 
 async def answers(query):
-    return await AsyncDDGS().aanswers(query)
+    query_result = await AsyncDDGS().aanswers(query)
+    output["data"] = query_result
+    return output
 
 
 async def suggestions(query, region):
-    return await AsyncDDGS().asuggestions(query, region)
+    query_result = await AsyncDDGS().asuggestions(query, region)
+    output["data"] = query_result
+    return output
 
 
 async def translate(text, from_lang, to_lang):
-    return await AsyncDDGS().atranslate(text, from_lang, to_lang)
+    query_result = await AsyncDDGS().atranslate(text, from_lang, to_lang)
+    output["data"] = query_result
+    return output
 
 
 async def maps(*args):
-    return await AsyncDDGS().amaps(*args)
+    query_result = await AsyncDDGS().amaps(*args)
+    output["data"] = query_result
+    return output
