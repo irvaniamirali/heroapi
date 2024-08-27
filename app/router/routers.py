@@ -18,6 +18,7 @@ from app.router.api import shop
 from app.router.api import translator
 from app.router.api import tron_api
 from app.router.api import v2ray_api
+from app.router.api import wikipedia
 from app.router.api import others_api
 
 router = APIRouter(prefix="/api")
@@ -508,3 +509,17 @@ async def v2ray_config(count: str) -> dict:
     Get free v2ray configs (any types
     """
     return await v2ray_api.v2ray(count)
+
+
+@router.get("/wikipedia/search", tags=WikiPedia, status_code=status.HTTP_200_OK)
+@router.post("/wikipedia/search", tags=WikiPedia, status_code=status.HTTP_200_OK)
+async def wikipedia(
+        response: Response,
+        query: str,
+        lang: Optional[str] = "en",
+        format: Optional[str] = None
+) -> dict:
+    """
+    Do a Wikipedia search for `query`.
+    """
+    return await wikipedia.wikipedia_search(response, query, lang, format)
