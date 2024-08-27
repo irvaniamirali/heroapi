@@ -11,6 +11,7 @@ from app.router.api import duckduckgo
 from app.router.api import faker
 from app.router.api import github
 from app.router.api import lexica_api
+from app.router.api import music_fa
 from app.router.api import translator
 
 router = APIRouter(prefix="/api")
@@ -398,6 +399,15 @@ async def lexica(response: Response, query: str) -> dict:
     AI Image Generator. [lexica](lexica.art)
     """
     return await lexica_api.image(response, query)
+
+
+@router.get("/music-fa", tags=Music, status_code=status.HTTP_200_OK)
+@router.post("/music-fa", tags=Music, status_code=status.HTTP_200_OK)
+async def music_fa(query: str, page: Optional[int] = 1) -> dict:
+    """
+    Search and search web service on the [music-fa](https://music-fa.com) site.
+    """
+    return await music_fa.search(query, page)
 
 
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
