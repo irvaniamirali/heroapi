@@ -12,6 +12,7 @@ from app.router.api import faker
 from app.router.api import github
 from app.router.api import lexica_api
 from app.router.api import music_fa
+from app.router.api import news_fa
 from app.router.api import translator
 
 router = APIRouter(prefix="/api")
@@ -408,6 +409,24 @@ async def music_fa(query: str, page: Optional[int] = 1) -> dict:
     Search and search web service on the [music-fa](https://music-fa.com) site.
     """
     return await music_fa.search(query, page)
+
+
+@router.get("/news/v1", tags=News, status_code=status.HTTP_200_OK)
+@router.post("/news/v1", tags=News, status_code=status.HTTP_200_OK)
+async def news(page: Optional[int] = 1) -> dict:
+    """
+    Web service to display news. onnected to the site www.tasnimnews.com
+    """
+    return await news_fa.news_v1(page)
+
+
+@router.get("/news/v2", tags=News, status_code=status.HTTP_200_OK)
+@router.post("/news/v2", tags=News, status_code=status.HTTP_200_OK)
+async def news_v2(page: Optional[int] = 1) -> dict:
+    """
+    Web service, the latest technological news. `page` parameter has 6000 pages
+    """
+    return await news_fa.news_v2(page)
 
 
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
