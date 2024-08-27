@@ -10,6 +10,7 @@ from app.router.api import ai
 from app.router.api import base64_api
 from app.router.api import datetime_api
 from app.router.api import duckduckgo
+from app.router.api import faker
 from app.router.api import translator
 
 router = APIRouter(prefix="/api")
@@ -21,9 +22,7 @@ async def gpt(response: Response, query: str) -> dict:
     """
     ChatGPT 3.5 API.
     """
-    payload = dict(success=True, data=None, error_message=None)
-    query_result = await ai.gpt(response, payload, query)
-    return query_result
+    return await ai.gpt(response, query)
 
 
 @router.get("/bs64encode", tags=Base64, status_code=status.HTTP_200_OK)
@@ -32,12 +31,7 @@ async def base64encode(string: str) -> dict:
     """
     Encode to Base64 format
     """
-    string_result = await base64_api.base64encode(string)
-    return {
-        "success": True,
-        "data": string_result,
-        "error_message": None
-    }
+    return await base64_api.base64encode(string)
 
 
 @router.get("/bs64decode", tags=Base64, status_code=status.HTTP_200_OK)
@@ -46,8 +40,7 @@ async def base64_decode(response: Response, string) -> dict:
     """
     Decode from Base64 format
     """
-    payload = dict(success=True, data=None, error_message=None)
-    return await base64_api.b64decode(response, payload, string)
+    return await base64_api.b64decode(response, string)
 
 
 @router.get("/datetime/solar", tags=DateTime, status_code=status.HTTP_200_OK)
@@ -56,12 +49,7 @@ async def solar_datetime() -> dict:
     """
     Current Jalali date
     """
-    date_result = await datetime_api.solar_date()
-    return {
-        "success": True,
-        "data": date_result,
-        "error_message": None
-    }
+    return await datetime_api.solar_date()
 
 
 @router.get("/datetime/ad", tags=DateTime, status_code=status.HTTP_200_OK)
@@ -70,12 +58,7 @@ async def ad_datetime() -> dict:
     """
     Current AD date
     """
-    date_result = await datetime_api.ad_date()
-    return {
-        "success": True,
-        "data": date_result,
-        "error_message": None
-    }
+    return await datetime_api.ad_date()
 
 
 @router.get("/datetime/iso", tags=DateTime, status_code=status.HTTP_200_OK)
@@ -84,12 +67,7 @@ async def iso_date(year: int, month: int, day: int, prefix: Optional[str] = "/")
     """
     Return the Jalali date as a string in ISO 8601 format.
     """
-    date_result = await datetime_api.iso_date(year, month, day, prefix)
-    return {
-        "success": True,
-        "data": date_result,
-        "error_message": None
-    }
+    return await datetime_api.iso_date(year, month, day, prefix)
 
 
 @router.get("/datetime/convert-ad", tags=DateTime, status_code=status.HTTP_200_OK)
@@ -98,12 +76,7 @@ async def convert_ad_to_jalali(year: int, month: int, day: int) -> dict:
     """
     Convert AD date to Jalali date.
     """
-    date_result = await datetime_api.convert_ad_to_jalali(year, month, day)
-    return {
-        "success": True,
-        "data": date_result,
-        "error_message": None
-    }
+    return await datetime_api.convert_ad_to_jalali(year, month, day)
 
 
 @router.get("/datetime/convert-jalali", tags=DateTime, status_code=status.HTTP_200_OK)
@@ -112,12 +85,36 @@ async def convert_jalali_to_ad(year: int, month: int, day: int) -> dict:
     """
     Convert Jalali date to AD date.
     """
-    date_result = await datetime_api.convert_jalali_to_ad(year, month, day)
-    return {
-        "success": True,
-        "data": date_result,
-        "error_message": None
-    }
+    return await datetime_api.convert_jalali_to_ad(year, month, day)
+
+
+@router.get("/faker/text", tags=FakeData, status_code=status.HTTP_200_OK)
+@router.post("/faker/text", tags=FakeData, status_code=status.HTTP_200_OK)
+async def faker_text(language: Optional[str] = "en") -> dict:
+    """
+    Random fake text API
+    Only `en` and `fa` are available.
+    """
+    return await faker.text(language)
+
+
+@router.get("/faker/name", tags=FakeData, status_code=status.HTTP_200_OK)
+@router.post("/faker/name", tags=FakeData, status_code=status.HTTP_200_OK)
+async def faker_name(count: Optional[int] = 20, language: Optional[str] = "en") -> list:
+    """
+    Random fake name API
+    :language: Only `en` and `fa` are available.
+    """
+    return await faker.name(count, language)
+
+
+@router.get("/faker/email", tags=FakeData, status_code=status.HTTP_200_OK)
+@router.post("/faker/email", tags=FakeData, status_code=status.HTTP_200_OK)
+async def faker_email(count: Optional[int] = 20) -> list:
+    """
+    Random fake email API
+    """
+    return await faker.email(count)
 
 
 @router.get("/duckduckgo/text", tags=DuckDuckGo, status_code=status.HTTP_200_OK)
