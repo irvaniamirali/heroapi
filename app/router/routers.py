@@ -17,6 +17,7 @@ from app.router.api import pypi_projects
 from app.router.api import shop
 from app.router.api import translator
 from app.router.api import tron_api
+from app.router.api import v2ray_api
 from app.router.api import others_api
 
 router = APIRouter(prefix="/api")
@@ -498,3 +499,12 @@ async def translate(
     Translation of texts based on the Google Translate engine.
     """
     return await translator.translate(response, text, to_lang, from_lang)
+
+
+@router.get("/v2ray", tags=V2ray, status_code=status.HTTP_200_OK)
+@router.post("/v2ray", tags=V2ray, status_code=status.HTTP_200_OK)
+async def v2ray_config(count: str) -> dict:
+    """
+    Get free v2ray configs (any types
+    """
+    return await v2ray_api.v2ray(count)
