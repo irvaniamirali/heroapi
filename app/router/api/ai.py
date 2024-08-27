@@ -27,7 +27,7 @@ PAYLOAD = {
 }
 
 
-async def gpt(response, payload, query):
+async def gpt(response, query):
     """
     ChatGPT 3.5 API
     """
@@ -36,10 +36,18 @@ async def gpt(response, payload, query):
     query_response = await client.post(HOST, json=PAYLOAD, headers=HEADERS)
     if query_response.status_code != codes.OK:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        payload["success"] = False
-        payload["data"] = None
-        payload["error_message"] = "A problem has occurred on our end"
-        return payload
+        return {
+            "success": False,
+            "data": None,
+            "error_message": "A problem has occurred on our end"
+        }
 
-    payload["data"] = query_response.text
-    return payload
+    return {
+        "success": True,
+        "data": {
+            "message": query_response.text,
+            "origin": query,
+            "model": "GPT-3.5",
+        },
+        "error_message": None
+    }
