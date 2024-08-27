@@ -439,6 +439,24 @@ async def icons_search(query: str, page: Optional[int] = 1) -> dict:
     return await other.icon_search(query, page)
 
 
+@router.get("/lang", tags=Language, status_code=status.HTTP_200_OK)
+@router.post("/lang", tags=Language, status_code=status.HTTP_200_OK)
+async def language_detect(response: Response, text: str) -> dict:
+    """
+    Identifying the language of texts
+    """
+    return await other.language_detect(response, text)
+
+
+@router.get("/html2json", tags=HTML2JSON, status_code=status.HTTP_200_OK)
+@router.post("/html2json", tags=HTML2JSON, status_code=status.HTTP_200_OK)
+async def convert_html_to_json(html: str) -> dict:
+    """
+    Convert HTML document to json
+    """
+    return await other.convert_html_to_json(html)
+
+
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
 @router.post("/translate", tags=Translate, status_code=status.HTTP_200_OK)
 async def translate(
