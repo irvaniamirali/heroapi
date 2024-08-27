@@ -10,6 +10,7 @@ from app.router.api import datetime_api
 from app.router.api import duckduckgo
 from app.router.api import faker
 from app.router.api import github
+from app.router.api import lexica_api
 from app.router.api import translator
 
 router = APIRouter(prefix="/api")
@@ -382,12 +383,21 @@ async def github_users_search(
         order: Optional[str] = "desc",
         per_page: Optional[int] = 30,
         page: Optional[int] = 1,
-):
+) -> dict:
     """
     GitHub users search web service.
     sort list repository: "followers", "repositories", "joined".
     """
     return await github.users_search(query, sort, order, per_page, page)
+
+
+@router.get("/lexica", tags=AI_Image, status_code=status.HTTP_200_OK)
+@router.post("/lexica", tags=AI_Image, status_code=status.HTTP_200_OK)
+async def lexica(response: Response, query: str) -> dict:
+    """
+    AI Image Generator. [lexica](lexica.art)
+    """
+    return await lexica_api.image(response, query)
 
 
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
@@ -401,4 +411,4 @@ async def translate(
     """
     Translation of texts based on the Google Translate engine.
     """
-    return await translator.translate(response, payload, text, to_lang, from_lang)
+    return await translator.translate(response, text, to_lang, from_lang)
