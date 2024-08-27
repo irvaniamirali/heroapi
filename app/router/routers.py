@@ -9,6 +9,7 @@ from app.router.api import base64_api
 from app.router.api import datetime_api
 from app.router.api import duckduckgo
 from app.router.api import faker
+from app.router.api import github
 from app.router.api import translator
 
 router = APIRouter(prefix="/api")
@@ -347,6 +348,46 @@ async def duckduckgo_maps(
     return await duckduckgo.maps(
         query, place, street, city, county, state, country, postalcode, latitude, longitude, radius, max_results
     )
+
+
+@router.get("/github/topic", tags=GitHub, status_code=status.HTTP_200_OK)
+@router.post("/github/topic", tags=GitHub, status_code=status.HTTP_200_OK)
+async def github_topic_search(query: str, per_page: Optional[int] = 30, page: Optional[int] = 1) -> dict:
+    """
+    GitHub topic search web service
+    """
+    return await github.topic_search(query, per_page, page)
+
+
+@router.get("/github/repo", tags=GitHub, status_code=status.HTTP_200_OK)
+@router.post("/github/repo", tags=GitHub, status_code=status.HTTP_200_OK)
+async def github_repo_search(
+        name: str,
+        sort: Optional[str] = "stars",
+        order: Optional[str] = "desc",
+        per_page: Optional[int] = 30,
+        page: Optional[int] = 1
+) -> dict:
+    """
+    GitHub repository search web service.
+    sort list repository: "stars", "forks", "help-wanted-issues", "updated".
+    """
+    return await github.repo_search(name, sort, order, per_page, page)
+
+
+@router.get("/github/users", tags=GitHub, status_code=status.HTTP_200_OK)
+async def github_users_search(
+        query: str,
+        sort: Optional[str] = "followers",
+        order: Optional[str] = "desc",
+        per_page: Optional[int] = 30,
+        page: Optional[int] = 1,
+):
+    """
+    GitHub users search web service.
+    sort list repository: "followers", "repositories", "joined".
+    """
+    return await github.users_search(query, sort, order, per_page, page)
 
 
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
