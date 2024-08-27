@@ -2,7 +2,7 @@
 
 Free and open source api 
 
-## Documents
+### Documents
 - [Telegram channel](https://t.me/HeroAPI)
 - [Swagger Documents](https://heroapi.ir/docs)
 
