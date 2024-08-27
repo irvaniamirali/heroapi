@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 client = AsyncClient()
 
 
-async def pypi_package_search(name):
+async def package_search(name):
     """
     PyPi package search web service
     """
