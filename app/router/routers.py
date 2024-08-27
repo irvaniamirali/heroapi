@@ -16,6 +16,7 @@ from app.router.api import news_fa
 from app.router.api import pypi_projects
 from app.router.api import shop
 from app.router.api import translator
+from app.router.api import tron_api
 from app.router.api import others_api
 
 router = APIRouter(prefix="/api")
@@ -475,6 +476,14 @@ async def divar_product_search(query: str, city: Optional[str] = "tehran") -> di
     Web search service in [Divar](https://divar.ir).
     """
     return await shop.divar(query, city)
+
+
+@router.get("/tron", tags=Tron, status_code=status.HTTP_200_OK)
+async def tron(response: Response) -> dict:
+    """
+    In this api, by using request and crypto site, we get the current price of Tron currency...
+    """
+    return await tron_api.tron(response)
 
 
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
