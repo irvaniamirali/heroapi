@@ -13,6 +13,7 @@ from app.router.api import github
 from app.router.api import lexica_api
 from app.router.api import music_fa
 from app.router.api import news_fa
+from app.router.api import pypi_projects
 from app.router.api import translator
 from app.router.api import others_api
 
@@ -455,6 +456,15 @@ async def convert_html_to_json(html: str) -> dict:
     Convert HTML document to json
     """
     return await others_api.convert_html_to_json(html)
+
+
+@router.get("/pypi", tags=PyPi, status_code=status.HTTP_200_OK)
+@router.post("/pypi", tags=PyPi, status_code=status.HTTP_200_OK)
+async def pypi_projects_search(name: str) -> dict:
+    """
+    PyPi package search web service
+    """
+    return await pypi_projects.package_search(name)
 
 
 @router.get("/translate", tags=Translate, status_code=status.HTTP_200_OK)
