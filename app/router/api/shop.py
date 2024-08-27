@@ -1,29 +1,15 @@
-from fastapi import APIRouter, Response, status
-
 from ast import literal_eval
-from typing import Optional
 
-import httpx
+from httpx import AsyncClient
 
-client = httpx.AsyncClient()
-
-router = APIRouter(tags=["Store"])
+client = AsyncClient()
 
 
-@router.get("/divar", status_code=status.HTTP_200_OK)
-@router.post("/divar", status_code=status.HTTP_200_OK)
-async def divar(response: Response, query: str, city: Optional[str] = "tehran") -> dict:
+async def divar(query, city):
     """
     Web search service in [Divar](https://divar.ir)
     """
-    request = await client.request(method="GET", url=f"https://divar.ir/s/{city}?q={query}")
-    if request.status_code != httpx.codes.OK:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "A problem has occurred on our end"
-        }
+    request = await client.request("GET", url=f"https://divar.ir/s/{city}?q={query}")
 
     request = request.text
     start, finish = request.rfind("["), request.rfind("]")
