@@ -6,7 +6,7 @@ import base64
 from binascii import Error
 
 
-async def base64encode(text):
+async def b64encode(text):
     """
     Encode to Base64 format
     """
@@ -18,7 +18,7 @@ async def base64encode(text):
     }
 
 
-async def base64decode(response, string):
+async def b64decode(response, string):
     """
     Decode from Base64 format
     """
