@@ -11,7 +11,7 @@ async def base64encode(string: str) -> dict:
     """
     Encode to Base64 format
     """
-    return await base64encode(string)
+    return await b64encode(string)
 
 
 @router.get("/bs64decode", status_code=status.HTTP_200_OK)
