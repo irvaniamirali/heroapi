@@ -28,7 +28,7 @@ PAYLOAD = {
 }
 
 
-async def gpt(response, query):
+async def gpt_api(response, query):
     """
     ChatGPT 3.5 API
     """
