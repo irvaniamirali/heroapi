@@ -9,7 +9,7 @@ client = AsyncClient()
 
 async def tron(response):
     """
-    In this api, by using request and crypto site, we get the current price of Tron currency...
+    In this sources, by using request and crypto site, we get the current price of Tron currency...
     """
     request = await client.request("POST", url="https://arzdigital.com/coins/tron/")
     if request.status_code != codes.OK:
