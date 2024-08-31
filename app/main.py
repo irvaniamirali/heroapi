@@ -3,9 +3,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html
 
-from app.settings.config import app_config
 from app.routers import routers
 from app.api.paths import paths
+from app.settings.config import app_config
 
 app = FastAPI(**app_config)
 
