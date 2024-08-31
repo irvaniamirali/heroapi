@@ -31,7 +31,7 @@ async def icon_search(query, page):
     }
 
 
-async def language_detect(response, text):
+async def language_detect_api(response, text):
     """
     Identifying the language of texts
     """
@@ -51,7 +51,7 @@ async def language_detect(response, text):
         }
 
 
-async def convert_html_to_json(html):
+async def convert_html_to_json_api(html):
     """
     Convert HTML document to json
     """
