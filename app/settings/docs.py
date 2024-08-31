@@ -1,10 +1,7 @@
 from fastapi import APIRouter
-from fastapi.templating import Jinja2Templates
 from fastapi.openapi.docs import get_swagger_ui_html
 
 router = APIRouter()
-
-templates = Jinja2Templates(directory="app/templates")
 
 
 @router.get("/docs", include_in_schema=False)
