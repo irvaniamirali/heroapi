@@ -1,7 +1,6 @@
 # Defining the path of routers
 
 URLS: list = [
-    "app.router.api.SoundCloud.router",
     "app.router.api._base64.router",
     "app.router.api.datetime.router",
     "app.router.api.dictionary.router",
