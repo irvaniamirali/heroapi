@@ -14,5 +14,5 @@ app_config = {
         "identifier": "MIT"
     },
     "docs_url": None,
-    "redoc": None
+    "redoc_url": None
 }
