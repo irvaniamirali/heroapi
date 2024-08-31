@@ -1,14 +1,8 @@
-from fastapi import APIRouter, status
+from httpx import AsyncClient, codes
 
-from typing import Optional
+from random import randint
 
-import random
-import httpx
-
-client = httpx.AsyncClient()
-
-router = APIRouter(tags=["V2ray config"])
-
+client = AsyncClient()
 
 GITHUB_REPO = "https://github.com/barry-far/V2ray-Configs"
 URL = "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt"
@@ -20,13 +14,11 @@ async def http_request(url: str, method: str = "GET", max_retry: int = 3):
     """
     for _ in range(max_retry):
         response = await client.request(method=method, url=url)
-        if response.status_code == httpx.codes.OK:
+        if response.status_code == codes.OK:
             return response.text
 
 
-@router.get("/v2ray", status_code=status.HTTP_200_OK)
-@router.post("/v2ray", status_code=status.HTTP_200_OK)
-async def v2ray(num_results: Optional[int] = 10):
+async def v2ray(count):
     """
     Get free v2ray configs (any types)
     """
@@ -38,11 +30,11 @@ async def v2ray(num_results: Optional[int] = 10):
             index = configs.index(config)
             del configs[index]
 
-    if num_results:
+    if count:
         unique_configs = []
-        for config in range(num_results):
+        for config in range(count):
             if config not in configs:
-                random_index = random.randint(0, len(configs))
+                random_index = randint(0, len(configs))
                 unique_configs.append(configs[random_index])
 
         return {

@@ -1,22 +1,11 @@
-from fastapi import APIRouter, Response, status
-
-from typing import Optional
+from fastapi import status
 
 from httpx import AsyncClient, codes
 
 client = AsyncClient()
 
-router = APIRouter(prefix="/wikipedia", tags=["Wikipedia Search"])
 
-
-@router.get("/search", status_code=status.HTTP_200_OK)
-@router.post("/search", status_code=status.HTTP_200_OK)
-async def wikipedia_search(
-        response: Response,
-        query: str,
-        lang: Optional[str] = "en",
-        format: Optional[str] = "json"
-):
+async def search(response, query, lang, format):
     """
     Do a Wikipedia search for `query`.
     """
