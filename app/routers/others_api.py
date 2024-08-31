@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Query, Response, status
+from fastapi import APIRouter, Response, status
 
-from typing import Optional, Annotated
+from typing import Optional
 
 from app.api.sources.others_api import icon_search, language_detect_api, convert_html_to_json_api
 
