@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Response, status
+from fastapi import APIRouter, Query, status
 
 from app.api.sources.faker import name, email, text
 
