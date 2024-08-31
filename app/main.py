@@ -3,24 +3,11 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html
 
-from app.router import router
+from app.settings.core import app_config
+from app.routers import routers
+from app.api.paths import paths
 
-app = FastAPI(
-    title="HeroAPI",
-    description="Free and open source api",
-    contact={
-        "name": "HeroTeam",
-        "url": "https://github.com/irvaniamirali/HeroAPI",
-        "email": "social.irvaniamirali@gmail.com",
-    },
-    terms_of_service="https://t.me/HeroAPI",
-    license_info={
-        "name": "Released under MIT LICENSE",
-        "identifier": "https://spdx.org/licenses/MIT.html"
-    },
-    docs_url=None,
-    redoc_url=None,
-)
+app = FastAPI(**app_config)
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -55,6 +42,7 @@ async def hello_world() -> dict:
         "data": "Hello World!"
     }
 
+initialize_routers = routers(app, paths)
 
 if __name__ == "app.main":
-    app.include_router(router)
+    initialize_routers()
