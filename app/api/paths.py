@@ -1,6 +1,6 @@
 # Define the Paths of Routers
 
-Paths = [
+paths = [
     "app.settings.docs.router",  # swagger UI HTML Docs
     "app.routers.ai.router",
     "app.routers.base64_api.router",
