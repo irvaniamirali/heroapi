@@ -1,6 +1,4 @@
-from fastapi import APIRouter, Response, status
-
-from typing import Optional
+from fastapi import status
 
 from bs4 import BeautifulSoup
 
