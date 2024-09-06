@@ -1,8 +1,9 @@
 # Define the Paths of Routers
 
 paths = [
-    "app.settings.docs.router",  # swagger UI HTML Docs
+    "app.settings.docs.router", # swagger UI HTML Docs
     "app.routers.ai.router",
+    "app.routers.soundcloud.router",
     "app.routers.base64_api.router",
     "app.routers.datetime_api.router",
     "app.routers.duckduckgo.router",
