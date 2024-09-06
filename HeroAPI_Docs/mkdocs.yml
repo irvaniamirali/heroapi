@@ -1,0 +1,15 @@
+site_name: HeroAPI
+extra_javascript:
+  - js/widgetla.js
+  - js/disable_shortcuts.js
+theme:
+  name: readthedocs
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+  features:
+    - navigation.expand
+    - navigation.sections
