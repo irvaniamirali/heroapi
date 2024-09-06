@@ -2,17 +2,10 @@ from fastapi import status
 
 from sclib.asyncio import SoundcloudAPI
 
-from httpx import AsyncClient
-
-client = AsyncClient()
-
 api = SoundcloudAPI()
 
 
 async def track(response, url):
-    """
-    SoundCloud Track Downloader
-    """
     try:
         track_result = await api.resolve(url)
     except:
@@ -38,4 +31,43 @@ async def track(response, url):
         "public": track_result.public,
         "policy": track_result.policy,
         "release_date": track_result.release_date
+    }
+
+
+async def playlist(response, url):
+    try:
+        playlist_result = await api.resolve(url)
+    except:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            "success": False,
+            "data": None,
+            "error_message": "A problem has occurred on our end"
+        }
+
+    results = []
+    for _track in playlist_result.tracks:
+        stream_url = await _track.get_stream_url()
+        results.append(
+            {
+                "artist": _track.artist,
+                "title": _track.title,
+                "artwork_url": _track.artwork_url,
+                "stream_url": stream_url,
+                "comment_count": _track.comment_count,
+                "album": _track.album,
+                "license": _track.license,
+                "display_date": _track.display_date,
+                "download_count": _track.download_count,
+                "likes_count": _track.likes_count,
+                "public": _track.public,
+                "policy": _track.policy,
+                "release_date": _track.release_date
+            }
+        )
+
+    return {
+        "success": True,
+        "data": results,
+        "error_message": None
     }
