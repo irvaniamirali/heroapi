@@ -1,15 +1,14 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Response, status
 
-from app.api.sources.soundcloud import soundcloud
+from app.api.sources.soundcloud import track
 
-router = APIRouter(prefix="/api", tags=["Sound Cloud Downloader"])
+router = APIRouter(prefix="/api", tags=["SoundCloud Downloader"])
 
-@router.get("/soundcloud", status_code=status.HTTP_200_OK)
-@router.post("/soundcloud", status_code=status.HTTP_200_OK)
-async def sound_cloud(link_music: str):
 
+@router.get("/soundcloud/track", status_code=status.HTTP_200_OK)
+@router.post("/soundcloud/track", status_code=status.HTTP_200_OK)
+async def soundcloud(response: Response, url: str) -> dict:
     """
-    this API for Download Track at https://soundcloud.com
+    This API for Download Track at https://soundcloud.com
     """
-
-    return await soundcloud(link_music=link_music)
+    return await track(response, url)
