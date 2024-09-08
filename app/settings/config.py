@@ -16,3 +16,5 @@ app_config = {
     "docs_url": None,
     "redoc_url": None
 }
+
+LiveAPI_docs_url = "https://irvaniamirali.github.io/heroapi/"
