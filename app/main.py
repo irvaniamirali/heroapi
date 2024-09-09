@@ -2,10 +2,9 @@ from fastapi import FastAPI, Request, status
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
+from app.routers import Routers
+from app.routers.paths import paths
 from app.settings.config import app_config
-
-from app.routers import routers
-from app.api.paths import paths
 
 app = FastAPI(**app_config)
 
@@ -30,7 +29,7 @@ async def hello_world() -> dict:
         "data": "Hello World!"
     }
 
-initialize_routers = routers(app, paths)
+initialize_routers = Routers(app, paths)
 
 if __name__ == "app.main":
     initialize_routers()
