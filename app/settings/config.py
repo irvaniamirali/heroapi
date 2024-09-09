@@ -1,5 +1,9 @@
 
-description = "- [GitHub](https://github.com/irvaniamirali/HeroAPI)\n- [Telegram](https://t.me/HeroAPI)"
+description = (
+    "- [GitHub](https://github.com/irvaniamirali/HeroAPI)\n"
+    "- [Telegram](https://t.me/HeroAPI)\n"
+    "- [LiveAPI Docs](https://heroapi.ir/liveapi)"
+)
 
 app_config = {
     "title": "HeroAPI",
