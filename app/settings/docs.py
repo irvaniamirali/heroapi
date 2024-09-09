@@ -19,7 +19,7 @@ async def swagger_ui_html():
     )
 
 
-@router.get("/live-api", include_in_schema=False, response_class=RedirectResponse)
+@router.get("/liveapi", include_in_schema=False, response_class=RedirectResponse)
 async def redirect_live_api_docs():
     """
     Redirect the LiveAPI Docs url
