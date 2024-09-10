@@ -8,6 +8,7 @@ paths = [
     "app.routers.sources.duckduckgo.router",
     "app.routers.sources.faker.router",
     "app.routers.sources.github.router",
+    "app.routers.sources.lexica_api.router",
     "app.routers.sources.music_fa.router",
     "app.routers.sources.news_fa.router",
     "app.routers.sources.others_api.router",
