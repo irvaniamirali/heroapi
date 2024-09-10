@@ -2,7 +2,7 @@ from fastapi import APIRouter, Response, status
 
 from typing import Optional
 
-from app.api.sources.translator import translate
+from app.api.sources.translator import translate as translate_api
 
 router = APIRouter(prefix="/api", tags=["Translate"])
 
@@ -18,5 +18,4 @@ async def translate(
     """
     Translation of texts based on the Google Translate engine.
     """
-    return await translate(response, text, to_lang, from_lang)
-
+    return await translate_api(response, text, to_lang, from_lang)
