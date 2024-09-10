@@ -1,0 +1,1 @@
+from .shop import divar

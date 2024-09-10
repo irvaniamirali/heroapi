@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, status
 
-from app.api.sources.lexica_api import image
+from app.api.sources.ai.lexica_api import image
 
 router = APIRouter(prefix="/api", tags=["AI", "Image Generator"])
 
