@@ -15,16 +15,15 @@ def list_files_walk(start_path="."):
         for file in files:
             full_path = os.path.join(root, file)
             if full_path.endswith(pattern) and file not in forbidden_files:
-                paths.append(file)
+                paths.append(full_path)
     return paths
 
 
 def replace_suffix(paths):
     routes = []
     for path in paths:
-        path = root_path_of_routers + path
-        without_suffix_path = path.replace(pattern, ".router")
-        routes.append(without_suffix_path.replace("/", "."))
+        suffix_path = path.replace(pattern, ".router")
+        routes.append(suffix_path.replace("/", "."))
     return routes
 
 
@@ -33,3 +32,5 @@ full_paths = list_files_walk(directory_path)
 # Path of APIRouters
 paths = sorted(replace_suffix(full_paths))
 paths += addition_paths
+
+print(paths)
