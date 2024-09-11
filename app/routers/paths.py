@@ -32,5 +32,3 @@ full_paths = list_files_walk(directory_path)
 # Path of APIRouters
 paths = sorted(replace_suffix(full_paths))
 paths += addition_paths
-
-print(paths)
