@@ -5,7 +5,7 @@ from random import randint
 client = AsyncClient()
 
 GITHUB_REPO = "https://github.com/barry-far/V2ray-Configs"
-URL = "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt"
+RAW_URL = "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt"
 
 
 async def http_request(url: str, method: str = "GET", max_retry: int = 3):
@@ -22,7 +22,7 @@ async def v2ray(count):
     """
     Get free v2ray configs (any types)
     """
-    response = await http_request(URL)
+    response = await http_request(RAW_URL)
     configs = response.splitlines()
 
     for config in configs:

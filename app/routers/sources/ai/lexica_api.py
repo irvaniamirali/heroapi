@@ -9,6 +9,6 @@ router = APIRouter(prefix="/api", tags=["AI", "Image Generator"])
 @router.post("/lexica", status_code=status.HTTP_200_OK)
 async def lexica(response: Response, query: str) -> dict:
     """
-    AI Image Generator. [lexica](lexica.art)
+    AI Image Generator. [lexica](https://lexica.art)
     """
     return await image(response, query)
