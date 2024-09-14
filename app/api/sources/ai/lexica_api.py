@@ -1,4 +1,4 @@
-from httpx import AsyncClient, codes
+from httpx import AsyncClient
 
 client = AsyncClient()
 
