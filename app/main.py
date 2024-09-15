@@ -5,7 +5,7 @@ from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from httpx import _exceptions
+from httpx import HTTPStatusError
 
 from app.routers import Routers, paths
 from app.settings.config import app_config, middleware_config
@@ -21,8 +21,8 @@ templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-@app.exception_handler(_exceptions.HTTPStatusError)
-async def handle_api_error(_: Request, exc: _exceptions.HTTPStatusError) -> JSONResponse:
+@app.exception_handler(HTTPStatusError)
+async def handle_api_error(_: Request, exc: HTTPStatusError) -> JSONResponse:
     """
     Handle API errors.
     """
