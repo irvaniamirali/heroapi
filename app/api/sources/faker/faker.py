@@ -4,6 +4,11 @@ from random import choice
 import aiofiles
 
 
+async def load_contents(file):
+    contents = await file.read()
+    return loads(contents)
+
+
 async def name(count, language):
     filename = "data/name_fa.json"
     if language.startswith("en"):
@@ -11,8 +16,7 @@ async def name(count, language):
 
     names = []
     async with aiofiles.open(filename, "r") as file:
-        contents = await file.read()
-        contents = loads(contents)
+        contents = await load_contents(file)
         for _ in range(count):
             names.append(choice(contents["items"]))
     return names
@@ -21,8 +25,7 @@ async def name(count, language):
 async def email(count):
     emails = []
     async with aiofiles.open("data/email_en.json", "r") as file:
-        contents = await file.read()
-        contents = loads(contents)
+        contents = await load_contents(file)
         for _ in range(count):
             emails.append(choice(contents["items"]))
     return emails
@@ -37,5 +40,5 @@ async def text(language):
         filename = "data/text_en.json"
 
     async with aiofiles.open(filename, "r") as file:
-        contents = await file.read()
-        return loads(contents)
+        contents = await load_contents(file)
+        return contents

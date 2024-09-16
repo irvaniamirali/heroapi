@@ -2,7 +2,7 @@ from httpx import AsyncClient
 
 from bs4 import BeautifulSoup
 
-import re
+from re import findall
 
 client = AsyncClient()
 
@@ -14,8 +14,8 @@ def beautifulsoup_instance(html_data: str, features: str = "html.parser"):
 
 
 async def news_v1(page):
-    request = await client.request("GET", f"{BASE_URL}/fa/top-stories?page={page}")
-    soup = beautifulsoup_instance(request.text, "html.parser")
+    response = await client.request("GET", f"{BASE_URL}/fa/top-stories?page={page}")
+    soup = beautifulsoup_instance(response.text, "html.parser")
     articles = soup.find_all("article", class_="list-item")
 
     search_result = []
@@ -33,16 +33,12 @@ async def news_v1(page):
             )
         )
 
-    return {
-        "success": True,
-        "data": search_result,
-        "error_message": None
-    }
+    return search_result
 
 
 async def news_v2(page):
-    request = await client.request("GET", f"https://gadgetnews.net/page/{page}")
-    soup = beautifulsoup_instance(request.text, "html.parser")
+    response = await client.request("GET", f"https://gadgetnews.net/page/{page}")
+    soup = beautifulsoup_instance(response.text, "html.parser")
 
     final_values = []
     for recent_post in range(0, 13):
@@ -61,7 +57,7 @@ async def news_v2(page):
 
             post_thumbnail_data = article.find("div", class_="post-thumbnail")
             post_image_data = post_thumbnail_data.find("img", decoding="async", src=True).get("srcset")
-            post_images = re.findall(r"(https:\/\/.*?\.jpg)", post_image_data)
+            post_images = findall(r"(https:\/\/.*?\.jpg)", post_image_data)
 
             entry_article = article.find("div", class_="entry")
             paragraph = entry_article.find("p").text
@@ -79,8 +75,4 @@ async def news_v2(page):
                 )
             )
 
-    return {
-        "success": True,
-        "data": final_values,
-        "error_message": None
-    }
+    return final_values

@@ -22,3 +22,10 @@ app_config = {
 }
 
 LiveAPI_docs_url = "https://irvaniamirali.github.io/heroapi/"
+
+middleware_config = {
+    "allow_credentials": True,
+    "allow_origins": ["*"],
+    "allow_methods": ["*"],
+    "allow_headers": ["*"]
+}

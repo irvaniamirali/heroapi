@@ -1,14 +1,14 @@
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, status
 
-from app.api.sources.ai.lexica_api import image
+from app.api.sources.ai.lexica_api import lexica_api
 
 router = APIRouter(prefix="/api", tags=["AI", "Image Generator"])
 
 
 @router.get("/lexica", status_code=status.HTTP_200_OK)
 @router.post("/lexica", status_code=status.HTTP_200_OK)
-async def lexica(response: Response, query: str) -> dict:
+async def lexica(query: str) -> dict:
     """
     AI Image Generator. [lexica](https://lexica.art)
     """
-    return await image(response, query)
+    return await lexica_api(query)

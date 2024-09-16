@@ -14,10 +14,10 @@ router = APIRouter(prefix="/api/duckduckgo", tags=["DuckDuckGo"])
 async def duckduckgo_text(
         query: str,
         region: Optional[str] = "wt-wt",
-        safe_search: Optional[str] = None,
+        safe_search: Optional[str] = "moderate",
         timelimit: Optional[str] = None,
         max_results: Optional[int] = 100,
-) -> dict:
+) -> list:
     """
     DuckDuckGo text search. Query params: https://duckduckgo.com/params.
     Args:
@@ -38,10 +38,10 @@ async def duckduckgo_text(
 async def duckduckgo_html_text(
         query: str,
         region: Optional[str] = "wt-wt",
-        safe_search: Optional[str] = None,
+        safe_search: Optional[str] = "moderate",
         timelimit: Optional[str] = None,
         max_results: Optional[int] = 100,
-) -> dict:
+) -> list:
     """
     DuckDuckGo text search. backend to HTML. Query params: https://duckduckgo.com/params.
     """
@@ -53,10 +53,10 @@ async def duckduckgo_html_text(
 async def duckduckgo_lite_text(
         query: str,
         region: Optional[str] = "wt-wt",
-        safe_search: Optional[str] = None,
+        safe_search: Optional[str] = "moderate",
         timelimit: Optional[str] = None,
         max_results: Optional[int] = 100,
-) -> dict:
+) -> list:
     """
     DuckDuckGo text search. backend to LITE. Query params: https://duckduckgo.com/params.
     """
@@ -69,7 +69,7 @@ async def duckduckgo_translate(
         text: str,
         from_lang: Optional[str] = None,
         to_lang: Optional[str] = "en"
-) -> dict:
+) -> list:
     """
     DuckDuckGo translate API
     """
@@ -84,7 +84,7 @@ async def duckduckgo_news(
         region: Optional[str] = None,
         safe_search: Optional[str] = "moderate",
         timelimit: Optional[str] = None
-) -> dict:
+) -> list:
     """
     DuckDuckGo news search. Query params: https://duckduckgo.com/params.
     Args:
@@ -104,6 +104,7 @@ async def duckduckgo_news(
 async def duckduckgo_images(
         query: str,
         region: Optional[str] = "wt-wt",
+        safesearch: Optional[str] = "moderate",
         timelimit: Optional[str] = None,
         size: Optional[str] = None,
         color: Optional[str] = None,
@@ -111,12 +112,13 @@ async def duckduckgo_images(
         layout: Optional[str] = None,
         license_image: Optional[str] = None,
         max_results: Optional[int] = 100
-) -> dict:
+) -> list:
     """
     DuckDuckGo images search. Query params: https://duckduckgo.com/params.
     Args:
         query: keywords for query.
         layout: Square, Tall, Wide. Defaults to None.
+        safesearch: on, moderate, off. Defaults to "moderate".
         region: wt-wt, us-en, uk-en, ru-ru, etc.
         timelimit: Day, Week, Month, Year. Defaults to None.
         size: Small, Medium, Large, Wallpaper.
@@ -130,7 +132,7 @@ async def duckduckgo_images(
     Returns:
         List of dictionaries with images search results.
     """
-    return await images(query, region, timelimit, size, color, type_image, layout, license_image, max_results)
+    return await images(query, region, safesearch, timelimit, size, color, type_image, layout, license_image, max_results)
 
 
 @router.get("/chat", tags=["AI"], status_code=status.HTTP_200_OK)
@@ -157,8 +159,8 @@ async def duckduckgo_videos(
         resolution: Optional[str] = None,
         duration: Optional[str] = None,
         license_videos: Optional[str] = None,
-        max_results: Optional[str] = None,
-) -> dict:
+        max_results: Optional[int] = None,
+) -> list:
     """
     DuckDuckGo videos search. Query params: https://duckduckgo.com/params.
     Args:
@@ -179,7 +181,7 @@ async def duckduckgo_videos(
 
 @router.get("/answers", status_code=status.HTTP_200_OK)
 @router.post("/answers", status_code=status.HTTP_200_OK)
-async def duckduckgo_answers(query: str) -> dict:
+async def duckduckgo_answers(query: str) -> list:
     """
     DuckDuckGo instant answers. Query params: https://duckduckgo.com/params.
     """
@@ -188,7 +190,7 @@ async def duckduckgo_answers(query: str) -> dict:
 
 @router.get("/suggestions", status_code=status.HTTP_200_OK)
 @router.post("/suggestions", status_code=status.HTTP_200_OK)
-async def duckduckgo_suggestions(query: str, region: Optional[str] = "wt-wt") -> dict:
+async def duckduckgo_suggestions(query: str, region: Optional[str] = "wt-wt") -> list:
     """
     DuckDuckGo suggestions. Query params: https://duckduckgo.com/params.
 
@@ -217,7 +219,7 @@ async def duckduckgo_maps(
         longitude: Optional[str] = None,
         radius: Optional[int] = 0,
         max_results: Optional[int] = 100
-) -> dict:
+) -> list:
     """
     DuckDuckGo maps search. Query params: https://duckduckgo.com/params.
     Args:

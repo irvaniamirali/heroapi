@@ -38,7 +38,7 @@ async def iso_date(year: int, month: int, day: int, prefix: Optional[str] = "/")
 
 @router.get("/convert-ad", status_code=status.HTTP_200_OK)
 @router.post("/convert-ad", status_code=status.HTTP_200_OK)
-async def convert_ad_to_jalali(year: int, month: int, day: int) -> dict:
+async def convert_ad_to_jalali(year: int, month: int, day: int) -> str:
     """
     Convert AD date to Jalali date.
     """
@@ -47,7 +47,7 @@ async def convert_ad_to_jalali(year: int, month: int, day: int) -> dict:
 
 @router.get("/convert-jalali", status_code=status.HTTP_200_OK)
 @router.post("/convert-jalali", status_code=status.HTTP_200_OK)
-async def convert_jalali_to_ad(year: int, month: int, day: int) -> dict:
+async def convert_jalali_to_ad(year: int, month: int, day: int) -> str:
     """
     Convert Jalali date to AD date.
     """

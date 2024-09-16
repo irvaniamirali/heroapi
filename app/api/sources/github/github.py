@@ -9,7 +9,7 @@ HEADERS = {
 }
 
 
-async def github_search(path):
+async def http_request(path):
     """
     Execute asynchronous request to GitHub API
     """
@@ -19,29 +19,17 @@ async def github_search(path):
 
 async def topic_search(query, per_page, page):
     path = BASE_URL + "topics?q=%s&per_page=%s&page=%s" % (query, per_page, page)
-    request = await github_search(path=path)
-    return {
-        "success": True,
-        "data": request.json(),
-        "error_message": None
-    }
+    response = await http_request(path=path)
+    return response.json()
 
 
 async def repo_search(name, sort, order, per_page, page):
     path = BASE_URL + "repositories?q=%s&s=%s&order=%s&per_page=%s&page=%s"
-    request = await github_search(path=path % (name, sort, order, per_page, page))
-    return {
-        "success": True,
-        "data": request.json(),
-        "error_message": None
-    }
+    response = await http_request(path=path % (name, sort, order, per_page, page))
+    return response.json()
 
 
 async def users_search(query, sort, order, per_page, page):
     path = BASE_URL + "users?q=%s&sort=%s&order=%s&per_page=%s&page=%s"
-    request = await github_search(path=path % (query, sort, order, per_page, page))
-    return {
-        "success": True,
-        "data": request.json(),
-        "error_message": None
-    }
+    response = await http_request(path=path % (query, sort, order, per_page, page))
+    return response.json()

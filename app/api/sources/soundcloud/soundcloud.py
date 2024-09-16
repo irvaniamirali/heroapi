@@ -10,11 +10,7 @@ async def track(response, url):
         track_result = await api.resolve(url)
     except:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "A problem has occurred on our end"
-        }
+        return {"error_message": "A problem has occurred on our end."}
 
     stream_url = await track_result.get_stream_url()
     return {
@@ -39,11 +35,7 @@ async def playlist(response, url):
         playlist_result = await api.resolve(url)
     except:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "A problem has occurred on our end"
-        }
+        return {"error_message": "A problem has occurred on our end."}
 
     results = []
     for _track in playlist_result.tracks:
@@ -66,8 +58,4 @@ async def playlist(response, url):
             }
         )
 
-    return {
-        "success": True,
-        "data": results,
-        "error_message": None
-    }
+    return results

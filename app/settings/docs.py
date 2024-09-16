@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.openapi.docs import get_swagger_ui_html
 
 from app.settings.config import LiveAPI_docs_url
@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get("/docs", include_in_schema=False)
-async def swagger_ui_html():
+async def swagger_ui_html() -> HTMLResponse:
     """
     Return swagger API document
     """
@@ -19,8 +19,8 @@ async def swagger_ui_html():
     )
 
 
-@router.get("/liveapi", include_in_schema=False, response_class=RedirectResponse)
-async def redirect_live_api_docs():
+@router.get("/liveapi", include_in_schema=False)
+async def redirect_live_api_docs() -> RedirectResponse:
     """
     Redirect the LiveAPI Docs url
     """

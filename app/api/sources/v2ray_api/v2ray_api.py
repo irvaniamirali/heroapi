@@ -8,22 +8,12 @@ GITHUB_REPO = "https://github.com/barry-far/V2ray-Configs"
 RAW_URL = "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt"
 
 
-async def http_request(url: str, method: str = "GET", max_retry: int = 3):
-    """
-    Execute asynchronous request to GitHub
-    """
-    for _ in range(max_retry):
-        response = await client.request(method=method, url=url)
-        if response.status_code == codes.OK:
-            return response.text
-
-
 async def v2ray(count):
     """
     Get free v2ray configs (any types)
     """
-    response = await http_request(RAW_URL)
-    configs = response.splitlines()
+    response = await client.request(method="GET", url=RAW_URL)
+    configs = response.text.splitlines()
 
     for config in configs:
         if config.startswith("#"):
@@ -37,22 +27,6 @@ async def v2ray(count):
                 random_index = randint(0, len(configs))
                 unique_configs.append(configs[random_index])
 
-        return {
-            "success": True,
-            "data": {
-                "configs": unique_configs,
-                "count": len(unique_configs),
-            },
-            "github_repo": GITHUB_REPO,
-            "error_message": None
-        }
+        return {"github_repo": GITHUB_REPO, "count": len(unique_configs), "configs": unique_configs}
 
-    return {
-        "success": True,
-        "data": {
-            "configs": configs,
-            "count": len(configs),
-        },
-        "github_repo": GITHUB_REPO,
-        "error_message": None
-    }
+    return {"github_repo": GITHUB_REPO, "count": len(configs), "configs": configs}

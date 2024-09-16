@@ -9,15 +9,7 @@ async def language_detect_api(response, text):
     """
     try:
         text_detected = detect(text)
-        return {
-            "success": True,
-            "data": text_detected,
-            "error_message": None
-        }
+        return {"language": text_detected}
     except LangDetectException:
         response.status_code = status.HTTP_400_BAD_REQUEST
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "The value of the `text` parameter is not invalid"
-        }
+        return {"error_message": "The value of the `text` parameter is not invalid."}
