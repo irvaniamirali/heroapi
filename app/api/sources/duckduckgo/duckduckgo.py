@@ -1,52 +1,38 @@
 from duckduckgo_search import AsyncDDGS
 
-output = {
-    "success": True,
-    "data": None,
-    "error_message": None
-}
-
 
 async def text_query(query, region, safe_search, timelimit, backend, max_results):
-    output["data"] = await AsyncDDGS().atext(query, region, safe_search, timelimit, backend, max_results)
-    return output
+    return await AsyncDDGS().atext(query, region, safe_search, timelimit, backend, max_results)
 
 
 async def news(query, max_results, region, safe_search, timelimit):
-    output["data"] = await AsyncDDGS().anews(query, max_results, safe_search, region, timelimit)
-    return output
+    return await AsyncDDGS().anews(query, max_results, safe_search, region, timelimit)
 
 
 async def chat(query, model, timeout):
-    output["data"] = await AsyncDDGS().achat(query, model, timeout)
-    return output
+    message = await AsyncDDGS().achat(query, model, timeout)
+    return {"model": model, "origin": query, "message": message}
 
 
 async def images(*args):
-    output["data"] = await AsyncDDGS().aimages(*args)
-    return output
+    return await AsyncDDGS().aimages(*args)
 
 
 async def videos(*args):
-    output["data"] = await AsyncDDGS().avideos(*args)
-    return output
+    return await AsyncDDGS().avideos(*args)
 
 
 async def answers(query):
-    output["data"] = await AsyncDDGS().aanswers(query)
-    return output
+    return await AsyncDDGS().aanswers(query)
 
 
 async def suggestions(query, region):
-    output["data"] = await AsyncDDGS().asuggestions(query, region)
-    return output
+    return await AsyncDDGS().asuggestions(query, region)
 
 
 async def translate(text, from_lang, to_lang):
-    output["data"] = await AsyncDDGS().atranslate(text, from_lang, to_lang)
-    return output
+    return await AsyncDDGS().atranslate(text, from_lang, to_lang)
 
 
 async def maps(*args):
-    output["data"] = await AsyncDDGS().amaps(*args)
-    return output
+    return await AsyncDDGS().amaps(*args)
