@@ -1,10 +1,9 @@
 from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
-from fastapi.templating import Jinja2Templates
 from fastapi.exceptions import HTTPException
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from httpx import HTTPStatusError
 
 from app.routers import Routers, paths
@@ -63,6 +62,7 @@ async def hello_world() -> dict:
         "success": True,
         "data": "Hello World!"
     }
+
 
 initialize_routers = Routers(app, paths)
 
