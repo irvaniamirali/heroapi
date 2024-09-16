@@ -46,7 +46,7 @@ async def http_exception_handler(_: Request, exc: HTTPException) -> JSONResponse
 
 
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
-async def custom_404_handler(request: Request, __):
+async def custom_404_handler(request: Request, _):
     """
     Handle 404 page (Not found)
     """
