@@ -9,7 +9,7 @@ router = APIRouter(prefix="/api/news", tags=["News"])
 
 @router.get("/v1", status_code=status.HTTP_200_OK)
 @router.post("/v1", status_code=status.HTTP_200_OK)
-async def news(page: Optional[int] = 1) -> dict:
+async def news(page: Optional[int] = 1) -> list:
     """
     Web service to display news. onnected to the site www.tasnimnews.com
     """
@@ -18,7 +18,7 @@ async def news(page: Optional[int] = 1) -> dict:
 
 @router.get("/v2", status_code=status.HTTP_200_OK)
 @router.post("/v2", status_code=status.HTTP_200_OK)
-async def news_v2(page: Optional[int] = 1) -> dict:
+async def news_v2(page: Optional[int] = 1) -> list:
     """
     Web service, the latest technological news. `page` parameter has 6000 pages
     """
