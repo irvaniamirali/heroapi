@@ -57,9 +57,4 @@ async def convert_html_to_json_api(html, capture_element_values, capture_element
     """
     Convert HTML document to json
     """
-    json_output = await convert(html, capture_element_values, capture_element_attributes)
-    return {
-        "success": True,
-        "data": json_output,
-        "error_message": None
-    }
+    return await convert(html, capture_element_values, capture_element_attributes)
