@@ -8,9 +8,8 @@ client = AsyncClient()
 
 
 async def search(query, page):
-    request = await client.request("GET", f"https://music-fa.com/search/{query}/page/{page}")
-
-    soup = BeautifulSoup(request.text, "html.parser")
+    response = await client.request(method="GET", url=f"https://music-fa.com/search/{query}/page/{page}")
+    soup = BeautifulSoup(response.text, "html.parser")
     articles = soup.find_all("article", class_="mf_pst")
 
     search_result = []
@@ -34,8 +33,4 @@ async def search(query, page):
             )
         )
 
-    return {
-        "success": request.is_success,
-        "data": search_result,
-        "error_message": None
-    }
+    return search_result
