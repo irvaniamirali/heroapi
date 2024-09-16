@@ -10,8 +10,8 @@ async def package_search(name):
     PyPi package search web service
     """
     query = "+".join(name.split())
-    request = await client.request("GET", url=f"https://pypi.org/search/?q={query}")
-    soup = BeautifulSoup(request.text, "html.parser")
+    response = await client.request("GET", url=f"https://pypi.org/search/?q={query}")
+    soup = BeautifulSoup(response.text, "html.parser")
     package_snippets = soup.find_all("a", class_="package-snippet")
 
     search_results = []
@@ -23,15 +23,8 @@ async def package_search(name):
         description = package_snippet.p.text.strip()
         search_results.append(
             dict(
-                name=name,
-                version=version,
-                release_date=release_date,
-                description=description
+                name=name, version=version, release_date=release_date, description=description
             )
         )
 
-    return {
-        "success": True,
-        "data": search_results,
-        "error_message": None
-    }
+    return search_results
