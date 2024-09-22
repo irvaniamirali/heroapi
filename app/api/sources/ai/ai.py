@@ -35,8 +35,4 @@ async def gpt(query):
     HEADERS["User-Agent"] = user_agent.generate_user_agent()
     response = await client.post(HOST, json=PAYLOAD, headers=HEADERS)
     response.raise_for_status()
-    return {
-        "model": "GPT-4",
-        "origin": query,
-        "message": response.text
-    }
+    return {"model": "GPT-4", "origin": query, "message": response.text}
