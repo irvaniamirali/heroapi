@@ -35,11 +35,10 @@ async def http_exception_handler(_: Request, exc: HTTPException) -> JSONResponse
     """
     Handle HTTP exceptions.
     """
-    # dummy handler for now. Maybe we'll add more handlers later.
+    # TODO: dummy handler for now. Maybe we'll add more handlers later.
     if not isinstance(exc.detail, dict):
         exc.detail = {"detail": exc.detail}
     if not exc.detail.get("status"):
-        # The same 'status' key is used in the API error 'to_dict' method.
         exc.detail["status"] = exc.status_code
     return JSONResponse(status_code=exc.status_code, content=exc.detail)
 
@@ -60,7 +59,7 @@ async def custom_404_handler(request: Request, _):
 async def hello_world() -> dict:
     return {
         "success": True,
-        "data": "Hello World!"
+        "message": "Hello World!"
     }
 
 

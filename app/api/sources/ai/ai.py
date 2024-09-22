@@ -1,6 +1,4 @@
-from fastapi import status
-
-from httpx import AsyncClient, codes
+from httpx import AsyncClient
 
 import user_agent
 
