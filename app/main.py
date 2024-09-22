@@ -1,10 +1,8 @@
 from fastapi import FastAPI, Request, status
-from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from httpx import HTTPStatusError
 
 from app.routers import Routers, paths
 from app.settings.config import app_config, middleware_config
@@ -20,39 +18,22 @@ templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-@app.exception_handler(HTTPStatusError)
-async def handle_api_error(_: Request, exc: HTTPStatusError) -> JSONResponse:
+@app.exception_handler(Exception)
+async def common_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """
     Handle API errors.
     """
-    # TODO: make specific error messages for each error code
-    message = {"error_message": "A problem has occurred on our end."}
-    return JSONResponse(status_code=exc.response.status_code, content=message)
-
-
-@app.exception_handler(HTTPException)
-async def http_exception_handler(_: Request, exc: HTTPException) -> JSONResponse:
-    """
-    Handle HTTP exceptions.
-    """
     # TODO: dummy handler for now. Maybe we'll add more handlers later.
-    if not isinstance(exc.detail, dict):
-        exc.detail = {"detail": exc.detail}
-    if not exc.detail.get("status"):
-        exc.detail["status"] = exc.status_code
-    return JSONResponse(status_code=exc.status_code, content=exc.detail)
+    message = {"error_message": "A problem has occurred on our end."}
+    return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=message)
 
 
 @app.exception_handler(status.HTTP_404_NOT_FOUND)
-async def custom_404_handler(request: Request, _):
+async def custom_404_handler(request: Request, exc: Exception):
     """
     Handle 404 page (Not found)
     """
-    return templates.TemplateResponse(
-        "404.html", {
-            "request": request
-        }
-    )
+    return templates.TemplateResponse("404.html", {"request": request})
 
 
 @app.get("/helloworld", status_code=status.HTTP_200_OK)
