@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api/faker", tags=["Fake data"])
 async def faker_text(language: Optional[str] = "en") -> dict:
     """
     Random fake text API
-    Only `en` and `fa` are available.
+    :language: Only `en` and `fa` are available.
     """
     return await text(language)
 
