@@ -1,1 +1,1 @@
-from .ai import gpt
+from .chat import gpt
