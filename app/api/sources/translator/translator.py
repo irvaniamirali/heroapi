@@ -1,11 +1,9 @@
-from fastapi import status
-
 import urllib.parse
 import html
 import user_agent
 
 from re import findall
-from httpx import AsyncClient, codes
+from httpx import AsyncClient
 
 client = AsyncClient()
 
@@ -16,21 +14,16 @@ HEADERS = {
 }
 
 
-async def translate(response, text, to_lang, from_lang):
+async def translate(text, to_lang, from_lang):
     HEADERS["User-Agent"] = user_agent.generate_user_agent()
     query_url = f"{URL}/m?tl={to_lang}&sl={from_lang}&q={urllib.parse.quote(text)}"
-    request = await client.request(method="GET", url=query_url, headers=HEADERS)
-    if request.status_code != codes.OK:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {
-            "success": False,
-            "data": None,
-            "error_message": "A problem has occurred on our end"
-        }
+    response = await client.request(method="GET", url=query_url, headers=HEADERS)
+    response.raise_for_status()
 
-    translated_text = findall(r'(?s)class="(?:t0|result-container)">(.*?)<', request.text)
+    translated_text = findall(r'(?s)class="(?:t0|result-container)">(.*?)<', response.text)
     return {
-        "success": True,
-        "data": html.unescape(translated_text[0]),
-        "error_message": None
+        "origin": text,
+        "to_lang": to_lang,
+        "from_lang": from_lang,
+        "text": html.unescape(translated_text[0])
     }
