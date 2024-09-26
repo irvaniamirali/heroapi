@@ -1,2 +1,2 @@
 from .chat import gpt
-from .lexica_api import lexica_api
+from .image_gen import lexica_api
