@@ -8,7 +8,6 @@ router = APIRouter(prefix="/api", tags=["Music search"])
 
 
 @router.get("/music-fa", status_code=status.HTTP_200_OK)
-@router.post("/music-fa", status_code=status.HTTP_200_OK)
 async def music_fa(query: str, page: Optional[int] = 1) -> list:
     """
     Search and search web service on the [music-fa](https://music-fa.com) site.
