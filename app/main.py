@@ -24,7 +24,7 @@ async def common_exception_handler(request: Request, exc: Exception) -> JSONResp
     Handle API errors.
     """
     # TODO: dummy handler for now. Maybe we'll add more handlers later.
-    message = {"error_message": "A problem has occurred on our end."}
+    message = {"message": "A problem has occurred on our end."}
     return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=message)
 
 
