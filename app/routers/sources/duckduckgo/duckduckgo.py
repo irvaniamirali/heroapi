@@ -10,7 +10,6 @@ router = APIRouter(prefix="/api/duckduckgo", tags=["DuckDuckGo"])
 
 
 @router.get("/text", status_code=status.HTTP_200_OK)
-@router.post("/text", status_code=status.HTTP_200_OK)
 async def duckduckgo_text(
         query: str,
         region: Optional[str] = "wt-wt",
@@ -33,7 +32,6 @@ async def duckduckgo_text(
     return await text_query(query, region, safe_search, timelimit, "api", max_results)
 
 
-@router.get("/text/html", status_code=status.HTTP_200_OK)
 @router.post("/text/html", status_code=status.HTTP_200_OK)
 async def duckduckgo_html_text(
         query: str,
@@ -48,7 +46,6 @@ async def duckduckgo_html_text(
     return await text_query(query, region, safe_search, timelimit, "html", max_results)
 
 
-@router.get("/text/lite", status_code=status.HTTP_200_OK)
 @router.post("/text/lite", status_code=status.HTTP_200_OK)
 async def duckduckgo_lite_text(
         query: str,
@@ -63,7 +60,6 @@ async def duckduckgo_lite_text(
     return await text_query(query, region, safe_search, timelimit, "lite", max_results)
 
 
-@router.get("/translate", tags=["Translate"], status_code=status.HTTP_200_OK)
 @router.post("/translate", tags=["Translate"], status_code=status.HTTP_200_OK)
 async def duckduckgo_translate(
         text: str,
@@ -77,7 +73,6 @@ async def duckduckgo_translate(
 
 
 @router.get("/news", status_code=status.HTTP_200_OK)
-@router.post("/news", status_code=status.HTTP_200_OK)
 async def duckduckgo_news(
         query: str,
         max_results: Optional[int] = 10,
@@ -100,7 +95,6 @@ async def duckduckgo_news(
 
 
 @router.get("/images", status_code=status.HTTP_200_OK)
-@router.post("/images", status_code=status.HTTP_200_OK)
 async def duckduckgo_images(
         query: str,
         region: Optional[str] = "wt-wt",
@@ -136,7 +130,6 @@ async def duckduckgo_images(
 
 
 @router.get("/chat", tags=["AI"], status_code=status.HTTP_200_OK)
-@router.post("/chat", tags=["AI"], status_code=status.HTTP_200_OK)
 async def duckduckgo_chat(
         query: str,
         model: Optional[str] = "gpt-4o-mini",
@@ -150,7 +143,6 @@ async def duckduckgo_chat(
 
 
 @router.get("/videos", status_code=status.HTTP_200_OK)
-@router.post("/videos", status_code=status.HTTP_200_OK)
 async def duckduckgo_videos(
         query: str,
         region: Optional[str] = "wt-wt",
@@ -180,7 +172,6 @@ async def duckduckgo_videos(
 
 
 @router.get("/answers", status_code=status.HTTP_200_OK)
-@router.post("/answers", status_code=status.HTTP_200_OK)
 async def duckduckgo_answers(query: str) -> list:
     """
     DuckDuckGo instant answers. Query params: https://duckduckgo.com/params.
@@ -189,7 +180,6 @@ async def duckduckgo_answers(query: str) -> list:
 
 
 @router.get("/suggestions", status_code=status.HTTP_200_OK)
-@router.post("/suggestions", status_code=status.HTTP_200_OK)
 async def duckduckgo_suggestions(query: str, region: Optional[str] = "wt-wt") -> list:
     """
     DuckDuckGo suggestions. Query params: https://duckduckgo.com/params.
@@ -205,7 +195,6 @@ async def duckduckgo_suggestions(query: str, region: Optional[str] = "wt-wt") ->
 
 
 @router.get("/maps", status_code=status.HTTP_200_OK)
-@router.post("/maps", status_code=status.HTTP_200_OK)
 async def duckduckgo_maps(
         query: str,
         place: Optional[str] = None,
