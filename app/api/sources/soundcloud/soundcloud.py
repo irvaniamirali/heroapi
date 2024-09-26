@@ -1,16 +1,10 @@
-from fastapi import status
-
 from sclib.asyncio import SoundcloudAPI
 
 api = SoundcloudAPI()
 
 
-async def track(response, url):
-    try:
-        track_result = await api.resolve(url)
-    except:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {"error_message": "A problem has occurred on our end."}
+async def track(url):
+    track_result = await api.resolve(url)
 
     stream_url = await track_result.get_stream_url()
     return {
@@ -30,12 +24,8 @@ async def track(response, url):
     }
 
 
-async def playlist(response, url):
-    try:
-        playlist_result = await api.resolve(url)
-    except:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {"error_message": "A problem has occurred on our end."}
+async def playlist(url):
+    playlist_result = await api.resolve(url)
 
     results = []
     for _track in playlist_result.tracks:
