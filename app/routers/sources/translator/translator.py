@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, status
 
 from typing import Optional
 
@@ -8,14 +8,8 @@ router = APIRouter(prefix="/api", tags=["Translate"])
 
 
 @router.get("/translate", status_code=status.HTTP_200_OK)
-@router.post("/translate", status_code=status.HTTP_200_OK)
-async def translate(
-        response: Response,
-        text: str,
-        to_lang: Optional[str] = "auto",
-        from_lang: Optional[str] = "auto"
-) -> dict:
+async def translate(text: str, to_lang: Optional[str] = "auto", from_lang: Optional[str] = "auto") -> dict:
     """
     Translation of texts based on the Google Translate engine.
     """
-    return await translate_api(response, text, to_lang, from_lang)
+    return await translate_api(text, to_lang, from_lang)
