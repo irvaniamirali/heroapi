@@ -12,14 +12,14 @@ HEADERS = {
     "Accept-Language": "en-US,en;q=0.5",
     "Accept-Encoding": "gzip, deflate, br",
     "Content-Type": "application/json",
-    "Referer": "https://chat18.aichatos8.com/",
-    "Origin": "https://chat18.aichatos8.com",
+    "Referer": "https://cht18.aichatosd2.com/",
+    "Origin": "https://cht18.aichatosd2.com",
     "Access-Control-Allow-Origin": "*"
 }
 
 PAYLOAD = {
     "prompt": None,
-    "userId": "#/chat/1724442116057",
+    "userId": "#/chat/1729523471628",
     "network": True,
     "system": "",
     "withoutContext": False,
