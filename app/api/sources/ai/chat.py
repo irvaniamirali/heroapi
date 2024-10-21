@@ -1,6 +1,4 @@
-from fastapi import status
-
-from httpx import AsyncClient, codes
+from httpx import AsyncClient
 
 import user_agent
 
@@ -14,14 +12,14 @@ HEADERS = {
     "Accept-Language": "en-US,en;q=0.5",
     "Accept-Encoding": "gzip, deflate, br",
     "Content-Type": "application/json",
-    "Referer": "https://chat18.aichatos8.com/",
-    "Origin": "https://chat18.aichatos8.com",
+    "Referer": "https://cht18.aichatosd2.com/",
+    "Origin": "https://cht18.aichatosd2.com",
     "Access-Control-Allow-Origin": "*"
 }
 
 PAYLOAD = {
     "prompt": None,
-    "userId": "#/chat/1724442116057",
+    "userId": "#/chat/1729523471628",
     "network": True,
     "system": "",
     "withoutContext": False,
@@ -37,8 +35,4 @@ async def gpt(query):
     HEADERS["User-Agent"] = user_agent.generate_user_agent()
     response = await client.post(HOST, json=PAYLOAD, headers=HEADERS)
     response.raise_for_status()
-    return {
-        "model": "GPT-4",
-        "origin": query,
-        "message": response.text
-    }
+    return {"model": "GPT-4", "origin": query, "message": response.text}

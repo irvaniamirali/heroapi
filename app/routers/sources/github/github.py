@@ -1,14 +1,13 @@
 from fastapi import APIRouter, status
 
-from app.api.sources.github import topic_search, repo_search, users_search
-
 from typing import Optional
+
+from app.api.sources.github import topic_search, repo_search, users_search
 
 router = APIRouter(prefix="/api/github", tags=["GitHub"])
 
 
 @router.get("/topic", status_code=status.HTTP_200_OK)
-@router.post("/topic", status_code=status.HTTP_200_OK)
 async def github_topic_search(query: str, per_page: Optional[int] = 30, page: Optional[int] = 1) -> dict:
     """
     GitHub topic search web service
@@ -17,7 +16,6 @@ async def github_topic_search(query: str, per_page: Optional[int] = 30, page: Op
 
 
 @router.get("/repo", status_code=status.HTTP_200_OK)
-@router.post("/repo", status_code=status.HTTP_200_OK)
 async def github_repo_search(
         name: str,
         sort: Optional[str] = "stars",
@@ -33,7 +31,6 @@ async def github_repo_search(
 
 
 @router.get("/users", status_code=status.HTTP_200_OK)
-@router.post("/users", status_code=status.HTTP_200_OK)
 async def github_users_search(
         query: str,
         sort: Optional[str] = "followers",

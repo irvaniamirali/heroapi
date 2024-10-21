@@ -10,7 +10,6 @@ router = APIRouter(prefix="/api/datetime", tags=["Date & Time"])
 
 
 @router.get("/solar", status_code=status.HTTP_200_OK)
-@router.post("/solar", status_code=status.HTTP_200_OK)
 async def solar_datetime() -> dict:
     """
     Current Jalali date
@@ -19,7 +18,6 @@ async def solar_datetime() -> dict:
 
 
 @router.get("/ad", status_code=status.HTTP_200_OK)
-@router.post("/ad", status_code=status.HTTP_200_OK)
 async def ad_datetime() -> dict:
     """
     Current AD date
@@ -28,7 +26,6 @@ async def ad_datetime() -> dict:
 
 
 @router.get("/iso", status_code=status.HTTP_200_OK)
-@router.post("/iso", status_code=status.HTTP_200_OK)
 async def iso_date(year: int, month: int, day: int, prefix: Optional[str] = "/") -> dict:
     """
     Return the Jalali date as a string in ISO 8601 format.
@@ -37,7 +34,6 @@ async def iso_date(year: int, month: int, day: int, prefix: Optional[str] = "/")
 
 
 @router.get("/convert-ad", status_code=status.HTTP_200_OK)
-@router.post("/convert-ad", status_code=status.HTTP_200_OK)
 async def convert_ad_to_jalali(year: int, month: int, day: int) -> str:
     """
     Convert AD date to Jalali date.
@@ -46,7 +42,6 @@ async def convert_ad_to_jalali(year: int, month: int, day: int) -> str:
 
 
 @router.get("/convert-jalali", status_code=status.HTTP_200_OK)
-@router.post("/convert-jalali", status_code=status.HTTP_200_OK)
 async def convert_jalali_to_ad(year: int, month: int, day: int) -> str:
     """
     Convert Jalali date to AD date.

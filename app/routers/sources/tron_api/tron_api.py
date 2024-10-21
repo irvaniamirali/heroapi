@@ -5,7 +5,6 @@ from app.api.sources.tron_api import tron as tron_api
 router = APIRouter(prefix="/api", tags=["Tron"])
 
 
-@router.get("/tron", status_code=status.HTTP_200_OK)
 @router.post("/tron", status_code=status.HTTP_200_OK)
 async def tron() -> dict:
     """
